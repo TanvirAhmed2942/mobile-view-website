@@ -1,10 +1,15 @@
+"use client";
 import NavBar from "@/components/common/navBar/navBar";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import useIcon from "@/hooks/useIcon";
 import React from "react";
-
+import { useRouter } from "next/navigation";
 function Redirects() {
+  const router = useRouter();
+  const handleContinue = () => {
+    router.push("/congrats");
+  };
   return (
     <ScrollArea className="w-full h-[calc(100vh-200px)] no-scrollbar">
       <div className="w-full min-h-[600px] xl:min-h-[630px] 2xl:min-h-[800px] flex flex-col items-center gap-6 justify-start">
@@ -34,7 +39,10 @@ function Redirects() {
             correct campaign chain.
           </p>
         </div>
-        <Button className="w-full bg-paul hover:bg-paul-dark text-white font-semibold py-6 px-4 rounded-full transition-all duration-200 flex items-center justify-center gap-2">
+        <Button
+          onClick={handleContinue}
+          className="w-full bg-paul hover:bg-paul-dark text-white font-semibold py-6 px-4 rounded-full transition-all duration-200 flex items-center justify-center gap-2"
+        >
           {useIcon({ name: "donate_icon" })}
           Continue
         </Button>

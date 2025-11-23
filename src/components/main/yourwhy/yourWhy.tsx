@@ -1,10 +1,19 @@
+"use client";
 import NavBar from "@/components/common/navBar/navBar";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
 import React from "react";
-
+import { useRouter } from "next/navigation";
 function YourWhy() {
+  const router = useRouter();
+
+  const handlePreview = () => {
+    router.push("/preview");
+  };
+  const handleSend = () => {
+    router.push("/donate");
+  };
   return (
     <ScrollArea className="w-full h-[calc(100vh-200px)] no-scrollbar">
       <div className="w-full min-h-[600px] xl:min-h-[630px] 2xl:min-h-[800px] flex flex-col items-center gap-6 justify-start">
@@ -27,10 +36,16 @@ function YourWhy() {
           />
         </div>
         <div className="w-full grid grid-cols-2 gap-2">
-          <Button className="w-full bg-white hover:bg-paul-dark border border-[#8a48c4] text-black hover:text-white font-semibold py-6 px-4 rounded-full transition-all duration-200">
+          <Button
+            onClick={handlePreview}
+            className="w-full bg-white hover:bg-paul-dark border border-[#8a48c4] text-black hover:text-white font-semibold py-6 px-4 rounded-full transition-all duration-200"
+          >
             Preview
           </Button>
-          <Button className="w-full bg-paul hover:bg-paul-dark text-white font-semibold py-6 px-4 rounded-full transition-all duration-200">
+          <Button
+            onClick={handleSend}
+            className="w-full bg-paul hover:bg-paul-dark text-white font-semibold py-6 px-4 rounded-full transition-all duration-200"
+          >
             Send
           </Button>
         </div>

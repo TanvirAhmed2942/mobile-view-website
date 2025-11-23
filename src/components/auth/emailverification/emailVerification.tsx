@@ -6,80 +6,84 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
-  function PhoneVerification() {
-    const [code, setCode] = useState(["", "", "", ""]);
-    const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
-    const [timer, setTimer] = useState(30);
+function PhoneVerification() {
+  const [code, setCode] = useState(["", "", "", ""]);
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const [timer, setTimer] = useState(30);
+  const router = useRouter();
+  const handleVerify = () => {
+    router.push("/invite");
+  };
+  useEffect(() => {
+    if (timer > 0) {
+      const interval = setInterval(() => {
+        setTimer((prev) => prev - 1);
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [timer]);
 
-    useEffect(() => {
-      if (timer > 0) {
-        const interval = setInterval(() => {
-          setTimer((prev) => prev - 1);
-        }, 1000);
-        return () => clearInterval(interval);
-      }
-    }, [timer]);
+  const handleInputChange = (index: number, value: string) => {
+    if (value.length > 1) return; // Only allow single digit
+    if (!/^\d*$/.test(value)) return; // Only allow numbers
 
-    const handleInputChange = (index: number, value: string) => {
-      if (value.length > 1) return; // Only allow single digit
-      if (!/^\d*$/.test(value)) return; // Only allow numbers
+    const newCode = [...code];
+    newCode[index] = value;
+    setCode(newCode);
 
-      const newCode = [...code];
-      newCode[index] = value;
-      setCode(newCode);
+    // Auto-focus next input
+    if (value && index < 3) {
+      inputRefs.current[index + 1]?.focus();
+    }
+  };
 
-      // Auto-focus next input
-      if (value && index < 3) {
-        inputRefs.current[index + 1]?.focus();
-      }
-    };
+  const handleKeyDown = (index: number, e: React.KeyboardEvent) => {
+    if (e.key === "Backspace" && !code[index] && index > 0) {
+      inputRefs.current[index - 1]?.focus();
+    }
+  };
 
-    const handleKeyDown = (index: number, e: React.KeyboardEvent) => {
-      if (e.key === "Backspace" && !code[index] && index > 0) {
-        inputRefs.current[index - 1]?.focus();
-      }
-    };
+  const handlePaste = (e: React.ClipboardEvent) => {
+    e.preventDefault();
+    const pastedData = e.clipboardData
+      .getData("text")
+      .replace(/\D/g, "")
+      .slice(0, 4);
+    const newCode = [...code];
+    for (let i = 0; i < pastedData.length && i < 4; i++) {
+      newCode[i] = pastedData[i];
+    }
+    setCode(newCode);
 
-    const handlePaste = (e: React.ClipboardEvent) => {
-      e.preventDefault();
-      const pastedData = e.clipboardData
-        .getData("text")
-        .replace(/\D/g, "")
-        .slice(0, 4);
-      const newCode = [...code];
-      for (let i = 0; i < pastedData.length && i < 4; i++) {
-        newCode[i] = pastedData[i];
-      }
-      setCode(newCode);
+    // Focus the next empty input or the last one
+    const nextEmptyIndex = newCode.findIndex(
+      (digit, index) => index >= pastedData.length && !digit
+    );
+    const focusIndex = nextEmptyIndex !== -1 ? nextEmptyIndex : 3;
+    inputRefs.current[focusIndex]?.focus();
+  };
 
-      // Focus the next empty input or the last one
-      const nextEmptyIndex = newCode.findIndex(
-        (digit, index) => index >= pastedData.length && !digit
-      );
-      const focusIndex = nextEmptyIndex !== -1 ? nextEmptyIndex : 3;
-      inputRefs.current[focusIndex]?.focus();
-    };
-
-    const handleResendCode = () => {
-      // Reset timer to 30 seconds
-      setTimer(30);
-      // Clear OTP fields
-      setCode(["", "", "", ""]);
-      // Focus first input
-      inputRefs.current[0]?.focus();
-      // TODO: Add API call to resend OTP here
-    };
+  const handleResendCode = () => {
+    // Reset timer to 30 seconds
+    setTimer(30);
+    // Clear OTP fields
+    setCode(["", "", "", ""]);
+    // Focus first input
+    inputRefs.current[0]?.focus();
+    // TODO: Add API call to resend OTP here
+  };
 
   return (
-    <div className='w-full min-h-[600px] xl:min-h-[630px] 2xl:min-h-[800px] flex flex-col items-center justify-start'>
+    <div className="w-full min-h-[600px] xl:min-h-[630px] 2xl:min-h-[800px] flex flex-col items-center justify-start">
       {/* Logo and App Name */}
-      <div className='w-full h-full flex flex-col items-center justify-between 2xl:mt-4'>
-     <div className="flex items-center justify-center gap-2 mb-6 ">
+      <div className="w-full h-full flex flex-col items-center justify-between 2xl:mt-4">
+        <div className="flex items-center justify-center gap-2 mb-6 ">
           <div className="relative w-40 h-10 flex-shrink-0">
             <Image
-              src="/logo.png" 
-              alt="logo" 
+              src="/logo.png"
+              alt="logo"
               fill
               sizes="160px"
               priority
@@ -91,18 +95,16 @@ import Image from "next/image";
         <div className="w-full h-px bg-gray-300 "></div>
       </div>
 
-     
+      <div className="space-y-2 text-left mt-6">
+        <h2 className="text-2xl  font-semibold text-gray-800 mb-2">
+          Enter OTP
+        </h2>
 
-     <div className="space-y-2 text-left mt-6">
-     <h2 className="text-2xl  font-semibold text-gray-800 mb-2">
-     Enter OTP
-      </h2>
-
-      <p className="text-sm  text-gray-500 ">
-      Enter OTP Send sms 01721XXX to complete your verification. Don&apos;t share this code with anyone. 
-      </p>
-     </div>
-     
+        <p className="text-sm  text-gray-500 ">
+          Enter OTP Send sms 01721XXX to complete your verification. Don&apos;t
+          share this code with anyone.
+        </p>
+      </div>
 
       {/* Form */}
       <form className="space-y-5 w-full mt-6">
@@ -145,17 +147,14 @@ import Image from "next/image";
           )}
         </div>
 
-      <Button
-          type="submit"
+        <Button
+          type="button"
+          onClick={handleVerify}
           className="w-full bg-paul hover:bg-paul-dark text-white font-medium py-6 px-4 rounded-full mt-6"
         >
           Verify Me
-        </Button> 
-    
-      
+        </Button>
       </form>
-
-
     </div>
   );
 }

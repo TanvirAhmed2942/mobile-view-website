@@ -8,8 +8,12 @@ import { CheckIcon } from "lucide-react";
 import React, { useState } from "react";
 
 import useIcon from "@/hooks/useIcon";
-
+import { useRouter } from "next/navigation";
 function Donate() {
+  const router = useRouter();
+  const handleContinue = () => {
+    router.push("/redirect");
+  };
   const [selectedAmount, setSelectedAmount] = useState<number | null>(100);
   const [customAmount, setCustomAmount] = useState("");
 
@@ -91,7 +95,10 @@ function Donate() {
           </div>
 
           {/* Continue Button */}
-          <Button className="w-full h-11 bg-paul hover:bg-paul-dark text-white font-semibold py-3 px-4 rounded-full mt-4 ">
+          <Button
+            onClick={handleContinue}
+            className="w-full h-11 bg-paul hover:bg-paul-dark text-white font-semibold py-3 px-4 rounded-full mt-4 "
+          >
             Continue
           </Button>
         </div>

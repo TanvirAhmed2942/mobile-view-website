@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 
 import { Button } from "@/components/ui/button";
@@ -6,7 +7,13 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { IoAddOutline } from "react-icons/io5";
 import NavBar from "@/components/common/navBar/navBar";
+import { useRouter } from "next/navigation";
 function Invite() {
+  const router = useRouter();
+
+  const handleInvite = () => {
+    router.push("/your-why");
+  };
   return (
     <ScrollArea className="w-full h-[calc(100vh-200px)] no-scrollbar">
       <div className="w-full min-h-[600px] xl:min-h-[630px] 2xl:min-h-[800px] flex flex-col items-center gap-6 justify-start">
@@ -107,7 +114,10 @@ function Invite() {
           </div>
         </div>
       </div>
-      <Button className="w-full bg-paul hover:bg-paul-dark text-white font-semibold py-6 px-4 rounded-full transition-all duration-200 mt-4">
+      <Button
+        onClick={handleInvite}
+        className="w-full bg-paul hover:bg-paul-dark text-white font-semibold py-6 px-4 rounded-full transition-all duration-200 mt-4"
+      >
         Continue
       </Button>
     </ScrollArea>
