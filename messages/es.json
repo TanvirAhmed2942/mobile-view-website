@@ -1,0 +1,644 @@
+{
+  "header": {
+    "navlink": {
+      "home": "Inicio",
+      "aboutUs": "Acerca de nosotros",
+      "howItWorks": "Cómo funciona"
+    },
+    "business": {
+      "business": "Negocios",
+      "independentPharmacies": "Farmacias independientes",
+      "earnAsDriver": "Gana como conductor",
+      "investors": "Inversores",
+      "otherBusinesses": "Otras empresas"
+    },
+    "login": "Iniciar sesión",
+    "signup": "Registrarse",
+    "logout": "Cerrar sesión",
+    "dashboard": "Panel de control",
+    "language": "Idioma",
+    "bottomHeader": {
+      "contactInformation": "Información de contacto",
+      "contactUsText": "Llámanos o envíanos un mensaje",
+      "contactUsPhone": "917-993-0549",
+      "mailUs": "Envíanos un mensaje:",
+      "businessHours": "Horarios de atención",
+      "businessHoursText": "Lunes a Viernes: 8a.m.-7p.m.",
+      "businessHoursText2": "Sábado: 8a.m.-1p.m.",
+      "businessHoursText3": "Domingo: Cerrado"
+    }
+  },
+  "home": {
+    "mapAndFormSection": {
+      "title": "Solicita tu receta entregada en minutos",
+      "titleforMobileView": "Solicita tu receta\nentregada en minutos",
+      "changeCityOrZipCode": "Cambiar ciudad o código postal",
+      "pharmacySuggestions": "Sugerencias de farmacias",
+      "modalDescription": "Crea una cuenta de Optimus Health Solutions para un checkout más rápido más tarde. ¿No tienes tiempo ahora? No hay problema. Puedes hacer checkout como invitado."
+    },
+    "form": {
+      "pickupLocation": "Ubicación de recogida",
+      "dropoffAddress": "Dirección de entrega",
+      "date": "Fecha",
+      "time": "Hora",
+      "checkoutRequest": "Solicitar checkout",
+      "now": "Ahora",
+      "today": "Hoy"
+    },
+    "datePickerModal": {
+      "title": "Selecciona una fecha de entrega",
+      "description": "Tu próxima entrega está programada para",
+      "confirmDate": "Confirmar fecha",
+      "cancel": "Cancelar"
+    },
+    "timePickerModal": {
+      "title": "Selecciona una hora de entrega",
+      "description": "Tu orden será entregada el",
+      "confirmTime": "Confirmar hora",
+      "cancel": "Cancelar",
+      "morning": "Mañana",
+      "afternoon": "Tarde",
+      "evening": "Noche"
+    },
+    "optimusHealthSolutions": {
+      "headline": "Cómo funciona Optimus Health Solutions",
+      "description": "Cuando recargas, transfieres recetas o programas servicios de salud esenciales a través de nuestra plataforma, te conectas con nuestras farmacias independientes locales confiables cerca de ti. Juntos, estamos fortaleciendo nuestras comunidades y ayudando a que las farmacias independientes prosperen.",
+      "steps": [
+        {
+          "title": "Regístrate",
+          "description": "Coordinaremos con tu farmacia o doctor para obtener tus recetas."
+        },
+        {
+          "title": "Solicitar",
+          "description": "Aceptamos tu seguro y entregamos tus recetas en un tiempo y te notificamos cuando sea que funcione para ti."
+        },
+        {
+          "title": "Entregamos!",
+          "description": "Coordinaremos con tu doctor y te notificaremos cuando sea que sea tiempo para recargas."
+        }
+      ],
+      "learnMore": "Aprender más"
+    },
+    "servicesWeOffer": {
+      "headline": "Servicios que Ofrecemos",
+      "description": "Cuando recargas, transfieres recetas o programas servicios de salud esenciales a través de nuestra plataforma, te conectas con nuestras farmacias independientes locales confiables cerca de ti. Juntos, estamos fortaleciendo nuestras comunidades y ayudando a que las farmacias independientes prosperen.",
+      "services": [
+        {
+          "title": "Solicitar Entrega de Receta",
+          "description": "Entregamos tus recetas en tu hogar o lugar de trabajo.",
+          "buttonText": "Solicitar Ahora"
+        },
+        {
+          "title": "Recargar una Receta",
+          "description": "Entregamos tus recetas en tu hogar o lugar de trabajo.",
+          "buttonText": "Recargar Ahora"
+        },
+        {
+          "title": "Transferir una Receta",
+          "description": "Entregamos tus recetas en tu hogar o lugar de trabajo.",
+          "buttonText": "Transferir Ahora"
+        },
+        {
+          "title": "Programar Servicios de Salud Esenciales",
+          "description": "Entregamos tus recetas en tu hogar o lugar de trabajo.",
+          "buttonText": "Programar Ahora"
+        }
+      ]
+    },
+    "ourStory": {
+      "headline": "Nuestra Historia",
+      "description_1st": "Iniciamos Optimus Health Solutions con una creencia simple: que nadie debería tener que luchar para obtener sus recetas, y que ninguna comunidad debería perder su farmacia independiente confiable.",
+      "description_2nd": "Al conectar a los pacientes con farmacias independientes cercanas, hacemos que el cuidado sea más rápido, personal y cercano a la casa.",
+      "buttonText": "Click para Aprender Más"
+    },
+    "ourImpact": {
+      "headline": "Nuestro Impacto",
+      "stats": [
+        {
+          "label": "Recetas Entregadas",
+          "suffix": "+"
+        },
+        {
+          "label": "Pacientes Atendidos",
+          "suffix": "+"
+        },
+        {
+          "label": "Tiempo Promedio de Entrega",
+          "suffix": " Mins"
+        }
+      ]
+    },
+    "userTestimonial": {
+      "headline": "Lo que dicen nuestros usuarios"
+    },
+    "formSection": {
+  "formTitle": "Envíanos un mensaje",
+  "formDescription": "Nos encantaría escuchar de usted — contacta en cualquier momento.",
+  "fullName": "Su Nombre",
+  "fullNamePlaceholder": "Ingrese su nombre aquí...",
+  "fullNameRequired": "El nombre es obligatorio",
+  "fullNameMinLength": "El nombre debe tener al menos 2 caracteres",
+  "emailAddress": "Correo Electrónico",
+  "emailAddressPlaceholder": "Ingrese su correo electrónico aquí...",
+  "emailAddressRequired": "El correo electrónico es obligatorio",
+  "emailAddressInvalid": "Correo electrónico inválido",
+  "phoneNumber": "Número de Teléfono",
+  "phoneNumberPlaceholder": "Ingrese su número de teléfono aquí...",
+  "phoneNumberRequired": "El número de teléfono es obligatorio",
+  "phoneNumberInvalid": "Formato de número de teléfono inválido",
+  "subject": "Asunto",
+  "subjectPlaceholder": "Seleccione su asunto aquí...",
+  "subjectRequired": "El asunto es obligatorio",
+    "otherspecify": "Otro (por favor especifique)",
+  "otherspecifyPlaceholder": "Ingrese su opción aquí...",
+  "otherspecifyRequired": "La especificación es obligatoria",
+  "otherspecifyMinLength": "La especificación debe tener al menos 2 caracteres",
+  "message": "Mensaje",
+  "messagePlaceholder": "Ingrese su mensaje aquí...",
+  "messageRequired": "El mensaje es obligatorio",
+  "messageMinLength": "El mensaje debe tener al menos 10 caracteres",
+  "submitButton": "Enviar Mensaje"
+}
+
+  },
+
+  "aboutUs": {
+    "banner": {
+      "title": "Tu socio de confianza para la entrega de recetas",
+      "description": "Hacemos la entrega de recetas más rápida, segura y accesible para los pacientes en Estados Unidos de América."
+    },
+    "headline": "Nuestra misión y visión",
+    "mission": {
+      "title": "Nuestra misión",
+      "description": "Somos un equipo de profesionales dedicados que estamos comprometidos a proporcionar el mejor servicio posible a nuestros pacientes."
+    },
+    "vision": {
+      "title": "Nuestra visión",
+      "description": "Somos un equipo de profesionales dedicados que estamos comprometidos a proporcionar el mejor servicio posible a nuestros pacientes."
+    },
+    "ourStory": {
+      "headline": "Nuestra historia",
+      "storyTimeline": [
+        {
+          "badge": "H1",
+          "title": "Quiénes somos",
+          "subtitle": "2022",
+          "description": "Somos un equipo de profesionales dedicados que estamos comprometidos a proporcionar el mejor servicio posible a nuestros pacientes."
+        },
+        {
+          "badge": "H2",
+          "title": "Por qué lo hacemos",
+          "subtitle": "2025",
+          "description": "Somos un equipo de profesionales dedicados que estamos comprometidos a proporcionar el mejor servicio posible a nuestros pacientes."
+        },
+        {
+          "badge": "H3",
+          "title": "Actual",
+          "subtitle": "Presente",
+          "description": "Somos un equipo de profesionales dedicados que estamos comprometidos a proporcionar el mejor servicio posible a nuestros pacientes."
+        }
+      ]
+    },
+    "ourValues": {
+      "headline": "Nuestros valores",
+      "values": [
+        {
+          "title": "Community First",
+          "description": "Apoyar y fortalecer las farmacias independientes para comunidades más saludables.",
+          "src": "/howitworks/value_1.png"
+        },
+        {
+          "title": "Patient Empowerment",
+          "description": "Hacer el acceso simple. Dar a la gente el poder de elegir su farmacia con respeto, privacidad, confiabilidad en cada interacción.",
+          "src": "/howitworks/value_2.png"
+        },
+        {
+          "title": "Partnership and Transparency",
+          "description": "Co-diseñar soluciones con farmacias asociadas para construir confianza y éxito compartido.",
+          "src": "/howitworks/value_3.png"
+        }
+      ]
+    }
+  },
+  "readyToExperience": {
+    "title": "Listo para experimentar la conveniencia de Optimus Heath Solutions",
+    "description": "Únete a miles de pacientes satisfechos que confían en nosotros para sus necesidades de entrega de recetas.",
+    "buttonText": "Envíanos un mensaje"
+  },
+  "howItWorks": {
+    "banner": {
+      "title": "\"Cómo funciona\" - Simple, Seguro y Local",
+      "description": "Nos encargamos de la coordinación para que puedas enfocarte en tu salud, mientras tu farmacia local se encarga del resto"
+    },
+    "headline": "Entrega de recetas",
+    "steps": [
+      {
+        "title": "Solicitar entrega",
+        "description": "Nuestro equipo contactará a tu farmacia para recargar tus recetas. Simplemente usa nuestra plataforma para solicitar entrega en minutos. Selecciona la ubicación de la farmacia, tu dirección de entrega, día y hora de entrega. Puedes crear una cuenta para un proceso más fácil o pagar como invitado"
+      },
+      {
+        "title": "Recibir entrega",
+        "description": "Relájate! Una vez que la farmacia recibe y confirma el cumplimiento para recoger. Nosotros entregaremos tu receta a tu casa, trabajo o cualquier ubicación de tu elección rápidamente (en minutos), de forma segura y convenientemente"
+      }
+    ],
+    "message": "Si estás recargando, transfiriendo o programando cuidados, Optimus HS te conecta directamente con tu farmacia local confiable para que sea rápido, confiable y sin estrés",
+    "descriptionOfProcess": [
+      {
+        "title": "Recargar receta",
+        "description": "Cuando necesitas una recarga? Simplemente envía tu solicitud de recarga a través de nuestra plataforma. Nosotros nos comunicaremos con tu farmacia local seleccionada para procesarla rápidamente. Una vez llena, recibirás una actualización instantánea para rastrear o programar tu entrega directamente a tu puerta."
+      },
+      {
+        "title": "Transferir receta",
+        "description": "Solo toma un minuto transferir tu receta de tu farmacia antigua a tu farmacia local preferida. Nosotros te enviaremos tus detalles de forma segura a la nueva farmacia y te notificaremos dentro de un día. Una vez que esté lista, te notificaremos para programar tu entrega donde y cuando lo necesites."
+      },
+      {
+        "title": "Programar servicios de salud esenciales",
+        "description": "Programa vacunas, exámenes de salud o consultas de bienestar en tu farmacia local preferida de forma fácil. Coordinaremos tus detalles de cita y te confirmaremos tu slot instantáneamente. Es conveniente, cuidado comunitario -manejado de forma segura y sin costo adicional para ti."
+      }
+    ]
+  },
+  "benefit": {
+    "title": "Ver todos nuestros beneficios",
+    "benefits": [
+      "Entrega conveniente a domicilio",
+      "Ahorra tiempo y costo",
+      "Manejo seguro de recetas",
+      "Seguimiento en tiempo real",
+      "Programación flexible",
+      "Sin costo para entregar Rx cuando usamos farmacias asociadas"
+    ]
+  },
+
+  "independentPharmacies": {
+    "banner": {
+      "title": "Para farmacias independientes",
+      "description": "Únete a nuestra red de farmacias independientes y ofrecemos recetas a domicilio a tus pacientes."
+    },
+    "benefits": [
+      {
+        "title": "Entrega Rápida y Confiable",
+        "description": "Entrega recetas de forma rápida y confiable a tus clientes con nuestra red de entrega eficiente."
+      },
+      {
+        "title": "Cumplimiento HIPAA",
+        "description": "Asegura la seguridad de los datos de los pacientes y el cumplimiento de las regulaciones HIPAA a través de nuestra plataforma segura."
+      },
+      {
+        "title": "Análisis de Datos",
+        "description": "Accede a análisis e información valiosa para comprender tu base de clientes y optimizar operaciones."
+      },
+      {
+        "title": "Aumenta los Ingresos",
+        "description": "Amplía tu alcance de clientes y aumenta los ingresos ofreciendo servicios de entrega convenientes a más pacientes."
+      }
+    ],
+    "headline": "Beneficios de unirse a nuestra red de farmacias independientes",
+    "description": "Como socio de Optimus, atraerás nuevos clientes, mejorarás la adherencia a la medicación y competirás efectivamente con las farmacias de cadena mientras te mantienes conectado a tu comunidad local.",
+    "howItWorks": {
+      "headline": "Cómo funciona",
+      "steps": [
+        {
+          "title": "Regístrate en nuestra plataforma",
+          "description": "Completa el formulario de registro en línea."
+        },
+        {
+          "title": "Carga tus licencias necesarias",
+          "description": "Proporciona licencias y certificaciones de farmacia válidas."
+        },
+        {
+          "title": "Comienza a recibir solicitudes de entrega",
+          "description": "Gestiona y cumple con las solicitudes de entrega a través de nuestra plataforma."
+        }
+      ]
+    },
+    "testimonials": {
+      "headline": "Lo que dicen nuestros usuarios"
+    },
+    "formSection": {
+      "headline": "Comience hoy",
+      "description": "Únete a nuestra creciente red de farmacias locales independientes de confianza que brindan atención médica directamente a domicilio. Como socio de Optimus, atraerás nuevos clientes, mejorarás la adherencia al tratamiento y competirás eficazmente con las grandes cadenas de farmacias, manteniendo a la vez el vínculo con tu comunidad local.",
+      "form": {
+        "formTitle": "Formulario de interés",
+        "formDescription": "Completa el formulario de interés y nos contactaremos contigo para programar una llamada de incorporación breve para guiarte a través del proceso",
+        "pharmacyName": "Nombre de la farmacia",
+        "pharmacyAddress": "Dirección de la farmacia",
+        "phoneNumber": "Número de teléfono",
+        "emailAddress": "Correo electrónico",
+        "contactPerson": "Persona de contacto",
+        "title": "Título",
+        "experienceBusiness": "Años en el negocio",
+        "message": "Tu mensaje",
+        "submitButton": "Enviar interés",
+        "placeholders": {
+          "pharmacyName": "Ingresa el nombre de tu farmacia aquí...",
+          "pharmacyNameRequired": "El nombre de la farmacia es requerido",
+          "pharmacyNameMinLength": "El nombre de la farmacia debe tener al menos 2 caracteres",
+          "pharmacyAddress": "Ingresa la dirección de tu farmacia aquí...",
+          "pharmacyAddressRequired": "La dirección de la farmacia es requerida",
+          "pharmacyAddressMinLength": "La dirección de la farmacia debe tener al menos 5 caracteres",
+          "phoneNumber": "Ingresa tu número de teléfono aquí...",
+          "phoneNumberRequired": "El número de teléfono es requerido",
+          "phoneNumberInvalid": "Formato de número de teléfono inválido",
+          "emailAddress": "Ingresa tu correo electrónico aquí...",
+          "emailAddressRequired": "El correo electrónico es requerido",
+          "emailAddressInvalid": "Correo electrónico inválido",
+          "contactPerson": "Ingresa tu persona de contacto aquí...",
+          "contactPersonRequired": "La persona de contacto es requerida",
+          "contactPersonMinLength": "La persona de contacto debe tener al menos 2 caracteres",
+          "title": "Ingresa tu título aquí...",
+          "titleRequired": "El título es requerido",
+          "titleMinLength": "El título debe tener al menos 2 caracteres",
+          "experienceBusiness": "Selecciona tus años en el negocio aquí...",
+          "experienceBusinessRequired": "Los años en el negocio son requeridos",
+          "message": "Escribe tu mensaje aquí...",
+          "messageRequired": "El mensaje es requerido",
+          "messageMinLength": "El mensaje debe tener al menos 10 caracteres"
+
+        },
+        "options": {
+          "years1-5": "1-5 años",
+          "years6-10": "6-10 años",
+          "years11-20": "11-20 años",
+          "years20+": "20+ años"
+        }
+      }
+    }
+  },
+  "earnAsDriver": {
+    "banner": {
+      "title": "Gana con cada entrega",
+      "description": "Únete a la comunidad de conductores independientes que apoyan a las farmacias locales y ayudan a los pacientes a obtener las recetas que necesitan mientras ganas un ingreso flexible."
+    },
+    "whyDriveWithUs": {
+      "headline": "¿Por qué conducir con nosotros?",
+      "description": "Descubra los beneficios de unirse a Optimus Health Solutions",
+      "features": [
+        {
+          "title": "Horario flexible"
+        },
+        {
+          "title": "Seguimiento en tiempo real de la entrega"
+        },
+        {
+          "title": "Pedidos seguros y verificados"
+        }
+      ]
+    },
+    "howItWorks": {
+      "headline": "Cómo funciona",
+      "steps": [
+        {
+          "title": "Regístrate en nuestra plataforma",
+          "description": "Comience por completar nuestro breve formulario de solicitud de conductor con su información básica, tipo de vehículo, etc."
+        },
+        {
+          "title": "Obtener verificado",
+          "description": "Nuestro equipo se pondrá en contacto con usted para indicarle los siguientes pasos. Este proceso incluirá verificación de antecedentes, verificación de la licencia de conducir y del seguro, inspección del vehículo (si corresponde) y capacitación sobre cumplimiento normativo."
+        },
+        {
+          "title": "¡Actívate y empieza a ganar!",
+          "description": "Una vez aprobada su solicitud, recibirá los detalles de entrega para recoger los medicamentos recetados en las farmacias locales y entregarlos en las ubicaciones preferidas del usuario de forma segura y con cuidado."
+        }
+      ]
+    },
+    "requirements": {
+      "headline": "Ver todos nuestros Requisitos",
+      "requirements": [
+        "Licencia de conducir válida (con al menos 2 años de antigüedad)",
+        "Historial de conducción limpio (sin infracciones graves)",
+        "Vehículo confiable (2005 o posterior)",
+        "Smartphone con capacidad de GPS",
+        "Se requiere verificación de antecedentes",
+        "Debe tener 21 años o más"
+      ]
+    },
+    "testimonials": {
+      "headline": "¿Listo para unirse a nosotros?"
+    },
+    "formSection": {
+  "form": {
+    "formTitle": "Formulario de Solicitud de Conductor",
+    "name": "Nombre",
+    "namePlaceholder": "Ingrese su nombre aquí...",
+    "nameRequired": "El nombre es obligatorio",
+    "nameMinLength": "El nombre debe tener al menos 2 caracteres",
+    "emailAddress": "Correo Electrónico",
+    "emailAddressPlaceholder": "Ingrese su correo electrónico aquí...",
+    "emailAddressRequired": "El correo electrónico es obligatorio",
+    "emailAddressInvalid": "Correo electrónico inválido",
+    "phoneNumber": "Número de Teléfono",
+    "phoneNumberPlaceholder": "Ingrese su número de teléfono aquí...",
+    "phoneNumberRequired": "El número de teléfono es obligatorio",
+    "phoneNumberInvalid": "Formato de número de teléfono inválido",
+    "city": "Ciudad",
+    "cityPlaceholder": "Ingrese el nombre de su ciudad aquí...",
+    "cityRequired": "La ciudad es obligatoria",
+    "cityMinLength": "El nombre de la ciudad debe tener al menos 2 caracteres",
+    "zipCode": "Código Postal",
+    "zipCodePlaceholder": "Ingrese su código postal aquí...",
+    "zipCodeRequired": "El código postal es obligatorio",
+    "zipCodeInvalid": "Formato de código postal inválido",
+    "vehicleType": "Tipo de Vehículo",
+    "vehicleTypePlaceholder": "Seleccione su tipo de vehículo aquí...",
+    "vehicleTypeRequired": "El tipo de vehículo es obligatorio",
+    "yearsWithLicense": "Años con Licencia",
+    "yearsWithLicensePlaceholder": "Seleccione los años con licencia de conducir",
+    "yearsWithLicenseRequired": "Los años con licencia de conducir son obligatorios",
+    "message": "Mensaje",
+    "years": "años",
+    "messagePlaceholder": "Ingrese su mensaje aquí...",
+    "messageRequired": "El mensaje es obligatorio",
+    "messageMinLength": "El mensaje debe tener al menos 10 caracteres",
+    "submitButton": "Enviar Interés"
+  }
+}
+
+  },
+
+  "investors":{
+    "banner": {
+      "title": "Invierte en el futuro de la entrega de recetas",
+      "description": "Únete a la comunidad de inversores que apoyan a las farmacias locales y ayudan a los pacientes a obtener las recetas que necesitan mientras ganas un ingreso flexible."
+    },
+    "whyInvestWithUs": {
+      "headline": "¿Por qué invertir con nosotros?",
+      "description": "Descubre las razones convincentes para invertir en Optimus Health Solutions, un líder en la entrega de recetas.",
+      "features": [
+        {
+          "title": "Mercado en crecimiento",
+          "description": "Lorem ipsum dolor sit amet consectetur. Massa nibh faucibus adipiscing aliquam posuere. "
+        },
+        {
+          "title": "HIPAA compliant",
+          "description": "Lorem ipsum dolor sit amet consectetur. Massa nibh faucibus adipiscing aliquam posuere. "
+        },
+        {
+          "title": "Plataforma escalable",
+          "description": "Lorem ipsum dolor sit amet consectetur. Massa nibh faucibus adipiscing aliquam posuere. "
+        },
+        {
+          "title": "Equipo experto",
+          "description": "Lorem ipsum dolor sit amet consectetur. Massa nibh faucibus adipiscing aliquam posuere. "
+        }
+      ]
+    },
+    "investorsInquiryForm": {
+  "Headline": "Complete el formulario para expresar interés",
+  "description": "Complete el formulario para expresar su interés en invertir en Optimus Health Solutions.",
+  "form": {
+    "formTitle": "Formulario de Consulta",
+    "fullName": "Nombre Completo",
+    "fullNamePlaceholder": "Ingrese su nombre completo aquí...",
+    "fullNameRequired": "El nombre completo es obligatorio",
+    "fullNameMinLength": "El nombre completo debe tener al menos 2 caracteres",
+    "emailAddress": "Correo Electrónico",
+    "emailAddressPlaceholder": "Ingrese su correo electrónico aquí...",
+    "emailAddressRequired": "El correo electrónico es obligatorio",
+    "emailAddressInvalid": "Correo electrónico inválido",
+    "phoneNumber": "Número de Teléfono",
+    "phoneNumberPlaceholder": "Ingrese su número de teléfono aquí...",
+    "phoneNumberRequired": "El número de teléfono es obligatorio",
+    "phoneNumberInvalid": "Formato de número de teléfono inválido",
+    "organizationName": "Nombre de la Organización",
+    "organizationNamePlaceholder": "Ingrese el nombre de su organización aquí...",
+    "organizationNameRequired": "El nombre de la organización es obligatorio",
+    "organizationNameMinLength": "El nombre de la organización debe tener al menos 2 caracteres",
+    "website": "Sitio Web (opcional)",
+    "websitePlaceholder": "Ingrese su sitio web aquí...",
+    "websiteInvalid": "Formato de URL del sitio web inválido",
+    "organizationType": "Tipo de Organización",
+    "organizationTypePlaceholder": "Ingrese el tipo de su organización aquí...",
+    "organizationTypeRequired": "El tipo de organización es obligatorio",
+    "organizationTypeMinLength": "El tipo de organización debe tener al menos 2 caracteres",
+    "yearsOfInvestmentExperience": "Años de Experiencia en Inversiones",
+    "yearsOfInvestmentExperiencePlaceholder": "Ingrese sus años de experiencia en inversiones aquí...",
+    "yearsOfInvestmentExperienceRequired": "Los años de experiencia en inversiones son obligatorios",
+    "message": "Mensaje",
+    "messagePlaceholder": "Ingrese su mensaje aquí...",
+    "messageRequired": "El mensaje es obligatorio",
+    "messageMinLength": "El mensaje debe tener al menos 10 caracteres",
+    "submitButton": "Enviar Interés",
+    "years": "años"
+  }
+}
+
+  },
+
+
+
+
+"otherBusinesses": {
+  "banner": {
+    "title": {
+      "first": "Descubra cómo",
+      "second": "puede servirle mejor"
+    },
+
+    "description": "Asóciese con Optimus Health para satisfacer de manera confiable las necesidades de entrega de última milla de sus miembros y pacientes, mejorando los resultados y reduciendo los costos."
+  },
+  "whyWorkWithUs": {
+    "headline": "¿Por Qué Trabajar con Nosotros?",
+    "description": "Brindamos nuestro apoyo a organizaciones que se preocupan por cómo sus miembros acceden a sus medicamentos. Nuestros servicios confiables garantizan una entrega rápida y segura en su comunidad local.",
+    "features": [
+      {
+        "title": "Mejorar la Adherencia",
+        "description": "Lorem ipsum dolor sit amet consectetur. Massa nibh faucibus adipiscing aliquam posuere."
+      },
+      {
+        "title": "Experiencia del Paciente",
+        "description": "Lorem ipsum dolor sit amet consectetur. Massa nibh faucibus adipiscing aliquam posuere."
+      },
+      {
+        "title": "Visibilidad Operativa",
+        "description": "Lorem ipsum dolor sit amet consectetur. Massa nibh faucibus adipiscing aliquam posuere."
+      },
+      {
+        "title": "Información Basada en Datos",
+        "description": "Lorem ipsum dolor sit amet consectetur. Massa nibh faucibus adipiscing aliquam posuere."
+      }
+    ]
+  },
+  
+  "businessInquiryForm": {
+  "headline": "Complete el formulario para expresar interés",
+  "description": "Complete el formulario para expresar su interés en trabajar con Optimus Health Solutions.",
+  "form": {
+    "formTitle": "Formulario de Consulta Empresarial",
+    "fullName": "Nombre Completo",
+    "fullNamePlaceholder": "Ingrese su nombre completo aquí...",
+    "fullNameRequired": "El nombre completo es obligatorio",
+    "fullNameMinLength": "El nombre completo debe tener al menos 2 caracteres",
+    "emailAddress": "Correo Electrónico",
+    "emailAddressPlaceholder": "Ingrese su correo electrónico aquí...",
+    "emailAddressRequired": "El correo electrónico es obligatorio",
+    "emailAddressInvalid": "Correo electrónico inválido",
+    "phoneNumber": "Número de Teléfono",
+    "phoneNumberPlaceholder": "Ingrese su número de teléfono aquí...",
+    "phoneNumberRequired": "El número de teléfono es obligatorio",
+    "phoneNumberInvalid": "Formato de número de teléfono inválido",
+    "organizationName": "Nombre de la Organización",
+    "organizationNamePlaceholder": "Ingrese el nombre de su organización aquí...",
+    "organizationNameRequired": "El nombre de la organización es obligatorio",
+    "organizationNameMinLength": "El nombre de la organización debe tener al menos 2 caracteres",
+    "organizationType": "Tipo de Organización",
+    "organizationTypePlaceholder": "Ingrese el tipo de su organización aquí...",
+    "organizationTypeRequired": "El tipo de organización es obligatorio",
+    "website": "Agregar Sitio Web de la Organización (opcional)",
+    "websitePlaceholder": "Agregue el sitio web de su organización...",
+    "websiteInvalid": "Formato de URL del sitio web inválido",
+    "regionOfInterest": "Región de Interés",
+    "regionOfInterestPlaceholder": "por ejemplo, NJ, NY Metro, PA",
+    "regionOfInterestRequired": "La región de interés es obligatoria",
+    "regionOfInterestMinLength": "La región de interés debe tener al menos 2 caracteres",
+    "message": "Mensaje",
+    "messagePlaceholder": "Ingrese su mensaje aquí...",
+    "messageRequired": "El mensaje es obligatorio",
+    "messageMinLength": "El mensaje debe tener al menos 10 caracteres",
+    "years": "años",
+    "submitButton": "Enviar Interés"
+  }
+}
+
+},
+
+
+"policies": { 
+  "hipaa": {
+    "title": "Política HIPAA",
+    "description": "Nos comprometemos a proteger la privacidad y seguridad de su información de salud. Esta política describe cómo manejamos su información de salud protegida (PHI) y garantiza el cumplimiento con el Health Insurance Portability and Accountability Act (HIPAA)."
+  },
+  "privacy": {
+    "title": "Política de privacidad",
+    "description": "Su privacidad importa. Aprenda cómo protegemos sus datos personales y garantizamos la entrega segura de recetas."
+  },
+  "terms": {
+    "title": "Política de términos de servicio",
+    "description": "Por favor, lea estos términos cuidadosamente antes de usar nuestros servicios."
+  }
+},
+
+
+  "footer": {
+    "slogan": "Conectando comunidades a sus farmacias locales para un acceso rápido y confiable a recetas",
+    "links": {
+      "home": "Inicio",
+      "aboutUs": "Acerca de nosotros",
+      "howItWorks": "Cómo funciona",
+      "independentPharmacies": "Para farmacias independientes",
+      "blog": "Blog"
+    },
+    "contactUs": {
+      "contactUs": "Contactanos",
+      "callUs": "Llámanos",
+      "emailUs": "Envíanos un mensaje"
+    },
+    "socialMedia": "Redes sociales",
+    "hipaaCertified": "HIPAA Certificado",
+    "policies": {
+      "hipaa": "Política HIPAA",
+      "privacy": "Política de privacidad",
+      "terms": "Política de términos de servicio"
+    },
+    "footerText": "Optimus Health Solutions. Todos los derechos reservados."
+  }
+}

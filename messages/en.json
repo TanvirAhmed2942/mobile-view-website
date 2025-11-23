@@ -1,0 +1,645 @@
+{
+  "header": {
+    "navlink": {
+      "home": "Home",
+      "aboutUs": "About Us",
+      "howItWorks": "How It Works"
+    },
+    "business": {
+      "business": "Business",
+      "independentPharmacies": "Independent Pharmacies",
+      "earnAsDriver": "Earn as a Driver",
+      "investors": "Investors",
+      "otherBusinesses": "Other Businesses"
+    },
+    "login": "Login",
+    "signup": "Sign Up",
+    "logout": "Logout",
+    "dashboard": "Dashboard",
+    "language": "Language",
+    "bottomHeader": {
+      "contactInformation": "Contact Information",
+      "contactUsText": "Please Call or Text",
+      "contactUsPhone": "917-993-0549",
+      "mailUs": "Email us:",
+      "businessHours": "Business Hours",
+      "businessHoursText": "Mon-Fri: 8a.m.-7p.m.",
+      "businessHoursText2": "Sat: 8a.m.-1p.m.",
+      "businessHoursText3": "Sun: Closed"
+    }
+  },
+
+  "home": {
+    "mapAndFormSection": {
+      "title": "Request Your Prescriptions Delivered in Minutes",
+      "titleforMobileView": "Request Your Prescriptions\nDelivered in Minutes",
+      "changeCityOrZipCode": "Change City or Zip Code",
+      "pharmacySuggestions": "Pharmacy Suggestions",
+      "modalDescription": "Create a Optimus health Solutions account for faster checkout later. No time right now? No problem. You can check out as guest."
+    },
+    "form": {
+      "pickupLocation": "Pickup Location",
+      "dropoffAddress": "Drop-off Address",
+      "date": "Date",
+      "time": "Time",
+      "checkoutRequest": "Checkout Request",
+      "now": "Now",
+      "today": "Today"
+    },
+    "datePickerModal": {
+      "title": "Select a Delivery Date",
+      "description": "Your next delivery is scheduled for",
+      "confirmDate": "Confirm Date",
+      "cancel": "Cancel"
+    },
+    "timePickerModal": {
+      "title": "Select a Delivery Time",
+      "description": "Your order will be delivered on",
+      "confirmTime": "Confirm Time",
+      "cancel": "Cancel",
+      "morning": "Morning",
+      "afternoon": "Afternoon",
+      "evening": "Evening"
+    },
+    "optimusHealthSolutions": {
+      "headline": "How Optimus Health Solutions Works",
+      "steps": [
+        {
+          "title": "Sign-up",
+          "description": "We'll coordinate with your old pharmacy or doctor to get your prescriptions."
+        },
+        {
+          "title": "Request",
+          "description": "We accept your insurance and deliver your prescriptions at a time  and text you when it's  that works for you."
+        },
+        {
+          "title": "We Deliver!",
+          "description": "We'll coordinate with your doctor and text you when it's  time for refills."
+        }
+      ],
+      "learnMore": "Learn More"
+    },
+    "servicesWeOffer": {
+      "headline": "Services We Offer",
+      "description": "When you refill, transfer prescription or schedule essential healthcare services through our platform, you're connecting with our trusted local independent pharmacies near you. Together, we're strengthening our communities and helping independent pharmacies thrive.",
+      "services": [
+        {
+          "title": "Request a Prescription Delivery",
+          "description": "We deliver your prescriptions to your home or workplace.",
+          "buttonText": "Request Now"
+        },
+        {
+          "title": "Refill a Prescription",
+          "description": "We deliver your prescriptions to your home or workplace.",
+          "buttonText": "Refill Now"
+        },
+        {
+          "title": "Transfer a Prescription",
+          "description": "We deliver your prescriptions to your home or workplace.",
+          "buttonText": "Transfer Now"
+        },
+        {
+          "title": "Schedule Essential Healthcare Services",
+          "description": "We deliver your prescriptions to your home or workplace.",
+          "buttonText": "Schedule Now"
+        }
+      ]
+    },
+    "ourStory": {
+      "headline": "Our Story",
+      "description_1st": "We started Optimus Health Solutions with a simple belief that no one should have to struggle to get their prescriptions, and no community should lose its trusted local independent pharmacy.",
+      "description_2nd": "By connecting patients with nearby independent pharmacies, we make care faster, more personal, and closer to home.",
+      "buttonText": "Click to Learn More"
+    },
+    "ourImpact": {
+      "headline": "Our Impact",
+      "stats": [
+        {
+          "label": "Prescriptions Delivered",
+          "suffix": "+"
+        },
+        {
+          "label": "Patients Served",
+          "suffix": "+"
+        },
+        {
+          "label": "Average Delivery Time",
+          "suffix": " Mins"
+        }
+      ]
+    },
+    "userTestimonial": {
+      "headline": "What our Users Say"
+    },
+    "formSection":{
+        "formTitle": "Send Us a Message",
+        "formDescription": "We'd love to hear from you — get in touch anytime.",
+        "fullName": "Your Name",
+        "fullNamePlaceholder": "Enter your name here...",
+        "fullNameRequired": "Name is required",
+        "fullNameMinLength": "Name must be at least 2 characters",
+        "emailAddress": "Email Address",
+        "emailAddressPlaceholder": "Enter your email address here...",
+        "emailAddressRequired": "Email address is required",
+        "emailAddressInvalid": "Invalid email address",
+        "phoneNumber": "Phone Number",
+        "phoneNumberPlaceholder": "Enter your phone number here...",
+        "phoneNumberRequired": "Phone number is required",
+        "phoneNumberInvalid": "Invalid phone number format",
+        "subject": "Subject",
+        "subjectPlaceholder": "Select your subject here...",
+        "subjectRequired": "Subject is required",
+        "otherspecify": "Other (please specify)",
+        "otherspecifyPlaceholder": "Enter your other specify here...",
+        "otherspecifyRequired": "Other specify is required",
+        "otherspecifyMinLength": "Other specify must be at least 2 characters",
+        "message": "Message",
+        "messagePlaceholder": "Enter your message here...",
+        "messageRequired": "Message is required",
+        "messageMinLength": "Message must be at least 10 characters",
+        "submitButton": "Send Message"
+    }
+  },
+
+  "aboutUs": {
+    "banner": {
+      "title": "Your Trusted Partner for Prescription Delivery",
+      "description": "e make prescription delivery faster, safer, and more accessible for patients across the USA."
+    },
+    "headline": "Our Mission & Vision",
+    "mission": {
+      "title": "Our Mission",
+      "description": "We are a team of dedicated professionals who are committed to providing the best possible service to our patients."
+    },
+    "vision": {
+      "title": "Our Vision",
+      "description": "We are a team of dedicated professionals who are committed to providing the best possible service to our patients."
+    },
+    "ourStory": {
+      "headline": "Our Story",
+      "storyTimeline": [
+        {
+          "badge": "H1",
+          "title": "Who we are",
+          "subtitle": "2022",
+          "description": "We are a team of dedicated professionals who are committed to providing the best possible service to our patients."
+        },
+        {
+          "badge": "H2",
+          "title": "Why we do it",
+          "subtitle": "2025",
+          "description": "We are a team of dedicated professionals who are committed to providing the best possible service to our patients."
+        },
+        {
+          "badge": "H3",
+          "title": "Current",
+          "subtitle": "Present",
+          "description": "We are a team of dedicated professionals who are committed to providing the best possible service to our patients."
+        }
+      ]
+    },
+    "ourValues": {
+      "headline": "Our Values",
+      "values": [
+        {
+          "title": "Community First",
+          "description": "Support and strengthen mom-and-pop pharmacy stores for healthier communities.",
+          "src": "/howitworks/value_1.png"
+        },
+        {
+          "title": "Patient Empowerment",
+          "description": "Make access simple. Give people the power to choose their pharmacy with respect, privacy, reliability in every interaction.",
+          "src": "/howitworks/value_2.png"
+        },
+        {
+          "title": "Partnership and Transparency",
+          "description": "Co-design solutions with partner pharmacies to build trust and shared success.",
+          "src": "/howitworks/value_3.png"
+        }
+      ]
+    }
+  },
+  "readyToExperience": {
+    "title": "Ready to experience the convenience of Optimus Heath Solutions",
+    "description": "Join thousands of satisfied patients who trust us with their prescription delivery needs.",
+    "buttonText": "Send us a Message"
+  },
+  "howItWorks": {
+    "banner": {
+      "title": "\"How It Works\" - Simple, Secure and Local",
+      "description": "We handle the coordination so you can focus on your health, while your trusted local pharmacy takes care of the rest"
+    },
+    "headline": "Prescription Delivery",
+    "steps": [
+      {
+        "title": "Request Delivery",
+        "description": "Our team will contact your pharmacy to refill your prescriptionsSimply use our platform to request delivery in minutes. Select pharmacy location, your delivery address, day and time of delivery. You can create an account for easy process or checkout as guest"
+      },
+      {
+        "title": "Get it Delivered",
+        "description": "Relax! Once the pharmacy receives and confirms fulfilment for pickup. We will deliver your prescription to your home, workplace, or any location of your choice quickly (in minutes), securely, and conveniently"
+      }
+    ],
+    "message": "Whether you're refilling, transferring, or scheduling care, Optimus HS connects you directly with your trusted local pharmacy to make it fast, reliable, and stress-free",
+    "descriptionOfProcess": [
+      {
+        "title": "Refill Prescription",
+        "description": "When you need a refill? Simply submit your refill request through our platform. We'll connect with your selected local pharmacy to process it quickly. Once filled, you'll get an instant update to track or schedule your delivery right to your doorstep."
+      },
+      {
+        "title": "Transfer Prescription",
+        "description": "It only takes a minute to transfer your prescription from your old pharmacy to your preferred local one. We'll securely send your details to the new pharmacy and confirm the transfer within a day. Once it's ready, you'll be notified to schedule your delivery wherever and whenever you need it."
+      },
+      {
+        "title": "Schedule Essential Healthcare Services",
+        "description": "Easily schedule vaccinations, health screenings, or wellness consultations at your preferred local pharmacy. We'll coordinate your appointment details and confirm your slot instantly. It's convenient, community-based care -handled securely and at no extra cost to you."
+      }
+    ]
+  },
+  "benefit": {
+    "title": "See all our Benefits",
+    "benefits": [
+      "Convenient home delivery",
+      "Saves time and cost",
+      "Secure prescription handling",
+      "Real-time tracking",
+      "Flexible scheduling",
+      "Zero cost to deliver Rx when using our partner pharmacies"
+    ]
+  },
+
+  "independentPharmacies": {
+    "banner": {
+      "title": "For Independent Pharmacies",
+      "description": "Grow your pharmacy’s reach and deliver medicines seamlessly to your customers."
+    },
+    "benefits": [
+      {
+        "title": "Fast & Reliable Delivery",
+        "description": "Deliver prescriptions quickly and reliably to your customers with our efficient delivery network."
+      },
+      {
+        "title": "HIPAA Compliant",
+        "description": "Ensure patient data security and compliance with HIPAA regulations through our secure platform."
+      },
+      {
+        "title": "Data Insights",
+        "description": "Access valuable analytics and insights to understand your customer base and optimize operations."
+      },
+      {
+        "title": "Increase Revenue",
+        "description": "Expand your customer reach and grow revenue by offering convenient delivery services to more patients."
+      }
+    ],
+    "headline": "Benefits of Joining Our Network",
+    "description": "As an Optimus partner, you’ll attract new customers, improve medication adherence, and compete effectively with large chain pharmacies while staying connected to your local community.",
+    "howItWorks": {
+      "headline": "How It Works",
+      "steps": [
+        {
+          "title": "Register your pharmacy",
+          "description": "Complete the online registration form."
+        },
+        {
+          "title": "Upload necessary licenses",
+          "description": "Provide valid pharmacy licenses and certifications."
+        },
+        {
+          "title": "Start receiving delivery requests",
+          "description": "Manage and Fulfil delivery requests through our platform."
+        }
+      ]
+    },
+    "testimonials": {
+      "headline": "What our Users Say"
+    },
+    "formSection": {
+      "headline": "Get Started Today",
+      "description": "Join our growing network of trusted local independent pharmacies delivering care directly to patients' doors. As an Optimus partner, you'll attract new customers, improve medication adherence, and compete effectively with large chain pharmacies while staying connected to your local community.",
+      "form": {
+        "formTitle": "Interest Form",
+        "formDescription": "Complete the Interest Form  and we'll contact you to schedule for a brief onboarding call to walk you through the process.",
+        "pharmacyName": "Pharmacy Name",
+        "pharmacyAddress": "Pharmacy Address",
+        "phoneNumber": "Phone Number",
+        "emailAddress": "Email Address",
+        "contactPerson": "Contact Person",
+        "title": "Title",
+        "experienceBusiness": "Years in Business",
+        "message": "Your Message",
+        "submitButton": "Submit Interest",
+        "placeholders": {
+          "pharmacyName": "Enter your pharmacy name here...",
+          "pharmacyNameRequired": "Pharmacy name is required",
+          "pharmacyNameMinLength": "Pharmacy name must be at least 2 characters",
+          "pharmacyAddress": "Enter your pharmacy address here...",
+          "pharmacyAddressRequired": "Pharmacy address is required",
+          "pharmacyAddressMinLength": "Pharmacy address must be at least 5 characters",
+          "phoneNumber": "Enter your phone number here...",
+          "phoneNumberRequired": "Phone number is required",
+          "phoneNumberInvalid": "Invalid phone number format",
+          "emailAddress": "Enter your email address here...",
+          "emailAddressRequired": "Email address is required",
+          "emailAddressInvalid": "Invalid email address",
+          "contactPerson": "Enter your contact person here...",
+          "contactPersonRequired": "Contact person is required",
+          "contactPersonMinLength": "Contact person name must be at least 2 characters",
+          "title": "Enter your title here...",
+          "titleRequired": "Title is required",
+          "titleMinLength": "Title must be at least 2 characters",
+          "experienceBusiness": "Select your years in business here...",
+          "experienceBusinessRequired": "Experience business is required",
+          "message": "Type your message here...",
+          "messageRequired": "Message is required",
+          "messageMinLength": "Message must be at least 10 characters"
+        },
+        "options": {
+          "years1-5": "1-5 years",
+          "years6-10": "6-10 years",
+          "years11-20": "11-20 years",
+          "years20+": "20+ years"
+        }
+      }
+    }
+  },
+
+ "earnAsDriver": {
+  "banner": {
+    "title": "Earn with Every Delivery",
+    "description": "Join the community of independent courier drivers supporting local pharmacies and helping patients get the prescriptions they need while you .while earning a flexible income."
+  },
+  "whyDriveWithUs": {
+    "headline": "Why Drive with Us?",
+    "description": "Discover the benefits of joining the Optimus Health Solutions",
+    "features": [
+      {
+        "title": "Flexible Schedule"
+       
+      },
+      {
+        "title": "Real-Time Delivery Tracking"
+     
+      },
+      {
+        "title": "Safe & Verified Orders"
+      }
+    ]
+  },
+  "howItWorks": {
+    "headline": "How It Works",
+    "steps": [
+      {
+        "title": "Apply to become a driver",
+        "description": "Start by completing our short driver application form with your basic information, vehicle type etc."
+      },
+      {
+        "title": "Get verified",
+        "description": "Our team will contact you with next steps. This process will include background check, driver’s license and insurance verification and vehicle inspection(if applicable), compliance training"
+      },
+      {
+        "title": "Get activated and begin earning",
+        "description": "Once approved, you will get delivery details to pick up Rx from local pharmacies, and deliver them to user’s preferred locations safely, securely and with care."
+      }
+    ]
+  },
+  "requirements": {
+    "headline": "See all our Requirements",
+    "requirements": [
+      "Valid driver's license (at least 2 years)",
+      "Clean driving record (no major violations)",
+      "Reliable vehicle (2005 or newer)",
+      "Smartphone with GPS capability",
+      "Background check required",
+      "Must be 21 years or older"
+    ]
+  },
+
+  "testimonials": {
+    "headline": "Ready to Join Us?"
+  },
+  "formSection": {
+    "form": {
+      "formTitle": "Driver Application Form",
+      "name": "Name",
+      "namePlaceholder": "Enter your name here...",
+      "nameRequired": "Name is required",
+      "nameMinLength": "Name must be at least 2 characters",
+      "emailAddress": "Email Address",
+      "emailAddressPlaceholder": "Enter your email address here...",
+      "emailAddressRequired": "Email address is required",
+      "emailAddressInvalid": "Invalid email address",
+      "phoneNumber": "Phone Number",
+      "phoneNumberPlaceholder": "Enter your phone number here...",
+      "phoneNumberRequired": "Phone number is required",
+      "phoneNumberInvalid": "Invalid phone number format",
+      "city": "City",
+      "cityPlaceholder": "Enter your city name here...",
+      "cityRequired": "City is required",
+      "cityMinLength": "City name must be at least 2 characters",
+      "zipCode": "Zip Code",
+      "zipCodePlaceholder": "Enter your zip code here...",
+      "zipCodeRequired": "Zip code is required",
+      "zipCodeInvalid": "Invalid zip code format",
+      "vehicleType": "Vehicle Type",
+      "vehicleTypePlaceholder": "Select your vehicle type here...",
+      "vehicleTypeRequired": "Vehicle type is required",
+      "yearsWithLicense": "Years with License",
+      "yearsWithLicensePlaceholder": "Select driver's license years",
+      "yearsWithLicenseRequired": "Years with driver's license is required",
+      "message": "Message",
+      "messagePlaceholder": "Enter your message here...",
+      "messageRequired": "Message is required",
+      "messageMinLength": "Message must be at least 10 characters",
+      "years":"years",
+      "submitButton": "Submit Interest"
+    }
+  }
+ },
+
+ "investors":{
+  "banner": {
+    "title": "Invest in the Future of Prescription Delivery",
+    "description": "join us in revolutionizing prescription delivery with a scalable business model rooted in local community healthcare delivery model"
+  },
+  "whyInvestWithUs": {
+    "headline": "Why Invest with Us?",
+    "description": "Discover the Compelling reasons to invest in Optimus Health Solutions, a leader in prescription delivery.",
+    "features": [
+      {
+        "title": "Growing Market",
+        "description": "Lorem ipsum dolor sit amet consectetur. Massa nibh faucibus adipiscing aliquam posuere. "
+      },
+      {
+        "title": "HIPAA Compliant",
+        "description": "Lorem ipsum dolor sit amet consectetur. Massa nibh faucibus adipiscing aliquam posuere. "
+      },
+      {
+        "title": "Scalable Platform",
+        "description": "Lorem ipsum dolor sit amet consectetur. Massa nibh faucibus adipiscing aliquam posuere. "
+      },
+      {
+        "title": "Experience Team",
+        "description": "Lorem ipsum dolor sit amet consectetur. Massa nibh faucibus adipiscing aliquam posuere. "
+      }
+    ]
+  },
+  "investorsInquiryForm": {
+    "Headline": "Complete form to express interest",
+    "description": "Complete the form to express your interest in investing in Optimus Health Solutions.",
+    "form": {
+      "formTitle": "Inquiry Form",
+      "fullName": "Full Name",
+      "fullNamePlaceholder": "Enter your full name here...",
+      "fullNameRequired": "Full name is required",
+      "fullNameMinLength": "Full name must be at least 2 characters",
+      "emailAddress": "Email Address",
+      "emailAddressPlaceholder": "Enter your email address here...",
+      "emailAddressRequired": "Email address is required",
+      "emailAddressInvalid": "Invalid email address",
+      "phoneNumber": "Phone Number",
+      "phoneNumberPlaceholder": "Enter your phone number here...",
+      "phoneNumberRequired": "Phone number is required",
+      "phoneNumberInvalid": "Invalid phone number format",
+      "organizationName": "Organization Name",
+      "organizationNamePlaceholder": "Enter your organization name here...",
+      "organizationNameRequired": "Organization name is required",
+      "organizationNameMinLength": "Organization name must be at least 2 characters",
+      "website": "Website (optional)",
+      "websitePlaceholder": "Enter your website here...",
+      "websiteInvalid": "Invalid website URL format",
+      "organizationType": "Organization Type",
+      "organizationTypePlaceholder": "Enter your organization type here...",
+      "organizationTypeRequired": "Organization type is required",
+      "organizationTypeMinLength": "Organization type must be at least 2 characters",
+      "yearsOfInvestmentExperience": "Years of Investment Experience",
+      "yearsOfInvestmentExperiencePlaceholder": "Enter your years of investment experience here...",
+      "yearsOfInvestmentExperienceRequired": "Years of investment experience is required",
+      "message": "Message",
+      "messagePlaceholder": "Enter your message here...",
+      "messageRequired": "Message is required",
+      "messageMinLength": "Message must be at least 10 characters",
+      "submitButton": "Submit Interest",
+      "years": "years"
+    }
+  }
+ },
+
+ "otherBusinesses": {
+  "banner": {
+    "title": {
+      "first": "Explore how",
+      "second": "can best serve you"
+    },
+    "description": "Partner with Optimus Health to reliably meet the last‑mile delivery needs of your members and patients while improving outcomes and reducing costs."
+  },
+  "whyWorkWithUs": {
+    "headline": "Why Work with Us?",
+    "description": "We provide our support to organizations that care about how their members get access to their medications. Our trusted services ensure fast, reliable delivery across your local community.",
+    "features": [
+      {
+        "title": "Improve Adherence",
+        "description": "Lorem ipsum dolor sit amet consectetur. Massa nibh faucibus adipiscing aliquam posuere. "
+      },
+      {
+        "title": "Patient Experience",
+        "description": "Lorem ipsum dolor sit amet consectetur. Massa nibh faucibus adipiscing aliquam posuere. "
+      },
+      {
+        "title": "Operational Visibility",
+        "description": "Lorem ipsum dolor sit amet consectetur. Massa nibh faucibus adipiscing aliquam posuere. "
+      },
+      {
+        "title": "Data Insights",
+        "description": "Lorem ipsum dolor sit amet consectetur. Massa nibh faucibus adipiscing aliquam posuere. "
+      }
+    ]
+  },
+  "businessInquiryForm": {
+    "headline": "Complete form to express interest",
+    "description": "Complete the form to express your interest in working with Optimus Health Solutions.",
+    "form": {
+      "formTitle": "Business Inquiry Form",
+      "fullName": "Full Name",
+      "fullNamePlaceholder": "Enter your full name here...",
+      "fullNameRequired": "Full name is required",
+      "fullNameMinLength": "Full name must be at least 2 characters",
+      "emailAddress": "Email Address",
+      "emailAddressPlaceholder": "Enter your email address here...",
+      "emailAddressRequired": "Email address is required",
+      "emailAddressInvalid": "Invalid email address",
+      "phoneNumber": "Phone Number",
+      "phoneNumberPlaceholder": "Enter your phone number here...",
+      "phoneNumberRequired": "Phone number is required",
+      "phoneNumberInvalid": "Invalid phone number format",
+      "organizationName": "Organization Name",
+      "organizationNamePlaceholder": "Enter your organization name here...",
+      "organizationNameRequired": "Organization name is required",
+      "organizationNameMinLength": "Organization name must be at least 2 characters",
+      "organizationType": "Organization Type",
+      "organizationTypePlaceholder": "Enter your organization type here...",
+      "organizationTypeRequired": "Organization type is required",
+      "website": "Add Organization Website (optional)",
+      "websitePlaceholder": "Add your organization website name...",
+      "websiteInvalid": "Invalid website URL format",
+      "regionOfInterest": "Region of Interest",
+      "regionOfInterestPlaceholder": "e.g., NJ, NY Metro, PA",
+      "regionOfInterestRequired": "Region of interest is required",
+      "regionOfInterestMinLength": "Region of interest must be at least 2 characters",
+      "message": "Message",
+      "messagePlaceholder": "Enter your message here...",
+      "messageRequired": "Message is required",
+      "messageMinLength": "Message must be at least 10 characters",
+      "years": "years",
+      "submitButton": "Submit Interest"
+    }
+  }
+ },
+
+"policies": {
+  "hipaa": {
+    "title": "HIPAA Policy",
+    "description": "We are committed to protecting the privacy and security of your health information. This policy outlines how we handle your protected health information (PHI) and ensures compliance with the Health Insurance Portability and Accountability Act (HIPAA)."
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "description": "Your privacy matters. Learn how we protect your personal data and ensure secure prescription delivery."
+  },
+  "terms": {
+    "title": "Terms of Service",
+    "description": "Please read these terms carefully before using our services."
+  }
+},
+
+
+
+
+
+
+
+
+
+
+  "footer": {
+    "slogan": "Connecting communities to their local pharmacies for fast, reliable access to prescriptions",
+    "links": {
+      "home": "Home",
+      "aboutUs": "About Us",
+      "howItWorks": "How It Works",
+      "independentPharmacies": "For Independent Pharmacies",
+      "blog": "Blog"
+    },
+    "contactUs": {
+      "contactUs": "Contact Us",
+      "callUs": "Call Us",
+      "emailUs": "Email Us"
+    },
+    "socialMedia": "Social Media",
+    "hipaaCertified": "HIPAA Certified",
+    "policies": {
+      "hipaa": "HIPAA Policy",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service"
+    },
+    "footerText": "Optimus Health Solutions. All rights reserved."
+  }
+}
