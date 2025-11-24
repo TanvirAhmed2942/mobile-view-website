@@ -1,46 +1,145 @@
-import React from "react";
+"use client";
 
-import MissionSection from "./missionSection";
-import OurStorySection from "./ourStorySection";
-
-import OurValues from "./ourValues";
-import { useTranslations } from "next-intl";
+import NavBar from "@/components/common/navBar/navBar";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Button } from "@/components/ui/button";
+import { ChevronUp, ChevronDown, ShieldCheck } from "lucide-react";
+import React, { useState } from "react";
+import Image from "next/image";
 
 function AboutUs() {
-  const t = useTranslations("aboutUs");
+  const [isMissionExpanded, setIsMissionExpanded] = useState(false);
+  const [isHowWeOperateExpanded, setIsHowWeOperateExpanded] = useState(false);
+
   return (
-    <div className="bg-white">
-      <div className=" min-h-screen container mx-auto px-4 space-y-16">
-        <MissionSection
-          headline={t("headline")}
-          missionTitle={t("mission.title")}
-          missionDescription={t("mission.description")}
-          visionTitle={t("vision.title")}
-          visionDescription={t("vision.description")}
-        />
-        <OurStorySection
-          headline={t("ourStory.headline")}
-          storyTimeline={
-            t.raw("ourStory.storyTimeline") as {
-              badge: string;
-              title: string;
-              subtitle: string;
-              description: string;
-            }[]
-          }
-        />
-        <OurValues
-          headline={t("ourValues.headline")}
-          values={
-            t.raw("ourValues.values") as {
-              title: string;
-              description: string;
-              src: string;
-            }[]
-          }
-        />
+    <ScrollArea className="w-full h-[calc(100vh-200px)] no-scrollbar">
+      <div className="w-full min-h-[600px] xl:min-h-[630px] 2xl:min-h-[800px] flex flex-col items-center gap-6 justify-start pb-8">
+        <NavBar />
+
+        {/* Page Title */}
+        <div className="w-full text-center">
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-800">
+            About Us
+          </h1>
+        </div>
+
+        {/* Pass It Along Section */}
+        <div className="w-full space-y-3 px-4">
+          <h2 className="text-xl md:text-2xl font-semibold text-paul">
+            Pass It Along: An Initiative for Connected Giving
+          </h2>
+          <p className="text-sm md:text-base text-gray-600 leading-relaxed">
+            Pass It Along was created by philanthropists Paul & Jerri Starkey to
+            help charities and connect friends in giving. It was first used by
+            safehouse organizations supporting the anti-trafficking cause,
+            setting the foundation for a new way to share and support meaningful
+            work.
+          </p>
+        </div>
+
+        {/* Our Founders Section */}
+        <div className="w-full space-y-4 px-4">
+          <h2 className="text-xl md:text-2xl font-semibold text-gray-800">
+            Our Founders
+          </h2>
+          <div className="space-y-3">
+            <h3 className="text-lg md:text-xl font-semibold text-paul">
+              Paul & Jerri Starkey
+            </h3>
+            <p className="text-sm md:text-base text-gray-600 italic leading-relaxed">
+              &quot;We wanted to create a simple way for people to share the
+              causes they care about with the people they trust.&quot;
+            </p>
+            {/* Founders Photo */}
+            <div className="relative w-full max-w-md mx-auto aspect-[4/3] rounded-lg overflow-hidden">
+              <Image
+                src="https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=800&h=600&fit=crop"
+                alt="Paul & Jerri Starkey"
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 400px"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Our Mission Section - Expandable */}
+        <div className="w-full px-4">
+          <button
+            onClick={() => setIsMissionExpanded(!isMissionExpanded)}
+            className="w-full flex items-center justify-between p-4 bg-white rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+          >
+            <h2 className="text-xl md:text-2xl font-semibold text-gray-800">
+              Our Mission
+            </h2>
+            {isMissionExpanded ? (
+              <ChevronUp className="w-5 h-5 text-gray-600" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-gray-600" />
+            )}
+          </button>
+          {isMissionExpanded && (
+            <div className="mt-2 p-4 bg-gray-50 rounded-lg">
+              <p className="text-sm md:text-base text-gray-600 leading-relaxed">
+                Our mission is to connect friends in giving. Each cause is
+                described and shared in an insightful way, allowing each to use
+                this space to make their appeal. we believe every cause is
+                unique and deserves a platform to tell its story.
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* How We Operate Section - Expandable */}
+        <div className="w-full px-4">
+          <button
+            onClick={() => setIsHowWeOperateExpanded(!isHowWeOperateExpanded)}
+            className="w-full flex items-center justify-between p-4 bg-white rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+          >
+            <h2 className="text-xl md:text-2xl font-semibold text-gray-800">
+              How We Operate
+            </h2>
+            {isHowWeOperateExpanded ? (
+              <ChevronUp className="w-5 h-5 text-gray-600" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-gray-600" />
+            )}
+          </button>
+          {isHowWeOperateExpanded && (
+            <div className="mt-2 p-4 bg-gray-50 rounded-lg">
+              <p className="text-sm md:text-base text-gray-600 leading-relaxed">
+                BUILDING BETTER LIVES Each Charity is accepts donation directly.
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Official & Secure Section */}
+        <div className="w-full px-4">
+          <div className="flex items-start gap-3 p-4 bg-white rounded-lg border border-gray-200">
+            <div className="flex-shrink-0">
+              <ShieldCheck className="w-8 h-8 text-[#6db5d2]" />
+            </div>
+            <div className="flex-1 space-y-2">
+              <h3 className="text-lg font-semibold text-[#6db5d2]">
+                Official & Secure
+              </h3>
+              <p className="text-sm md:text-base text-gray-600 leading-relaxed">
+                It is important to track which chain/tree donors come from so
+                grants can be made properly.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* See Active Causes Button */}
+        <div className="w-full px-4 mt-4">
+          <Button className="w-full bg-paul hover:bg-paul-dark text-white font-semibold py-6 px-4 rounded-full">
+            See Active Causes
+          </Button>
+        </div>
       </div>
-    </div>
+    </ScrollArea>
   );
 }
 
