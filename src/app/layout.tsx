@@ -25,13 +25,12 @@ export default async function RootLayout({
   const locale = await getLocale();
   return (
     <html lang="en">
-      <body className={`${inter.variable} antialiased bg-black w-full  sm:w-[420px] mx-auto min-h-[100vh] flex items-center justify-center`}>
+      <body
+        className={`${inter.variable} antialiased bg-black w-full  sm:w-[420px] mx-auto min-h-[100vh] flex items-center justify-center`}
+      >
         <AuthProvider>
           <NextIntlClientProvider messages={messages} locale={locale}>
-         
-        
-              {children}
-         
+            {children}
           </NextIntlClientProvider>
         </AuthProvider>
       </body>

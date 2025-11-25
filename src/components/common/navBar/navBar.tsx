@@ -31,6 +31,7 @@ function NavBar() {
                 src="/logo.png"
                 alt="logo"
                 fill
+                quality={100}
                 sizes="(max-width: 640px) 64px, 80px"
                 priority
                 className="object-contain scale-150"
@@ -142,7 +143,7 @@ function NavBar() {
                 </Link>
 
                 <Link
-                  href="/impact-summary"
+                  href="/impact"
                   onClick={() => setIsSidebarOpen(false)}
                   className="flex items-center justify-between p-2.5 sm:p-3 hover:bg-gray-50 rounded-lg transition-colors"
                 >
@@ -158,7 +159,7 @@ function NavBar() {
                 </Link>
 
                 <Link
-                  href="/downline-stats"
+                  href="/dowline-seed"
                   onClick={() => setIsSidebarOpen(false)}
                   className="flex items-center justify-between p-2.5 sm:p-3 hover:bg-gray-50 rounded-lg transition-colors"
                 >
