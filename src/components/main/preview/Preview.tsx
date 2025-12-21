@@ -22,7 +22,7 @@ I started this with my $100 donation. Please click the link, share with friends,
 
   const handleSendSMS = () => {
     // Join multiple numbers with comma
-    const numbers = contacts.join(",");
+    const numbers = contacts.join(";");
     // Encode message for URI
     const encodedMessage = encodeURIComponent(message);
     // Open SMS app
