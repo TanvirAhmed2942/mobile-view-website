@@ -21,16 +21,25 @@ www.gopassit.org/friends
 I started this with my $100 donation. Please click the link, share with friends, and consider donating. Cheers!`;
 
   const handleSendSMS = () => {
-    // Clean phone numbers (remove spaces/dashes, keep as-is)
+    // Clean phone numbers
     const cleanedNumbers = contacts.map((phone) => phone.replace(/\s|-/g, ""));
     const encodedMessage = encodeURIComponent(message);
 
-    // Join numbers with comma (not semicolon - semicolon creates group chats)
+    // Copy message to clipboard as fallback
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(message).catch(() => {
+        // Clipboard failed, continue anyway
+      });
+    }
+
+    // Try with all recipients - some SMS apps might support it
+    // If not, at least recipients will be added and user can paste message
     const numbersString = cleanedNumbers.join(",");
 
-    // Use standard SMS URI format with body parameter
-    // Note: Some SMS apps don't support body with multiple recipients
-    // In that case, the message won't pre-fill but recipients will be added
+    // Try opening SMS with all recipients
+    // Note: Many mobile SMS apps don't support body with multiple recipients
+    // In that case, recipients will be added but message won't pre-fill
+    // User will need to paste the message (we copied it to clipboard)
     window.location.href = `sms:${numbersString}?body=${encodedMessage}`;
   };
 
