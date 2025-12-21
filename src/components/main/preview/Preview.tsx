@@ -21,12 +21,17 @@ www.gopassit.org/friends
 I started this with my $100 donation. Please click the link, share with friends, and consider donating. Cheers!`;
 
   const handleSendSMS = () => {
-    // Join multiple numbers with comma
-    const numbers = contacts.join(";");
-    // Encode message for URI
+    // Clean phone numbers (remove spaces/dashes, keep as-is)
+    const cleanedNumbers = contacts.map((phone) => phone.replace(/\s|-/g, ""));
     const encodedMessage = encodeURIComponent(message);
-    // Open SMS app
-    window.location.href = `sms:${numbers}?body=${encodedMessage}`;
+
+    // Join numbers with comma (not semicolon - semicolon creates group chats)
+    const numbersString = cleanedNumbers.join(",");
+
+    // Use standard SMS URI format with body parameter
+    // Note: Some SMS apps don't support body with multiple recipients
+    // In that case, the message won't pre-fill but recipients will be added
+    window.location.href = `sms:${numbersString}?body=${encodedMessage}`;
   };
 
   return (
