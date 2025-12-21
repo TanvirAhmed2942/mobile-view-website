@@ -8,7 +8,7 @@ import React from "react";
 
 function Preview() {
   // Example: replace these with actual selected contacts
-  const contacts = ["01794625758"];
+  const contacts = ["01794685758"];
 
   const message = `Hey <FRIENDS NAME>,
 
