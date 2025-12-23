@@ -13,6 +13,7 @@ interface Contact {
   id: number;
   name: string;
   phone: string;
+  sent?: boolean;
 }
 
 interface ContactResult {
@@ -65,6 +66,7 @@ export default function ContactPage() {
             id: Date.now() + index,
             name: c.name?.[0] ?? "Unknown",
             phone: c.tel?.[0] ? normalizePhone(c.tel[0]) : "",
+            sent: false,
           }))
           .filter((c) => c.phone);
 
@@ -104,14 +106,13 @@ export default function ContactPage() {
           id: Date.now(),
           name: "Manual Contact",
           phone,
+          sent: false,
         },
       ];
     });
 
     setManualNumber("");
   };
-
-  const contactsList = ["01794685758", "01744687793"];
 
   const message = `Hey <FRIENDS NAME>,
 
@@ -127,11 +128,9 @@ I started this with my $100 donation. Please click the link, share with friends,
     router.push("/donate");
   };
 
-  const handleSendSMS = () => {
-    // Clean phone numbers
-    const cleanedNumbers = contactsList.map((phone) =>
-      phone.replace(/\s|-/g, "")
-    );
+  const handleSendSMS = (contact: Contact) => {
+    // Clean single phone number
+    const cleanedNumber = contact.phone.replace(/\s|-/g, "");
     const encodedMessage = encodeURIComponent(message);
 
     // Copy message to clipboard as fallback
@@ -141,15 +140,13 @@ I started this with my $100 donation. Please click the link, share with friends,
       });
     }
 
-    // Try with all recipients - some SMS apps might support it
-    // If not, at least recipients will be added and user can paste message
-    const numbersString = cleanedNumbers.join(",");
+    // Open SMS for single recipient
+    window.location.href = `sms:${cleanedNumber}?body=${encodedMessage}`;
 
-    // Try opening SMS with all recipients
-    // Note: Many mobile SMS apps don't support body with multiple recipients
-    // In that case, recipients will be added but message won't pre-fill
-    // User will need to paste the message (we copied it to clipboard)
-    window.location.href = `sms:${numbersString}?body=${encodedMessage}`;
+    // Mark as sent
+    setContacts((prev) =>
+      prev.map((c) => (c.id === contact.id ? { ...c, sent: true } : c))
+    );
   };
 
   /* ---------- Remove contact ---------- */
@@ -202,10 +199,13 @@ I started this with my $100 donation. Please click the link, share with friends,
                   />
 
                   <Button
-                    onClick={handleSendSMS}
-                    className="bg-paul hover:bg-paul-dark text-white rounded-full"
+                    onClick={() => handleSendSMS(c)}
+                    disabled={c.sent}
+                    className="bg-paul hover:bg-paul-dark text-white rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    <span className=" text-sm ml-1">Send</span>
+                    <span className=" text-sm ml-1">
+                      {c.sent ? "Sent" : "Send"}
+                    </span>
                     <IoIosSend className=" size-5" />
                   </Button>
                 </div>
