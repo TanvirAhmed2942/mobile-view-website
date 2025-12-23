@@ -10,14 +10,29 @@ import {
   BarChart3,
   Pencil,
   ChevronDown,
+  LogOut,
 } from "lucide-react";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 function NavBar() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const router = useRouter();
+
+  const handleLogout = () => {
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("userRole");
+      localStorage.removeItem("phoneNumber");
+      localStorage.removeItem("nickName");
+      localStorage.removeItem("verifyToken");
+    }
+    setIsSidebarOpen(false);
+    router.push("/");
+  };
 
   return (
     <div className="bg-gray-100 sticky top-0 z-50 w-full">
@@ -173,6 +188,22 @@ function NavBar() {
                   </div>
                   <ChevronDown className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400 rotate-[-90deg]" />
                 </Link>
+
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="w-full text-left flex items-center justify-between p-2.5 sm:p-3 hover:bg-gray-50 rounded-lg transition-colors"
+                >
+                  <div className="flex items-center gap-2 sm:gap-2.5">
+                    <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gray-100 flex items-center justify-center">
+                      <LogOut className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-600" />
+                    </div>
+                    <span className="text-gray-800 font-medium text-xs sm:text-sm">
+                      Logout
+                    </span>
+                  </div>
+                  <ChevronDown className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400 rotate-[-90deg]" />
+                </button>
               </div>
             </div>
           </div>

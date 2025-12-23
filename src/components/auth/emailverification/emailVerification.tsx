@@ -7,23 +7,93 @@ import { Input } from "@/components/ui/input";
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import {
+  useVerifyOTPMutation,
+  useLoginMutation,
+} from "@/store/APIs/authApi/authApi";
+import { toast } from "sonner";
+import Timer from "./Timer";
 
 function PhoneVerification() {
   const [code, setCode] = useState(["", "", "", ""]);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
-  const [timer, setTimer] = useState(30);
   const router = useRouter();
-  const handleVerify = () => {
-    router.push("/your-why");
-  };
+  const [verifyOTP, { isLoading: isVerifying }] = useVerifyOTPMutation();
+  const [login, { isLoading: isResending }] = useLoginMutation();
+  const [phoneNumber, setPhoneNumber] = useState<string>("");
+  const [nickName, setNickName] = useState<string>("");
+
+  // Get phone number and nickName from localStorage on mount
   useEffect(() => {
-    if (timer > 0) {
-      const interval = setInterval(() => {
-        setTimer((prev) => prev - 1);
-      }, 1000);
-      return () => clearInterval(interval);
+    if (typeof window !== "undefined") {
+      const storedPhone = localStorage.getItem("phoneNumber");
+      const storedNickName = localStorage.getItem("nickName");
+      if (storedPhone) {
+        setPhoneNumber(storedPhone);
+      }
+      if (storedNickName) {
+        setNickName(storedNickName);
+      }
     }
-  }, [timer]);
+  }, []);
+
+  const handleVerify = async () => {
+    // Check if phone number exists
+    if (!phoneNumber) {
+      toast.error("Phone number not found. Please go back and try again.");
+      return;
+    }
+
+    // Combine OTP code
+    const oneTimeCode = parseInt(code.join(""), 10);
+
+    // Validate OTP
+    if (isNaN(oneTimeCode) || code.some((digit) => !digit)) {
+      toast.error("Please enter a valid 4-digit OTP code");
+      return;
+    }
+
+    try {
+      const response = await verifyOTP({
+        oneTimeCode,
+        contact: phoneNumber,
+        isForLogin: true, // Hardcoded as requested
+      }).unwrap();
+
+      // Save accessToken and user role to localStorage
+      if (typeof window !== "undefined" && response.data) {
+        const data = response.data as {
+          accessToken?: string;
+          user?: { role?: string };
+          role?: string;
+        };
+        if (data.accessToken) {
+          localStorage.setItem("accessToken", data.accessToken);
+        }
+        // Save user role if available
+        const userRole = data.user?.role || data.role;
+        if (userRole) {
+          localStorage.setItem("userRole", userRole);
+        }
+      }
+
+      // Clear persisted login data after successful OTP verification
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("phoneNumber");
+        localStorage.removeItem("nickName");
+      }
+
+      toast.success("OTP verified successfully!");
+      router.push("/your-why");
+    } catch (error: unknown) {
+      const errorMessage =
+        (error as { data?: { message?: string }; message?: string })?.data
+          ?.message ||
+        (error as { message?: string })?.message ||
+        "Failed to verify OTP. Please try again.";
+      toast.error(errorMessage);
+    }
+  };
 
   const handleInputChange = (index: number, value: string) => {
     if (value.length > 1) return; // Only allow single digit
@@ -65,14 +135,35 @@ function PhoneVerification() {
     inputRefs.current[focusIndex]?.focus();
   };
 
-  const handleResendCode = () => {
-    // Reset timer to 30 seconds
-    setTimer(30);
-    // Clear OTP fields
-    setCode(["", "", "", ""]);
-    // Focus first input
-    inputRefs.current[0]?.focus();
-    // TODO: Add API call to resend OTP here
+  const handleResendCode = async () => {
+    // Check if we have the required data
+    if (!phoneNumber || !nickName) {
+      toast.error("Missing login information. Please go back and try again.");
+      return;
+    }
+
+    try {
+      // Call login API again with the same data
+      await login({
+        role: "USER", // Hardcoded as requested
+        name: nickName,
+        contact: phoneNumber,
+      }).unwrap();
+
+      toast.success("Verification code resent successfully!");
+
+      // Clear OTP fields
+      setCode(["", "", "", ""]);
+      // Focus first input
+      inputRefs.current[0]?.focus();
+    } catch (error: unknown) {
+      const errorMessage =
+        (error as { data?: { message?: string }; message?: string })?.data
+          ?.message ||
+        (error as { message?: string })?.message ||
+        "Failed to resend verification code. Please try again.";
+      toast.error(errorMessage);
+    }
   };
 
   return (
@@ -101,8 +192,11 @@ function PhoneVerification() {
         </h2>
 
         <p className="text-sm  text-gray-500 ">
-          Enter OTP Send sms 01721XXX to complete your verification. Don&apos;t
-          share this code with anyone.
+          Enter OTP sent to{" "}
+          {phoneNumber
+            ? phoneNumber.replace(/(.{3})(.{3})(.*)/, "$1$2XXX")
+            : "your phone"}{" "}
+          to complete your verification. Don&apos;t share this code with anyone.
         </p>
       </div>
 
@@ -130,29 +224,19 @@ function PhoneVerification() {
         </div>
 
         {/* Resend Timer or Resend Code Link */}
-        <div className="text-center">
-          {timer > 0 ? (
-            <p className="text-sm text-gray-500">
-              Resend code in {String(Math.floor(timer / 60)).padStart(2, "0")}:
-              {String(timer % 60).padStart(2, "0")}
-            </p>
-          ) : (
-            <button
-              type="button"
-              onClick={handleResendCode}
-              className="text-sm text-paul hover:text-paul-dark hover:underline cursor-pointer font-medium"
-            >
-              Resend Code
-            </button>
-          )}
-        </div>
+        <Timer
+          initialSeconds={30}
+          onResend={handleResendCode}
+          isResending={isResending}
+        />
 
         <Button
           type="button"
           onClick={handleVerify}
-          className="w-full bg-paul hover:bg-paul-dark text-white font-medium py-6 px-4 rounded-full mt-6"
+          disabled={isVerifying || !phoneNumber}
+          className="w-full bg-paul hover:bg-paul-dark text-white font-medium py-6 px-4 rounded-full mt-6 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Verify Me
+          {isVerifying ? "Verifying..." : "Verify Me"}
         </Button>
       </form>
     </div>

@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/userInfo.authProvide";
 import StoreProvider from "@/store/StoreProvider";
+import { Toaster } from "sonner";
 
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getLocale } from "next-intl/server";
@@ -37,6 +38,7 @@ export default async function RootLayout({
           <StoreProvider>
             <NextIntlClientProvider messages={messages} locale={locale}>
               {children}
+              <Toaster position="top-center" richColors />
             </NextIntlClientProvider>
           </StoreProvider>
         </AuthProvider>

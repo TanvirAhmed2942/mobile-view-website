@@ -9,6 +9,8 @@ import gsap from "gsap";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { EyeOff, Eye } from "lucide-react";
+import { useLoginMutation } from "@/store/APIs/authApi/authApi";
+import { toast } from "sonner";
 
 function WelcomePage() {
   const router = useRouter();
@@ -26,9 +28,51 @@ function WelcomePage() {
   const [showPhoneNumber, setShowPhoneNumber] = useState(false);
   const [nickName, setNickName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [login, { isLoading }] = useLoginMutation();
 
-  const handleSendVerificationCode = () => {
-    router.push("/auth/phone-verification");
+  const handleSendVerificationCode = async () => {
+    // Validate inputs
+    if (!nickName.trim()) {
+      toast.error("Please enter your nick name");
+      return;
+    }
+
+    if (!phoneNumber.trim() || phoneNumber.trim().length < 6) {
+      toast.error("Phone number must contain at least 6 characters");
+      return;
+    }
+
+    try {
+      const response = await login({
+        role: "USER", // Hardcoded as requested
+        name: nickName.trim(),
+        contact: phoneNumber.trim(),
+      }).unwrap();
+
+      // Save phone number and nickName to localStorage for resend functionality
+      if (typeof window !== "undefined") {
+        localStorage.setItem("phoneNumber", phoneNumber.trim());
+        localStorage.setItem("nickName", nickName.trim());
+
+        // Save user role from response if available
+        if (response.data && response.data.length > 0) {
+          const userRole = response.data[0].role;
+          if (userRole) {
+            localStorage.setItem("userRole", userRole);
+          }
+        }
+      }
+
+      toast.success("Verification code sent successfully!");
+      router.push("/auth/phone-verification");
+    } catch (error: unknown) {
+      const errorMessage =
+        (error as { data?: { message?: string }; message?: string })?.data
+          ?.message ||
+        (error as { message?: string })?.message ||
+        "Failed to send verification code. Please try again.";
+      toast.error(errorMessage);
+    }
   };
 
   const handleVideoEnd = () => {
@@ -243,9 +287,10 @@ function WelcomePage() {
             <Button
               type="button"
               onClick={handleSendVerificationCode}
-              className="w-full bg-paul hover:bg-paul-dark text-white font-medium py-6 px-4 rounded-full "
+              disabled={isLoading}
+              className="w-full bg-paul hover:bg-paul-dark text-white font-medium py-6 px-4 rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Send Verification Code
+              {isLoading ? "Sending..." : "Send Verification Code"}
             </Button>
             <p
               ref={footerRef}
