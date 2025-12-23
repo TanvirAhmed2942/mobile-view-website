@@ -170,9 +170,10 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { IoAddOutline } from "react-icons/io5";
-import { useRouter } from "next/navigation";
 
+import { useRouter } from "next/navigation";
+import NavBar from "@/components/common/navBar/navBar";
+import { IoIosSend } from "react-icons/io";
 /* -------------------- Types -------------------- */
 interface Contact {
   id: number;
@@ -276,14 +277,52 @@ export default function ContactPage() {
     setManualNumber("");
   };
 
+  const contactsList = ["01794685758", "01744687793"];
+
+  const message = `Hey <FRIENDS NAME>,
+
+I'm supporting [WHY from their prior page] and thought you might be interested too.
+
+This app lets our message reach tens, hundreds, even thousands of connected friends. When you share with 12 friends, it starts a ripple effect of giving.
+
+www.gopassit.org/friends
+
+I started this with my $100 donation. Please click the link, share with friends, and consider donating. Cheers!`;
+
   const handleContinue = (): void => {
-    router.push("/your-why");
+    router.push("/donate");
+  };
+
+  const handleSendSMS = () => {
+    // Clean phone numbers
+    const cleanedNumbers = contactsList.map((phone) =>
+      phone.replace(/\s|-/g, "")
+    );
+    const encodedMessage = encodeURIComponent(message);
+
+    // Copy message to clipboard as fallback
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(message).catch(() => {
+        // Clipboard failed, continue anyway
+      });
+    }
+
+    // Try with all recipients - some SMS apps might support it
+    // If not, at least recipients will be added and user can paste message
+    const numbersString = cleanedNumbers.join(",");
+
+    // Try opening SMS with all recipients
+    // Note: Many mobile SMS apps don't support body with multiple recipients
+    // In that case, recipients will be added but message won't pre-fill
+    // User will need to paste the message (we copied it to clipboard)
+    window.location.href = `sms:${numbersString}?body=${encodedMessage}`;
   };
 
   /* -------------------- UI -------------------- */
   return (
     <ScrollArea className="w-full h-[calc(100vh-200px)] no-scrollbar">
       <div className="w-full min-h-[600px] flex flex-col gap-6 p-4">
+        <NavBar />
         <h2 className="text-2xl font-semibold text-gray-800">
           Invite Your Friends
         </h2>
@@ -317,9 +356,12 @@ export default function ContactPage() {
                   <p className="text-sm text-gray-500">{c.phone}</p>
                 </div>
 
-                <Button className="bg-[#f2ebf4] hover:bg-[#e2d4e4] rounded-full">
-                  <IoAddOutline className="text-paul size-5" />
-                  <span className="text-paul text-sm ml-1">Add</span>
+                <Button
+                  onClick={handleSendSMS}
+                  className="bg-paul hover:bg-paul-dark text-white rounded-full"
+                >
+                  <span className=" text-sm ml-1">Send</span>
+                  <IoIosSend className=" size-5" />
                 </Button>
               </div>
             ))}

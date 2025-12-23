@@ -12,7 +12,7 @@ function YourWhy() {
     router.push("/preview");
   };
   const handleSend = () => {
-    router.push("/donate");
+    router.push("/invite");
   };
   return (
     <ScrollArea className="w-full h-[calc(100vh-200px)] no-scrollbar">

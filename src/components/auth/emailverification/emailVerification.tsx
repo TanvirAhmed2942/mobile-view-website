@@ -14,7 +14,7 @@ function PhoneVerification() {
   const [timer, setTimer] = useState(30);
   const router = useRouter();
   const handleVerify = () => {
-    router.push("/invite");
+    router.push("/your-why");
   };
   useEffect(() => {
     if (timer > 0) {
