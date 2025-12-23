@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/userInfo.authProvide";
+import StoreProvider from "@/store/StoreProvider";
 
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getLocale } from "next-intl/server";
@@ -33,9 +34,11 @@ export default async function RootLayout({
         className={`${inter.variable} antialiased bg-black w-full  sm:w-[420px] mx-auto min-h-[100vh] flex items-center justify-center`}
       >
         <AuthProvider>
-          <NextIntlClientProvider messages={messages} locale={locale}>
-            {children}
-          </NextIntlClientProvider>
+          <StoreProvider>
+            <NextIntlClientProvider messages={messages} locale={locale}>
+              {children}
+            </NextIntlClientProvider>
+          </StoreProvider>
         </AuthProvider>
       </body>
     </html>

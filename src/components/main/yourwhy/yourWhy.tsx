@@ -3,15 +3,41 @@ import NavBar from "@/components/common/navBar/navBar";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { setWhyMessage, hydrateFromStorage } from "@/store/whySlice";
+
 function YourWhy() {
   const router = useRouter();
+  const dispatch = useAppDispatch();
+  const whyMessage = useAppSelector((state) => state.why.whyMessage);
+  const [message, setMessage] = useState(whyMessage);
+
+  // Hydrate from sessionStorage after mount to avoid hydration mismatch
+  useEffect(() => {
+    dispatch(hydrateFromStorage());
+  }, [dispatch]);
+
+  // Sync local state with Redux when Redux state changes (e.g., when user navigates back)
+  useEffect(() => {
+    setMessage(whyMessage);
+  }, [whyMessage]);
+
+  // Update Redux whenever message changes so it's always in sync
+  const handleMessageChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newMessage = e.target.value;
+    setMessage(newMessage);
+    dispatch(setWhyMessage(newMessage)); // Update Redux immediately
+  };
 
   const handlePreview = () => {
+    // Ensure the latest message is saved to Redux and sessionStorage
+    dispatch(setWhyMessage(message));
     router.push("/preview");
   };
   const handleSend = () => {
+    dispatch(setWhyMessage(message));
     router.push("/invite");
   };
   return (
@@ -33,6 +59,8 @@ function YourWhy() {
           <Textarea
             placeholder="Add Your WHY"
             className="w-full h-40 resize-none"
+            value={message}
+            onChange={handleMessageChange}
           />
         </div>
         <div className="w-full grid grid-cols-2 gap-2">
