@@ -5,95 +5,76 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ChevronUp, ChevronDown } from "lucide-react";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
+import { useGetContentQuery } from "@/store/APIs/authApi/aboutusApi/aboutusApi";
 
 interface PrivacySection {
   id: string;
   title: string;
   defaultExpanded?: boolean;
-  introText?: string;
-  items?: string[];
   content?: string;
 }
 
-const privacySections: PrivacySection[] = [
-  {
-    id: "whatWeCollect",
-    title: "What We Collect",
-    defaultExpanded: true,
-    introText: "To provide our services, we collect the following information:",
-    items: [
-      "Your name, email address, and phone number.",
-      "Payment information to process your donation securely.",
-    ],
-  },
-  {
-    id: "howWeUseIt",
-    title: "How We Use It",
-    defaultExpanded: false,
-    introText: "We use the information we collect to:",
-    items: [
-      "Process and complete your donation transactions.",
-      "Send you important updates about your donations and our services.",
-      "Improve our platform and user experience.",
-    ],
-  },
-  {
-    id: "yourAnonymity",
-    title: "Your Anonymity",
-    defaultExpanded: false,
-    content:
-      "We respect your privacy and offer options to remain anonymous when making donations. You can choose to hide your name from public donation lists while still receiving acknowledgment for your contribution. Your personal information is never shared publicly without your explicit consent.",
-  },
-  {
-    id: "whoSeesYourInfo",
-    title: "Who Sees Your Info",
-    defaultExpanded: false,
-    introText: "Your information is only accessible to:",
-    items: [
-      "Our internal team members who need it to process your donations.",
-      "Trusted payment processors who handle transaction security.",
-      "Legal authorities only when required by law.",
-    ],
-  },
-  {
-    id: "security",
-    title: "Security",
-    defaultExpanded: false,
-    introText:
-      "We implement industry-standard security measures to protect your data:",
-    items: [
-      "SSL encryption for all data transmission.",
-      "Secure payment processing through PCI-compliant partners.",
-      "Regular security audits and updates to our systems.",
-    ],
-  },
-  {
-    id: "yourChoices",
-    title: "Your Choices",
-    defaultExpanded: false,
-    introText: "You have the right to:",
-    items: [
-      "Access and review your personal information.",
-      "Request corrections to inaccurate data.",
-      "Delete your account and associated data.",
-      "Opt-out of marketing communications.",
-    ],
-  },
-];
-
 function PrivacyPolicy() {
+  const { data, isLoading, error } = useGetContentQuery();
+
+  const privacySections: PrivacySection[] = useMemo(() => {
+    const policy = data?.data?.privacyPolicy;
+    if (!policy) return [];
+
+    return [
+      {
+        id: "whatWeCollect",
+        title: "What We Collect",
+        defaultExpanded: true,
+        content: policy.whatWeCollect,
+      },
+      {
+        id: "howWeUseIt",
+        title: "How We Use It",
+        content: policy.howWeUseIt,
+      },
+      {
+        id: "yourAnonymity",
+        title: "Your Anonymity",
+        content: policy.yourAnonymity,
+      },
+      {
+        id: "whoSeesYourInfo",
+        title: "Who Sees Your Info",
+        content: policy.whoSeesYourInfo,
+      },
+      {
+        id: "security",
+        title: "Security",
+        content: policy.security,
+      },
+      {
+        id: "yourChoices",
+        title: "Your Choices",
+        content: policy.yourChoices,
+      },
+    ];
+  }, [data]);
+
   const [expandedSections, setExpandedSections] = useState<
     Record<string, boolean>
-  >(
-    privacySections.reduce(
-      (acc, section) => ({
-        ...acc,
-        [section.id]: section.defaultExpanded ?? false,
-      }),
-      {}
-    )
-  );
+  >({});
+
+  // Initialize expansion once data loads
+  React.useEffect(() => {
+    if (privacySections.length > 0) {
+      setExpandedSections(
+        privacySections.reduce(
+          (acc, section) => ({
+            ...acc,
+            [section.id]: section.defaultExpanded ?? false,
+          }),
+          {}
+        )
+      );
+    }
+  }, [privacySections]);
 
   const toggleSection = (sectionId: string) => {
     setExpandedSections((prev) => ({
@@ -122,59 +103,54 @@ function PrivacyPolicy() {
           {/* Collapsible Sections */}
           <Card className="w-full max-w-3xl border-0 shadow-none ">
             <div className="space-y-0">
-              {privacySections.map((section, index) => {
-                const isExpanded = expandedSections[section.id];
-                const isLast = index === privacySections.length - 1;
+              {isLoading && (
+                <div className="p-4 text-sm text-gray-500">Loading...</div>
+              )}
+              {error && (
+                <div className="p-4 text-sm text-red-500">
+                  Failed to load privacy policy.
+                </div>
+              )}
+              {!isLoading && !error && privacySections.length === 0 && (
+                <div className="p-4 text-sm text-gray-500">
+                  No privacy policy available.
+                </div>
+              )}
+              {!isLoading &&
+                !error &&
+                privacySections.map((section, index) => {
+                  const isExpanded = expandedSections[section.id];
+                  const isLast = index === privacySections.length - 1;
 
-                return (
-                  <div key={section.id} className="w-full">
-                    <button
-                      onClick={() => toggleSection(section.id)}
-                      className={`w-full flex items-center justify-between p-4 bg-white border-b border-gray-200 hover:bg-gray-50 transition-colors ${
-                        isLast && !isExpanded ? "rounded-b-lg" : ""
-                      }`}
-                    >
-                      <h2 className="text-lg md:text-xl font-semibold text-gray-800">
-                        {section.title}
-                      </h2>
-                      {isExpanded ? (
-                        <ChevronUp className="w-5 h-5 text-gray-600" />
-                      ) : (
-                        <ChevronDown className="w-5 h-5 text-gray-600" />
+                  return (
+                    <div key={section.id} className="w-full">
+                      <button
+                        onClick={() => toggleSection(section.id)}
+                        className={`w-full flex items-center justify-between p-4 bg-white border-b border-gray-200 hover:bg-gray-50 transition-colors ${
+                          isLast && !isExpanded ? "rounded-b-lg" : ""
+                        }`}
+                      >
+                        <h2 className="text-lg md:text-xl font-semibold text-gray-800">
+                          {section.title}
+                        </h2>
+                        {isExpanded ? (
+                          <ChevronUp className="w-5 h-5 text-gray-600" />
+                        ) : (
+                          <ChevronDown className="w-5 h-5 text-gray-600" />
+                        )}
+                      </button>
+                      {isExpanded && (
+                        <CardContent className="p-4 bg-white border-b border-gray-200 rounded-none">
+                          {section.content && (
+                            <p className="text-sm md:text-base text-gray-600 leading-relaxed whitespace-pre-line">
+                              {section.content}
+                            </p>
+                          )}
+                        </CardContent>
                       )}
-                    </button>
-                    {isExpanded && (
-                      <CardContent className="p-4 bg-white border-b border-gray-200 rounded-none">
-                        {section.introText && (
-                          <p className="text-sm md:text-base text-gray-600 mb-4 leading-relaxed">
-                            {section.introText}
-                          </p>
-                        )}
-                        {section.items && section.items.length > 0 && (
-                          <ul className="space-y-3">
-                            {section.items.map((item, itemIndex) => (
-                              <li
-                                key={itemIndex}
-                                className="flex items-start gap-3"
-                              >
-                                <div className="w-2 h-2 rounded-full bg-paul mt-2 flex-shrink-0"></div>
-                                <span className="text-sm md:text-base text-gray-600">
-                                  {item}
-                                </span>
-                              </li>
-                            ))}
-                          </ul>
-                        )}
-                        {section.content && (
-                          <p className="text-sm md:text-base text-gray-600 leading-relaxed">
-                            {section.content}
-                          </p>
-                        )}
-                      </CardContent>
-                    )}
-                  </div>
-                );
-              })}
+                    </div>
+                  );
+                })}
             </div>
           </Card>
 

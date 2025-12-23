@@ -6,7 +6,12 @@ const withNextIntl = createNextIntlPlugin("./i18n/request.js");
 const nextConfig: NextConfig = {
   trailingSlash: false,
   images: {
-    remotePatterns: [{ hostname: "images.unsplash.com" }],
+    remotePatterns: [
+      { hostname: "images.unsplash.com" },
+      { hostname: "via.placeholder.com" },
+      { hostname: "example.com" },
+      { hostname: "humayon5001.binarybards.online" },
+    ],
   },
 };
 

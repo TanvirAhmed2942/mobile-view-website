@@ -1,11 +1,14 @@
 import AboutUs from "@/components/main/aboutus/aboutUs";
+import AuthGuard from "@/components/common/AuthGuard";
 import React from "react";
 
 function page() {
   return (
-    <div className="w-full bg-gray-100 rounded-2xl p-6">
-      <AboutUs />
-    </div>
+    <AuthGuard login={true} role={["USER"]} redirectTo="/">
+      <div className="w-full bg-gray-100 rounded-2xl p-6">
+        <AboutUs />
+      </div>
+    </AuthGuard>
   );
 }
 

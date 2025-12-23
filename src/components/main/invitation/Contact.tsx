@@ -8,6 +8,7 @@ import { LiaMinusCircleSolid } from "react-icons/lia";
 import { useRouter } from "next/navigation";
 import NavBar from "@/components/common/navBar/navBar";
 import { IoIosSend } from "react-icons/io";
+import { Check } from "lucide-react";
 /* -------------------- Types -------------------- */
 interface Contact {
   id: number;
@@ -47,7 +48,9 @@ export default function ContactPage() {
   const router = useRouter();
 
   const [contacts, setContacts] = useState<Contact[]>([]);
-  const [manualNumber, setManualNumber] = useState<string>("01743345476");
+  const [manualNumber, setManualNumber] = useState<string>("");
+  const [manualName, setManualName] = useState<string>("");
+  const [manualStage, setManualStage] = useState<"name" | "phone">("name");
 
   /* ---------- Open phone contact picker ---------- */
   const handleOpenContacts = async (): Promise<void> => {
@@ -92,7 +95,7 @@ export default function ContactPage() {
 
   /* ---------- Manual add ---------- */
   const handleManualAdd = (): void => {
-    if (!manualNumber) return;
+    if (!manualName.trim() || !manualNumber) return;
 
     const phone = normalizePhone(manualNumber);
 
@@ -104,14 +107,16 @@ export default function ContactPage() {
         ...prev,
         {
           id: Date.now(),
-          name: "Manual Contact",
+          name: manualName.trim(),
           phone,
           sent: false,
         },
       ];
     });
 
+    setManualName("");
     setManualNumber("");
+    setManualStage("name");
   };
 
   const message = `Hey <FRIENDS NAME>,
@@ -155,6 +160,8 @@ I started this with my $100 donation. Please click the link, share with friends,
   };
 
   /* -------------------- UI -------------------- */
+  const canContinue = contacts.length >= 3;
+
   return (
     <ScrollArea className="w-full h-[calc(100vh-200px)] no-scrollbar">
       <div className="w-full min-h-[600px] flex flex-col gap-6 p-4">
@@ -219,36 +226,77 @@ I started this with my $100 donation. Please click the link, share with friends,
           <div className="space-y-2">
             <h3 className="text-lg font-semibold">Manual Entry</h3>
 
-            <Input
-              type="tel"
-              value={manualNumber}
-              onChange={(e) => {
-                // Only allow numbers
-                const value = e.target.value.replace(/\D/g, "");
-                setManualNumber(value);
-              }}
-              placeholder="Enter phone number"
-              className="rounded-2xl h-11"
-              inputMode="numeric"
-              pattern="[0-9]*"
-            />
-
-            <Button
-              onClick={handleManualAdd}
-              className="bg-paul hover:bg-paul-dark text-white rounded-full"
-            >
-              Add Number
-            </Button>
+            {manualStage === "name" ? (
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="text"
+                    value={manualName}
+                    onChange={(e) => setManualName(e.target.value)}
+                    placeholder="Enter contact name"
+                    className="rounded-2xl h-11"
+                  />
+                  <Button
+                    onClick={() => setManualStage("phone")}
+                    disabled={!manualName.trim()}
+                    className="bg-paul hover:bg-paul-dark text-white rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <Check className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <p className="text-sm text-gray-600">
+                  Name: <span className="font-medium">{manualName}</span>
+                </p>
+                <Input
+                  type="tel"
+                  value={manualNumber}
+                  onChange={(e) => {
+                    // Only allow numbers
+                    const value = e.target.value.replace(/\D/g, "");
+                    setManualNumber(value);
+                  }}
+                  placeholder="Enter phone number"
+                  className="rounded-2xl h-11"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                />
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => setManualStage("name")}
+                    className="rounded-full"
+                  >
+                    Edit Name
+                  </Button>
+                  <Button
+                    onClick={handleManualAdd}
+                    disabled={!manualNumber}
+                    className="bg-paul hover:bg-paul-dark text-white rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Add Number
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
         {/* CONTINUE */}
         <Button
           onClick={handleContinue}
-          className="w-full bg-paul hover:bg-paul-dark text-white py-6 rounded-full mt-6"
+          disabled={!canContinue}
+          className="w-full bg-paul hover:bg-paul-dark text-white py-6 rounded-full mt-6 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Continue
         </Button>
+        {!canContinue && (
+          <p className="text-xs text-gray-500 text-center">
+            ** Add at least 3 contacts to continue.
+          </p>
+        )}
 
         <p className="text-xs text-gray-400 text-center mt-2">
           We only access contacts you select. Nothing is stored without

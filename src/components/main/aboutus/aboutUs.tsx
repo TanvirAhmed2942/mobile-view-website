@@ -6,10 +6,22 @@ import { Button } from "@/components/ui/button";
 import { ChevronUp, ChevronDown, ShieldCheck } from "lucide-react";
 import React, { useState } from "react";
 import Image from "next/image";
-
+import { useGetContentQuery } from "@/store/APIs/authApi/aboutusApi/aboutusApi";
+import { ImageUrl } from "@/store/baseUrl";
 function AboutUs() {
   const [isMissionExpanded, setIsMissionExpanded] = useState(false);
   const [isHowWeOperateExpanded, setIsHowWeOperateExpanded] = useState(false);
+  const { data, isLoading, error } = useGetContentQuery();
+
+  const foundersData = data?.data?.founders;
+  const missionText =
+    data?.data?.ourMission ||
+    "Our mission content is not available at the moment.";
+  const howWeOperateText =
+    data?.data?.howWeOperate ||
+    "How we operate content is not available at the moment.";
+
+  const showError = !isLoading && error;
 
   return (
     <ScrollArea className="w-full h-[calc(100vh-200px)] no-scrollbar">
@@ -44,17 +56,20 @@ function AboutUs() {
           </h2>
           <div className="space-y-3">
             <h3 className="text-lg md:text-xl font-semibold text-paul">
-              Paul & Jerri Starkey
+              {foundersData?.[0]?.name}
             </h3>
             <p className="text-sm md:text-base text-gray-600 italic leading-relaxed">
-              &quot;We wanted to create a simple way for people to share the
-              causes they care about with the people they trust.&quot;
+              &quot;{foundersData?.[0]?.bio}&quot;
             </p>
             {/* Founders Photo */}
             <div className="relative w-full max-w-md mx-auto aspect-[4/3] rounded-lg overflow-hidden">
               <Image
-                src="https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=800&h=600&fit=crop"
-                alt="Paul & Jerri Starkey"
+                src={
+                  foundersData?.[0]?.image
+                    ? `${ImageUrl()}/${foundersData?.[0]?.image}`
+                    : "https://via.placeholder.com/150"
+                }
+                alt={foundersData?.[0]?.name || ""}
                 fill
                 className="object-cover"
                 sizes="(max-width: 768px) 100vw, 400px"
@@ -80,12 +95,17 @@ function AboutUs() {
           </button>
           {isMissionExpanded && (
             <div className="mt-2 p-4 bg-gray-50 rounded-lg">
-              <p className="text-sm md:text-base text-gray-600 leading-relaxed">
-                Our mission is to connect friends in giving. Each cause is
-                described and shared in an insightful way, allowing each to use
-                this space to make their appeal. we believe every cause is
-                unique and deserves a platform to tell its story.
-              </p>
+              {isLoading ? (
+                <p className="text-sm text-gray-500">Loading...</p>
+              ) : showError ? (
+                <p className="text-sm text-red-500">
+                  Failed to load mission content.
+                </p>
+              ) : (
+                <p className="text-sm md:text-base text-gray-600 leading-relaxed whitespace-pre-line">
+                  {missionText}
+                </p>
+              )}
             </div>
           )}
         </div>
@@ -107,9 +127,17 @@ function AboutUs() {
           </button>
           {isHowWeOperateExpanded && (
             <div className="mt-2 p-4 bg-gray-50 rounded-lg">
-              <p className="text-sm md:text-base text-gray-600 leading-relaxed">
-                BUILDING BETTER LIVES Each Charity is accepts donation directly.
-              </p>
+              {isLoading ? (
+                <p className="text-sm text-gray-500">Loading...</p>
+              ) : showError ? (
+                <p className="text-sm text-red-500">
+                  Failed to load how we operate content.
+                </p>
+              ) : (
+                <p className="text-sm md:text-base text-gray-600 leading-relaxed whitespace-pre-line">
+                  {howWeOperateText}
+                </p>
+              )}
             </div>
           )}
         </div>
