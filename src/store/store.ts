@@ -1,11 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
 import whyReducer from "./whySlice";
+import donationReducer from "./donationSlice";
 import { api } from "./baseApi";
 
 export const makeStore = () => {
   return configureStore({
     reducer: {
       why: whyReducer,
+      donation: donationReducer,
       [api.reducerPath]: api.reducer,
     },
     middleware: (getDefaultMiddleware) =>

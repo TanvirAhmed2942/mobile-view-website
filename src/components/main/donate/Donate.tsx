@@ -9,16 +9,43 @@ import React, { useState } from "react";
 
 import useIcon from "@/hooks/useIcon";
 import { useRouter } from "next/navigation";
+import { useAppDispatch } from "@/store/hooks";
+import { setDonationInfo } from "@/store/donationSlice";
+
 function Donate() {
   const router = useRouter();
-  const handleContinue = () => {
-    router.push("/your-why");
-  };
-  const handleShareWithoutDonating = () => {
-    router.push("/your-why");
-  };
+  const dispatch = useAppDispatch();
   const [selectedAmount, setSelectedAmount] = useState<number | null>(100);
   const [customAmount, setCustomAmount] = useState("");
+
+  const handleContinue = () => {
+    // Calculate final amount (selected or custom)
+    const finalAmount = customAmount
+      ? parseFloat(customAmount.replace(/[^0-9.]/g, "")) || null
+      : selectedAmount;
+
+    // Store donation info (user is donating)
+    dispatch(
+      setDonationInfo({
+        donationAmount: finalAmount,
+        paymentMethod: "bkash", // TODO: Add payment method selection UI
+        isDonating: true,
+      })
+    );
+    router.push("/your-why");
+  };
+
+  const handleShareWithoutDonating = () => {
+    // Clear donation info (user is not donating)
+    dispatch(
+      setDonationInfo({
+        donationAmount: null,
+        paymentMethod: null,
+        isDonating: false,
+      })
+    );
+    router.push("/your-why");
+  };
 
   const options = [
     {

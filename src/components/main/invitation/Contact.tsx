@@ -11,6 +11,7 @@ import { IoIosSend } from "react-icons/io";
 import { Check } from "lucide-react";
 import { useAppSelector, useAppDispatch } from "@/store/hooks";
 import { hydrateFromStorage } from "@/store/whySlice";
+import { useInviteUserMutation } from "@/store/APIs/inviteApi/inviteApi";
 /* -------------------- Types -------------------- */
 interface Contact {
   id: number;
@@ -46,10 +47,29 @@ const normalizePhone = (phone: string): string =>
   phone.replace(/\s|-/g, "").replace(/^0/, "+880"); // 🇧🇩 adjust if needed
 
 /* -------------------- Component -------------------- */
+// Helper function to decode JWT and get userId
+const decodeJWT = (token: string): { id?: string } | null => {
+  try {
+    const base64Url = token.split(".")[1];
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split("")
+        .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+        .join("")
+    );
+    return JSON.parse(jsonPayload);
+  } catch {
+    return null;
+  }
+};
+
 export default function ContactPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const whyMessage = useAppSelector((state) => state.why.whyMessage);
+  const donationInfo = useAppSelector((state) => state.donation);
+  const [inviteUser] = useInviteUserMutation();
 
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [manualNumber, setManualNumber] = useState<string>("");
@@ -128,8 +148,68 @@ export default function ContactPage() {
     setManualStage("name");
   };
 
-  const handleContinue = (): void => {
-    router.push("/redirect");
+  const handleContinue = async (): Promise<void> => {
+    // Validate minimum contacts
+    if (contacts.length < 3) {
+      alert("Please add at least 3 contacts to continue.");
+      return;
+    }
+
+    // Get userId from JWT token
+    let userId = "";
+    if (typeof window !== "undefined") {
+      const accessToken = localStorage.getItem("accessToken");
+      if (accessToken) {
+        const decoded = decodeJWT(accessToken);
+        userId = decoded?.id || "";
+      }
+    }
+
+    if (!userId) {
+      alert("User not authenticated. Please login again.");
+      return;
+    }
+
+    // Prepare invitees array
+    const myInvitees = contacts.map((contact) => ({
+      invitationForPhone: contact.phone,
+      invitationForName: contact.name,
+    }));
+
+    // Prepare request payload
+    const requestPayload: {
+      myInvitees: Array<{
+        invitationForPhone: string;
+        invitationForName: string;
+      }>;
+      invitationIrecievedFrom: string;
+      donationAmount?: number;
+      paymentMethod?: string;
+    } = {
+      myInvitees,
+      invitationIrecievedFrom: userId,
+    };
+
+    // Only include donation info if user is donating
+    if (donationInfo.isDonating && donationInfo.donationAmount) {
+      requestPayload.donationAmount = donationInfo.donationAmount;
+      requestPayload.paymentMethod = donationInfo.paymentMethod || "bkash";
+    }
+
+    try {
+      await inviteUser({
+        ...requestPayload,
+        campaignId: "693fd8701a0a266f71861447",
+      }).unwrap();
+      // Success - navigate to redirect page
+      router.push("/redirect");
+    } catch (error) {
+      console.error("Failed to send invitations:", error);
+      const errorMessage =
+        (error as { data?: { message?: string } })?.data?.message ||
+        "Failed to send invitations. Please try again.";
+      alert(errorMessage);
+    }
   };
 
   const handleSendSMS = (contact: Contact) => {
