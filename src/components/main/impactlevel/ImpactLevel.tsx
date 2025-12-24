@@ -2,11 +2,86 @@
 
 import NavBar from "@/components/common/navBar/navBar";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { DollarSign, Users, Heart } from "lucide-react";
-import React from "react";
+import { DollarSign, Users, Heart, Loader2 } from "lucide-react";
+import React, { useMemo } from "react";
 import { LuWaves } from "react-icons/lu";
+import { useGetMyProfileQuery } from "@/store/APIs/userApi/userApi";
+import { useGetContentQuery } from "@/store/APIs/authApi/aboutusApi/aboutusApi";
+
+// Helper function to format currency
+const formatCurrency = (amount: number): string => {
+  return `$${amount.toLocaleString("en-US")}`;
+};
+
+// Helper function to format numbers
+const formatNumber = (num: number): string => {
+  return num.toLocaleString("en-US");
+};
+
+// Helper function to extract level number from userLevel (e.g., "L5" -> 5)
+const getLevelNumber = (userLevel: string): number => {
+  const match = userLevel.match(/L(\d+)/);
+  return match ? parseInt(match[1], 10) : 0;
+};
 
 function ImpactLevel() {
+  const {
+    data: profileData,
+    isLoading: isProfileLoading,
+    error: profileError,
+  } = useGetMyProfileQuery();
+  const { data: contentData, isLoading: isContentLoading } =
+    useGetContentQuery();
+
+  const userData = profileData?.data;
+
+  // Memoize userLevelStrategy to avoid dependency issues
+  const userLevelStrategy = useMemo(
+    () => contentData?.data?.userLevelStrategy || [],
+    [contentData?.data?.userLevelStrategy]
+  );
+
+  // Find the current user's level info
+  const currentLevelInfo = useMemo(() => {
+    if (!userData?.userLevel) return null;
+    return userLevelStrategy.find(
+      (level) => level.level === userData.userLevel
+    );
+  }, [userData?.userLevel, userLevelStrategy]);
+
+  // Extract level number from userLevel
+  const levelNumber = userData?.userLevel
+    ? getLevelNumber(userData.userLevel)
+    : 0;
+  const levelTitle = currentLevelInfo?.title || "Ocean Wave";
+
+  const isLoading = isProfileLoading || isContentLoading;
+
+  if (isLoading) {
+    return (
+      <ScrollArea className="w-full h-[calc(100vh-200px)] no-scrollbar">
+        <div className="w-full min-h-[600px] xl:min-h-[630px] 2xl:min-h-[800px] flex flex-col items-center justify-center gap-6">
+          <NavBar />
+          <div className="flex flex-col items-center justify-center gap-2 min-h-[400px]">
+            <Loader2 className="w-10 h-10 animate-spin text-paul" />
+            <p className="text-gray-500">Loading impact level...</p>
+          </div>
+        </div>
+      </ScrollArea>
+    );
+  }
+
+  if (profileError || !userData) {
+    return (
+      <ScrollArea className="w-full h-[calc(100vh-200px)] no-scrollbar">
+        <div className="w-full min-h-[600px] xl:min-h-[630px] 2xl:min-h-[800px] flex flex-col items-center justify-center gap-6">
+          <NavBar />
+          <p className="text-red-500">Failed to load impact level data.</p>
+        </div>
+      </ScrollArea>
+    );
+  }
+
   return (
     <ScrollArea className="w-full h-[calc(100vh-200px)] no-scrollbar">
       <div className="w-full min-h-[600px] xl:min-h-[630px] 2xl:min-h-[800px] flex flex-col items-center gap-6 justify-start pb-8">
@@ -32,12 +107,12 @@ function ImpactLevel() {
 
             {/* Level Number */}
             <span className="text-3xl  font-bold text-gray-800 mb-2">
-              Level 5
+              Level {levelNumber}
             </span>
 
             {/* Level Name */}
             <span className="text-2xl md:text-3xl font-bold text-paul">
-              Ocean Wave
+              {levelTitle}
             </span>
           </div>
         </div>
@@ -54,7 +129,9 @@ function ImpactLevel() {
             <span className="text-white text-lg font-medium">Funds Raised</span>
 
             {/* Amount */}
-            <span className="text-5xl  font-bold text-white">$13,250</span>
+            <span className="text-5xl  font-bold text-white">
+              {formatCurrency(userData.totalRaised || 0)}
+            </span>
           </div>
         </div>
 
@@ -71,7 +148,9 @@ function ImpactLevel() {
             <span className="text-sm text-gray-500">Invited</span>
 
             {/* Count */}
-            <span className="text-3xl  font-bold text-gray-800">1,256</span>
+            <span className="text-3xl  font-bold text-gray-800">
+              {formatNumber(userData.totalInvited || 0)}
+            </span>
           </div>
 
           {/* Donated Card */}
@@ -85,7 +164,9 @@ function ImpactLevel() {
             <span className="text-sm text-gray-500">Donated</span>
 
             {/* Count */}
-            <span className="text-3xl  font-bold text-gray-800">134</span>
+            <span className="text-3xl  font-bold text-gray-800">
+              {formatNumber(userData.totalDonated || 0)}
+            </span>
           </div>
         </div>
       </div>
