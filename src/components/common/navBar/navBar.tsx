@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Menu,
   Info,
@@ -22,7 +22,19 @@ import { useRouter } from "next/navigation";
 function NavBar() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isAboutUsDropdownOpen, setIsAboutUsDropdownOpen] = useState(false);
+  const [currentUserName, setCurrentUserName] = useState("");
+  const [currentUserImage, setCurrentUserImage] = useState("");
   const router = useRouter();
+
+  // Get user data from localStorage on mount
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const nickName = localStorage.getItem("nickName") || "";
+      const userImage = localStorage.getItem("userImage") || "";
+      setCurrentUserName(nickName);
+      setCurrentUserImage(userImage);
+    }
+  }, []);
 
   const handleLogout = () => {
     if (typeof window !== "undefined") {
@@ -31,6 +43,7 @@ function NavBar() {
       localStorage.removeItem("phoneNumber");
       localStorage.removeItem("nickName");
       localStorage.removeItem("verifyToken");
+      localStorage.removeItem("userImage");
     }
     setIsSidebarOpen(false);
     router.push("/");
@@ -91,11 +104,18 @@ function NavBar() {
                 <div className="relative mb-3">
                   <Avatar className="w-16 h-16 sm:w-20 sm:h-20">
                     <AvatarImage
-                      src="https://github.com/shadcn.png"
-                      alt="Paul Starkey"
+                      src={currentUserImage || undefined}
+                      alt={currentUserName || "User"}
                     />
-                    <AvatarFallback className="text-base sm:text-lg">
-                      PS
+                    <AvatarFallback className="text-base sm:text-lg bg-paul text-white">
+                      {currentUserName
+                        ? currentUserName
+                            .split(" ")
+                            .map((n) => n[0])
+                            .join("")
+                            .toUpperCase()
+                            .slice(0, 2)
+                        : "U"}
                     </AvatarFallback>
                   </Avatar>
                   <button className="absolute bottom-0 right-0 w-6 h-6 sm:w-7 sm:h-7 bg-paul rounded-lg flex items-center justify-center border-2 border-white">
@@ -105,14 +125,24 @@ function NavBar() {
 
                 {/* Name */}
                 <h2 className="text-base sm:text-lg font-bold text-gray-800 mb-1">
-                  Paul Starkey
+                  {currentUserName || "User"}
                 </h2>
 
                 {/* Phone Number */}
-                <p className="text-xs text-gray-500 mb-3">+1-202-555-0142</p>
+                <p className="text-xs text-gray-500 mb-3">
+                  {typeof window !== "undefined"
+                    ? localStorage.getItem("phoneNumber") || ""
+                    : ""}
+                </p>
 
                 {/* Edit Profile Button */}
-                <Button className="w-full bg-paul hover:bg-paul-dark text-white font-medium py-2 sm:py-2.5 px-4 rounded-lg text-xs sm:text-sm">
+                <Button
+                  onClick={() => {
+                    setIsSidebarOpen(false);
+                    router.push("/edit-user");
+                  }}
+                  className="w-full bg-paul hover:bg-paul-dark text-white font-medium py-2 sm:py-2.5 px-4 rounded-lg text-xs sm:text-sm"
+                >
                   Edit Profile
                 </Button>
               </div>

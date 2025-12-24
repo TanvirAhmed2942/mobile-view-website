@@ -12,7 +12,10 @@ import { useRouter } from "next/navigation";
 function Donate() {
   const router = useRouter();
   const handleContinue = () => {
-    router.push("/redirect");
+    router.push("/your-why");
+  };
+  const handleShareWithoutDonating = () => {
+    router.push("/your-why");
   };
   const [selectedAmount, setSelectedAmount] = useState<number | null>(100);
   const [customAmount, setCustomAmount] = useState("");
@@ -112,7 +115,10 @@ function Donate() {
           </div>
 
           {/* Continue Button */}
-          <Button className="w-full h-11 bg-white hover:bg-paul-dark text-black hover:text-white border border-[#8a48c4] font-semibold py-3 px-4 rounded-full mt-4 flex items-center justify-center gap-2">
+          <Button
+            className="w-full h-11 bg-white hover:bg-paul-dark text-black hover:text-white border border-[#8a48c4] font-semibold py-3 px-4 rounded-full mt-4 flex items-center justify-center gap-2"
+            onClick={handleShareWithoutDonating}
+          >
             {useIcon({ name: "two_user_black_icon" })}
             Share Without Donating
           </Button>

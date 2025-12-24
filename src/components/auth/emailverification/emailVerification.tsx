@@ -84,7 +84,7 @@ function PhoneVerification() {
       }
 
       toast.success("OTP verified successfully!");
-      router.push("/your-why");
+      router.push("/donate");
     } catch (error: unknown) {
       const errorMessage =
         (error as { data?: { message?: string }; message?: string })?.data

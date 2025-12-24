@@ -12,16 +12,16 @@ function YourWhy() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const whyMessage = useAppSelector((state) => state.why.whyMessage);
-  const [message, setMessage] = useState(whyMessage);
+  const [message, setMessage] = useState(whyMessage || "");
 
   // Hydrate from sessionStorage after mount to avoid hydration mismatch
   useEffect(() => {
     dispatch(hydrateFromStorage());
   }, [dispatch]);
 
-  // Sync local state with Redux when Redux state changes (e.g., when user navigates back)
+  // Sync local state with Redux when Redux state changes (e.g., after hydration or when user navigates back)
   useEffect(() => {
-    setMessage(whyMessage);
+    setMessage(whyMessage || "");
   }, [whyMessage]);
 
   // Update Redux whenever message changes so it's always in sync
@@ -58,7 +58,7 @@ function YourWhy() {
           </h1>
           <Textarea
             placeholder="Add Your WHY"
-            className="w-full h-40 resize-none"
+            className="w-full h-60 resize-none"
             value={message}
             onChange={handleMessageChange}
           />

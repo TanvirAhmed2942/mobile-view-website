@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -9,6 +9,8 @@ import { useRouter } from "next/navigation";
 import NavBar from "@/components/common/navBar/navBar";
 import { IoIosSend } from "react-icons/io";
 import { Check } from "lucide-react";
+import { useAppSelector, useAppDispatch } from "@/store/hooks";
+import { hydrateFromStorage } from "@/store/whySlice";
 /* -------------------- Types -------------------- */
 interface Contact {
   id: number;
@@ -46,11 +48,18 @@ const normalizePhone = (phone: string): string =>
 /* -------------------- Component -------------------- */
 export default function ContactPage() {
   const router = useRouter();
+  const dispatch = useAppDispatch();
+  const whyMessage = useAppSelector((state) => state.why.whyMessage);
 
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [manualNumber, setManualNumber] = useState<string>("");
   const [manualName, setManualName] = useState<string>("");
   const [manualStage, setManualStage] = useState<"name" | "phone">("name");
+
+  // Hydrate from sessionStorage after mount
+  useEffect(() => {
+    dispatch(hydrateFromStorage());
+  }, [dispatch]);
 
   /* ---------- Open phone contact picker ---------- */
   const handleOpenContacts = async (): Promise<void> => {
@@ -119,28 +128,27 @@ export default function ContactPage() {
     setManualStage("name");
   };
 
-  const message = `Hey <FRIENDS NAME>,
-
-I'm supporting [WHY from their prior page] and thought you might be interested too.
-
-This app lets our message reach tens, hundreds, even thousands of connected friends. When you share with 12 friends, it starts a ripple effect of giving.
-
-www.gopassit.org/friends
-
-I started this with my $100 donation. Please click the link, share with friends, and consider donating. Cheers!`;
-
   const handleContinue = (): void => {
-    router.push("/donate");
+    router.push("/redirect");
   };
 
   const handleSendSMS = (contact: Contact) => {
+    // Get the latest message from Redux (user's last modified version)
+    const latestMessage = whyMessage;
+
+    // Replace <FRIENDS NAME> placeholder with actual contact name
+    const personalizedMessage = latestMessage.replace(
+      /<FRIENDS NAME>/g,
+      contact.name
+    );
+
     // Clean single phone number
     const cleanedNumber = contact.phone.replace(/\s|-/g, "");
-    const encodedMessage = encodeURIComponent(message);
+    const encodedMessage = encodeURIComponent(personalizedMessage);
 
     // Copy message to clipboard as fallback
     if (navigator.clipboard) {
-      navigator.clipboard.writeText(message).catch(() => {
+      navigator.clipboard.writeText(personalizedMessage).catch(() => {
         // Clipboard failed, continue anyway
       });
     }

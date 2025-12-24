@@ -12,7 +12,7 @@ function Invite() {
   const router = useRouter();
 
   const handleInvite = () => {
-    router.push("/your-why");
+    router.push("/redirect");
   };
   return (
     <ScrollArea className="w-full h-[calc(100vh-200px)] no-scrollbar">
