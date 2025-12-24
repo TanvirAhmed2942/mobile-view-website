@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import NavBar from "@/components/common/navBar/navBar";
 import { IoIosSend } from "react-icons/io";
 import { Check } from "lucide-react";
+import { toast } from "sonner";
 import { useAppSelector, useAppDispatch } from "@/store/hooks";
 import { hydrateFromStorage } from "@/store/whySlice";
 import { useInviteUserMutation } from "@/store/APIs/inviteApi/inviteApi";
@@ -151,7 +152,7 @@ export default function ContactPage() {
   const handleContinue = async (): Promise<void> => {
     // Validate minimum contacts
     if (contacts.length < 3) {
-      alert("Please add at least 3 contacts to continue.");
+      toast.error("Please add at least 3 contacts to continue.");
       return;
     }
 
@@ -166,7 +167,7 @@ export default function ContactPage() {
     }
 
     if (!userId) {
-      alert("User not authenticated. Please login again.");
+      toast.error("User not authenticated. Please login again.");
       return;
     }
 
@@ -196,19 +197,38 @@ export default function ContactPage() {
       requestPayload.paymentMethod = donationInfo.paymentMethod || "bkash";
     }
 
+    // Get campaignId from Redux
+    if (!donationInfo.campaignId) {
+      toast.error(
+        "Campaign not selected. Please go back and select a campaign."
+      );
+      return;
+    }
+
     try {
-      await inviteUser({
+      const response = await inviteUser({
         ...requestPayload,
-        campaignId: "693fd8701a0a266f71861447",
+        campaignId: donationInfo.campaignId,
       }).unwrap();
-      // Success - navigate to redirect page
-      router.push("/redirect");
+
+      // Show success toast - check if response has a message
+      const successMessage =
+        (response as unknown as { message?: string })?.message ||
+        "Invitations sent successfully!";
+      toast.success(successMessage);
+
+      // Navigate to redirect page after a short delay
+      setTimeout(() => {
+        router.push("/redirect");
+      }, 1000);
     } catch (error) {
       console.error("Failed to send invitations:", error);
       const errorMessage =
-        (error as { data?: { message?: string } })?.data?.message ||
+        (error as { data?: { message?: string }; message?: string })?.data
+          ?.message ||
+        (error as { message?: string })?.message ||
         "Failed to send invitations. Please try again.";
-      alert(errorMessage);
+      toast.error(errorMessage);
     }
   };
 

@@ -4,21 +4,42 @@ import NavBar from "@/components/common/navBar/navBar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { CheckIcon } from "lucide-react";
 import React, { useState } from "react";
 
 import useIcon from "@/hooks/useIcon";
 import { useRouter } from "next/navigation";
-import { useAppDispatch } from "@/store/hooks";
-import { setDonationInfo } from "@/store/donationSlice";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { setDonationInfo, setCampaignId } from "@/store/donationSlice";
+import { useGetCampaignsQuery } from "@/store/APIs/campaignApi/campaignApiu";
 
 function Donate() {
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const { data: campaignsResponse, isLoading: isLoadingCampaigns } =
+    useGetCampaignsQuery();
+  const selectedCampaignId = useAppSelector(
+    (state) => state.donation.campaignId
+  );
   const [selectedAmount, setSelectedAmount] = useState<number | null>(100);
   const [customAmount, setCustomAmount] = useState("");
 
+  const campaigns = campaignsResponse?.data?.result || [];
+
   const handleContinue = () => {
+    // Validate campaign selection
+    if (!selectedCampaignId) {
+      alert("Please select a campaign to continue.");
+      return;
+    }
+
     // Calculate final amount (selected or custom)
     const finalAmount = customAmount
       ? parseFloat(customAmount.replace(/[^0-9.]/g, "")) || null
@@ -30,18 +51,26 @@ function Donate() {
         donationAmount: finalAmount,
         paymentMethod: "bkash", // TODO: Add payment method selection UI
         isDonating: true,
+        campaignId: selectedCampaignId,
       })
     );
     router.push("/your-why");
   };
 
   const handleShareWithoutDonating = () => {
-    // Clear donation info (user is not donating)
+    // Validate campaign selection
+    if (!selectedCampaignId) {
+      alert("Please select a campaign to continue.");
+      return;
+    }
+
+    // Clear donation info (user is not donating) but keep campaignId
     dispatch(
       setDonationInfo({
         donationAmount: null,
         paymentMethod: null,
         isDonating: false,
+        campaignId: selectedCampaignId,
       })
     );
     router.push("/your-why");
@@ -70,6 +99,38 @@ function Donate() {
           <h2 className="text-left text-2xl font-semibold text-gray-800 mb-4">
             Donate / Share
           </h2>
+
+          {/* Campaign Selection */}
+          <div className="space-y-2">
+            <h3 className="text-lg font-semibold text-gray-800">
+              Select Campaign
+            </h3>
+            <Select
+              value={selectedCampaignId || ""}
+              onValueChange={(value) => dispatch(setCampaignId(value))}
+            >
+              <SelectTrigger className="w-full bg-gray-50 border-gray-300 rounded-xl h-11">
+                <SelectValue placeholder="Select a campaign" />
+              </SelectTrigger>
+              <SelectContent>
+                {isLoadingCampaigns ? (
+                  <SelectItem value="loading" disabled>
+                    Loading campaigns...
+                  </SelectItem>
+                ) : campaigns.length === 0 ? (
+                  <SelectItem value="no-campaigns" disabled>
+                    No campaigns available
+                  </SelectItem>
+                ) : (
+                  campaigns.map((campaign) => (
+                    <SelectItem key={campaign._id} value={campaign._id}>
+                      {campaign.title}
+                    </SelectItem>
+                  ))
+                )}
+              </SelectContent>
+            </Select>
+          </div>
 
           {/* Donation Amount Options */}
           <div className="space-y-3">
