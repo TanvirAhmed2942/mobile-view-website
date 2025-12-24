@@ -10,6 +10,7 @@ import {
   BarChart3,
   Pencil,
   ChevronDown,
+  ChevronUp,
   LogOut,
 } from "lucide-react";
 import Link from "next/link";
@@ -20,6 +21,7 @@ import { useRouter } from "next/navigation";
 
 function NavBar() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isAboutUsDropdownOpen, setIsAboutUsDropdownOpen] = useState(false);
   const router = useRouter();
 
   const handleLogout = () => {
@@ -56,7 +58,12 @@ function NavBar() {
 
           {/* Hamburger Menu Button - Circular */}
           <button
-            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            onClick={() => {
+              setIsSidebarOpen(!isSidebarOpen);
+              if (isSidebarOpen) {
+                setIsAboutUsDropdownOpen(false);
+              }
+            }}
             className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-gray-300 bg-white shadow-sm flex items-center justify-center hover:bg-gray-50 transition-colors"
           >
             <Menu className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700" />
@@ -70,7 +77,10 @@ function NavBar() {
           {/* Overlay */}
           <div
             className="fixed inset-0 bg-black/50 z-[-1] animate-in fade-in-0"
-            onClick={() => setIsSidebarOpen(false)}
+            onClick={() => {
+              setIsSidebarOpen(false);
+              setIsAboutUsDropdownOpen(false);
+            }}
           />
           {/* Sidebar */}
           <div className="fixed left-0 sm:left-[calc((100vw-420px)/2)] top-1/2 -translate-y-1/2 w-full  sm:w-[380px] max-w-[380px] min-h-[600px] sm:min-h-[800px] max-h-[90vh] sm:max-h-[800px] z-50 animate-in slide-in-from-left duration-300">
@@ -109,21 +119,58 @@ function NavBar() {
 
               {/* Menu Items */}
               <div className="space-y-0.5">
-                <Link
-                  href="/about-us"
-                  onClick={() => setIsSidebarOpen(false)}
-                  className="flex items-center justify-between p-2.5 sm:p-3 hover:bg-gray-50 rounded-lg transition-colors"
-                >
-                  <div className="flex items-center gap-2 sm:gap-2.5">
-                    <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gray-100 flex items-center justify-center">
-                      <Info className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-600" />
+                {/* About Us Dropdown */}
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setIsAboutUsDropdownOpen(!isAboutUsDropdownOpen)
+                    }
+                    className="w-full flex items-center justify-between p-2.5 sm:p-3 hover:bg-gray-50 rounded-lg transition-colors"
+                  >
+                    <div className="flex items-center gap-2 sm:gap-2.5">
+                      <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gray-100 flex items-center justify-center">
+                        <Info className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-600" />
+                      </div>
+                      <span className="text-gray-800 font-medium text-xs sm:text-sm">
+                        About Us
+                      </span>
                     </div>
-                    <span className="text-gray-800 font-medium text-xs sm:text-sm">
-                      About Us
-                    </span>
-                  </div>
-                  <ChevronDown className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400 rotate-[-90deg]" />
-                </Link>
+                    {isAboutUsDropdownOpen ? (
+                      <ChevronUp className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400" />
+                    ) : (
+                      <ChevronDown className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400 rotate-[-90deg]" />
+                    )}
+                  </button>
+                  {isAboutUsDropdownOpen && (
+                    <div className="ml-4 mt-1 space-y-0.5">
+                      <Link
+                        href="/about-us"
+                        onClick={() => {
+                          setIsAboutUsDropdownOpen(false);
+                          setIsSidebarOpen(false);
+                        }}
+                        className="flex items-center gap-2 sm:gap-2.5 p-2.5 sm:p-3 hover:bg-gray-50 rounded-lg transition-colors"
+                      >
+                        <span className="text-gray-700 font-medium text-xs sm:text-sm">
+                          About Us
+                        </span>
+                      </Link>
+                      <Link
+                        href="/about-cause"
+                        onClick={() => {
+                          setIsAboutUsDropdownOpen(false);
+                          setIsSidebarOpen(false);
+                        }}
+                        className="flex items-center gap-2 sm:gap-2.5 p-2.5 sm:p-3 hover:bg-gray-50 rounded-lg transition-colors"
+                      >
+                        <span className="text-gray-700 font-medium text-xs sm:text-sm">
+                          About the Cause
+                        </span>
+                      </Link>
+                    </div>
+                  )}
+                </div>
 
                 <Link
                   href="/alerts"
@@ -158,7 +205,7 @@ function NavBar() {
                 </Link>
 
                 <Link
-                  href="/impact"
+                  href="/impact-level"
                   onClick={() => setIsSidebarOpen(false)}
                   className="flex items-center justify-between p-2.5 sm:p-3 hover:bg-gray-50 rounded-lg transition-colors"
                 >

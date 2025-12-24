@@ -14,6 +14,7 @@ function AboutUs() {
   const { data, isLoading, error } = useGetContentQuery();
 
   const foundersData = data?.data?.founders;
+  const introductionText = data?.data?.introduction || "";
   const missionText =
     data?.data?.ourMission ||
     "Our mission content is not available at the moment.";
@@ -41,11 +42,7 @@ function AboutUs() {
             Pass It Along: An Initiative for Connected Giving
           </h2>
           <p className="text-sm md:text-base text-gray-600 leading-relaxed">
-            Pass It Along was created by philanthropists Paul & Jerri Starkey to
-            help charities and connect friends in giving. It was first used by
-            safehouse organizations supporting the anti-trafficking cause,
-            setting the foundation for a new way to share and support meaningful
-            work.
+            {introductionText}
           </p>
         </div>
 
