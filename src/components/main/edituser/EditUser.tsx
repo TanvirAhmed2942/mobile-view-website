@@ -3,12 +3,28 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useUpdateProfileMutation } from "@/store/APIs/userApi/userApi";
+import {
+  useUpdateProfileMutation,
+  useGetMyProfileQuery,
+} from "@/store/APIs/userApi/userApi";
 import { toast } from "sonner";
-import { Pencil, Upload, X } from "lucide-react";
+import { Pencil, Upload, X, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import NavBar from "@/components/common/navBar/navBar";
 import { ImageUrl } from "@/store/baseUrl";
+
+// Helper function to get full image URL
+const getImageUrl = (imagePath: string): string => {
+  if (!imagePath) return "";
+  // If it's already a full URL, return as is
+  if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
+    return imagePath;
+  }
+  // Otherwise, prepend the base URL
+  return `${ImageUrl()}${
+    imagePath.startsWith("/") ? imagePath : `/${imagePath}`
+  }`;
+};
 
 function EditUser() {
   const [name, setName] = useState("");
@@ -16,22 +32,21 @@ function EditUser() {
   const [previewImage, setPreviewImage] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [updateProfile, { isLoading }] = useUpdateProfileMutation();
+  const { data: profileData, isLoading: isLoadingProfile } =
+    useGetMyProfileQuery();
   const router = useRouter();
 
-  // Load user data from localStorage on mount
+  // Load user data from API
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const nickName = localStorage.getItem("nickName") || "";
-      const userImage = localStorage.getItem("userImage") || "";
-      setName(nickName);
+    if (profileData?.data) {
+      const userData = profileData.data;
+      setName(userData.name);
       // Set preview image if available
-      if (userImage) {
-        setPreviewImage(
-          userImage.startsWith("http") ? userImage : `${ImageUrl()}${userImage}`
-        );
+      if (userData.image) {
+        setPreviewImage(getImageUrl(userData.image));
       }
     }
-  }, []);
+  }, [profileData]);
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -57,7 +72,12 @@ function EditUser() {
 
   const handleRemoveImage = () => {
     setSelectedImage(null);
-    setPreviewImage("");
+    // Reset to original image from API
+    if (profileData?.data?.image) {
+      setPreviewImage(getImageUrl(profileData.data.image));
+    } else {
+      setPreviewImage("");
+    }
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -84,9 +104,7 @@ function EditUser() {
         localStorage.setItem("nickName", response.data.name);
         // Store the full image URL if image was updated
         if (response.data.image) {
-          const imageUrl = response.data.image.startsWith("http")
-            ? response.data.image
-            : `${ImageUrl()}${response.data.image}`;
+          const imageUrl = getImageUrl(response.data.image);
           localStorage.setItem("userImage", imageUrl);
           setPreviewImage(imageUrl);
         }
@@ -122,6 +140,18 @@ function EditUser() {
       .toUpperCase()
       .slice(0, 2);
   };
+
+  if (isLoadingProfile) {
+    return (
+      <div className="w-full h-[calc(100vh-200px)] flex flex-col items-center gap-6">
+        <NavBar />
+        <div className="flex flex-col items-center justify-center gap-2 min-h-[400px]">
+          <Loader2 className="w-10 h-10 animate-spin text-paul" />
+          <p className="text-gray-500">Loading profile...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full h-[calc(100vh-200px)] flex flex-col items-center gap-6">

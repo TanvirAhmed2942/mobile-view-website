@@ -64,8 +64,12 @@ function PhoneVerification() {
       if (typeof window !== "undefined" && response.data) {
         const data = response.data as {
           accessToken?: string;
-          user?: { role?: string };
+          user?: {
+            role?: string;
+            verified?: boolean;
+          };
           role?: string;
+          isVerified?: boolean;
         };
         if (data.accessToken) {
           localStorage.setItem("accessToken", data.accessToken);
@@ -84,7 +88,25 @@ function PhoneVerification() {
       }
 
       toast.success("OTP verified successfully!");
-      router.push("/donate");
+
+      // Check if user is verified - redirect to /user if verified, otherwise /donate
+      if (response.data) {
+        const data = response.data as {
+          isVerified?: boolean;
+          user?: {
+            verified?: boolean;
+          };
+        };
+        const isVerified = data.isVerified || data.user?.verified;
+        if (isVerified) {
+          router.push("/user");
+        } else {
+          router.push("/donate");
+        }
+      } else {
+        // Default to /donate if no data
+        router.push("/donate");
+      }
     } catch (error: unknown) {
       const errorMessage =
         (error as { data?: { message?: string }; message?: string })?.data

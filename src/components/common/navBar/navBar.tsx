@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Menu,
   Info,
@@ -8,7 +8,6 @@ import {
   ShieldCheck,
   Users,
   BarChart3,
-  Pencil,
   ChevronDown,
   ChevronUp,
   LogOut,
@@ -18,23 +17,55 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useGetMyProfileQuery } from "@/store/APIs/userApi/userApi";
+import { ImageUrl } from "@/store/baseUrl";
+
+// Helper function to get full image URL
+const getImageUrl = (imagePath: string): string => {
+  if (!imagePath) return "";
+  // If it's already a full URL, return as is
+  if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
+    return imagePath;
+  }
+  // Otherwise, prepend the base URL
+  return `${ImageUrl()}${
+    imagePath.startsWith("/") ? imagePath : `/${imagePath}`
+  }`;
+};
+
+// Helper function to get initials from name
+const getInitials = (name: string): string => {
+  return name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+};
 
 function NavBar() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isAboutUsDropdownOpen, setIsAboutUsDropdownOpen] = useState(false);
-  const [currentUserName, setCurrentUserName] = useState("");
-  const [currentUserImage, setCurrentUserImage] = useState("");
   const router = useRouter();
+  const { data: profileData } = useGetMyProfileQuery();
+  const userData = profileData?.data;
 
-  // Get user data from localStorage on mount
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const nickName = localStorage.getItem("nickName") || "";
-      const userImage = localStorage.getItem("userImage") || "";
-      setCurrentUserName(nickName);
-      setCurrentUserImage(userImage);
-    }
-  }, []);
+  // Fallback to localStorage if API data not available
+  const currentUserName =
+    userData?.name ||
+    (typeof window !== "undefined"
+      ? localStorage.getItem("nickName") || ""
+      : "");
+  const currentUserImage = userData?.image
+    ? getImageUrl(userData.image)
+    : typeof window !== "undefined"
+    ? localStorage.getItem("userImage") || ""
+    : "";
+  const currentUserContact =
+    userData?.contact ||
+    (typeof window !== "undefined"
+      ? localStorage.getItem("phoneNumber") || ""
+      : "");
 
   const handleLogout = () => {
     if (typeof window !== "undefined") {
@@ -108,14 +139,7 @@ function NavBar() {
                       alt={currentUserName || "User"}
                     />
                     <AvatarFallback className="text-base sm:text-lg bg-paul text-white">
-                      {currentUserName
-                        ? currentUserName
-                            .split(" ")
-                            .map((n) => n[0])
-                            .join("")
-                            .toUpperCase()
-                            .slice(0, 2)
-                        : "U"}
+                      {currentUserName ? getInitials(currentUserName) : "U"}
                     </AvatarFallback>
                   </Avatar>
                 </div>
@@ -127,9 +151,7 @@ function NavBar() {
 
                 {/* Phone Number */}
                 <p className="text-xs text-gray-500 mb-3">
-                  {typeof window !== "undefined"
-                    ? localStorage.getItem("phoneNumber") || ""
-                    : ""}
+                  {currentUserContact}
                 </p>
 
                 {/* Edit Profile Button */}

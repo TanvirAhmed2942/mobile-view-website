@@ -7,10 +7,32 @@ import { Users } from "lucide-react";
 import React, { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useGetContentQuery } from "@/store/APIs/authApi/aboutusApi/aboutusApi";
+import { ImageUrl } from "@/store/baseUrl";
+
+// Helper function to get full image URL
+const getImageUrl = (imagePath: string): string => {
+  if (!imagePath) return "";
+  // If it's already a full URL, return as is
+  if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
+    return imagePath;
+  }
+  // Otherwise, prepend the base URL
+  return `${ImageUrl()}${
+    imagePath.startsWith("/") ? imagePath : `/${imagePath}`
+  }`;
+};
 
 function AboutCause() {
   const [isReadMoreExpanded, setIsReadMoreExpanded] = useState(false);
   const router = useRouter();
+  const { data } = useGetContentQuery();
+  const aboutRefugeForWomen = data?.data?.aboutRefugeForWomen || "";
+  const citiesServed = data?.data?.citiesServed || 0;
+  const yearsOfOperation = data?.data?.yearsOfOperation || 0;
+  const survivorsSupported = data?.data?.survivorsSupported || 0;
+  const media = data?.data?.gallery || [];
+
   return (
     <ScrollArea className="w-full h-[calc(100vh-200px)] no-scrollbar">
       <div className="w-full min-h-[600px] xl:min-h-[630px] 2xl:min-h-[800px] flex flex-col items-center gap-6 justify-start pb-8">
@@ -70,39 +92,24 @@ function AboutCause() {
             About Refuge For Women
           </h2>
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-5">
-            <p className="text-sm md:text-base text-gray-600 leading-relaxed">
-              Refuge for Women is a non-profit, faith-based organization
-              providing specialized long-term care for women who have escaped
-              human trafficking or sexual exploitation. With multiple locations
-              across the U.S., Refuge for Women offers safe housing, at no
-              charge to the resident, with a residential program that is
-              uniquely designed to help residents flourish.
-            </p>
-            {!isReadMoreExpanded && (
-              <button
-                onClick={() => setIsReadMoreExpanded(true)}
-                className="text-paul underline text-sm mt-2 hover:text-paul-dark"
-              >
-                Read More
-              </button>
-            )}
-            {isReadMoreExpanded && (
-              <div className="mt-2">
+            {aboutRefugeForWomen.length > 120 ? (
+              <>
                 <p className="text-sm md:text-base text-gray-600 leading-relaxed">
-                  The organization provides comprehensive support services
-                  including counseling, life skills training, education
-                  assistance, and job placement programs. Through their network
-                  of safe houses, they create a supportive community where
-                  survivors can heal, grow, and rebuild their lives with dignity
-                  and hope.
+                  {isReadMoreExpanded
+                    ? aboutRefugeForWomen
+                    : `${aboutRefugeForWomen.substring(0, 120)}...`}
                 </p>
                 <button
-                  onClick={() => setIsReadMoreExpanded(false)}
+                  onClick={() => setIsReadMoreExpanded(!isReadMoreExpanded)}
                   className="text-paul underline text-sm mt-2 hover:text-paul-dark"
                 >
-                  Read Less
+                  {isReadMoreExpanded ? "Read Less" : "Read More"}
                 </button>
-              </div>
+              </>
+            ) : (
+              <p className="text-sm md:text-base text-gray-600 leading-relaxed">
+                {aboutRefugeForWomen}
+              </p>
             )}
           </div>
         </div>
@@ -119,7 +126,9 @@ function AboutCause() {
                 <Users className="w-6 h-6 text-paul" />
               </div>
               <span className="text-xs text-gray-500">Cities Served</span>
-              <span className="text-xl font-bold text-gray-800">5</span>
+              <span className="text-xl font-bold text-gray-800">
+                {citiesServed}
+              </span>
             </div>
 
             {/* Years of Operation */}
@@ -128,7 +137,9 @@ function AboutCause() {
                 <Users className="w-6 h-6 text-paul" />
               </div>
               <span className="text-xs text-gray-500">Years of Operation</span>
-              <span className="text-xl font-bold text-gray-800">14</span>
+              <span className="text-xl font-bold text-gray-800">
+                {yearsOfOperation}
+              </span>
             </div>
 
             {/* Survivors Supported */}
@@ -137,7 +148,9 @@ function AboutCause() {
                 <Users className="w-6 h-6 text-paul" />
               </div>
               <span className="text-xs text-gray-500">Survivors Supported</span>
-              <span className="text-xl font-bold text-gray-800">100s</span>
+              <span className="text-xl font-bold text-gray-800">
+                {survivorsSupported}
+              </span>
             </div>
 
             {/* Emergency & Long-term Care */}
@@ -153,45 +166,55 @@ function AboutCause() {
         </div>
 
         {/* Media Section */}
-        <div className="w-full space-y-3 px-4">
-          <h2 className="text-xl md:text-2xl font-bold text-gray-800 text-left">
-            Media
-          </h2>
-          <div className="space-y-3">
-            {/* Large Top Image */}
-            <div className="relative w-full aspect-[16/10] rounded-lg overflow-hidden">
-              <Image
-                src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=800&h=500&fit=crop"
-                alt="Refuge For Women - Group photo"
-                fill
-                className="object-cover"
-                sizes="(max-width: 768px) 100vw, 800px"
-              />
-            </div>
+        {media.length > 0 && (
+          <div className="w-full space-y-3 px-4">
+            <h2 className="text-xl md:text-2xl font-bold text-gray-800 text-left">
+              Media
+            </h2>
+            <div className="space-y-3">
+              {/* Large Top Image - First image */}
+              {media[0] && (
+                <div className="relative w-full aspect-[16/10] rounded-lg overflow-hidden">
+                  <Image
+                    src={getImageUrl(media[0])}
+                    alt="Refuge For Women - Media 1"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, 800px"
+                  />
+                </div>
+              )}
 
-            {/* Bottom Two Images */}
-            <div className="grid grid-cols-2 gap-3">
-              <div className="relative w-full aspect-square rounded-lg overflow-hidden">
-                <Image
-                  src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop"
-                  alt="Refuge For Women - Individual 1"
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 50vw, 400px"
-                />
-              </div>
-              <div className="relative w-full aspect-square rounded-lg overflow-hidden">
-                <Image
-                  src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop"
-                  alt="Refuge For Women - Individual 2"
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 50vw, 400px"
-                />
-              </div>
+              {/* Bottom Images Grid - Remaining images */}
+              {media.length > 1 && (
+                <div
+                  className={`grid gap-3 ${
+                    media.length === 2
+                      ? "grid-cols-2"
+                      : media.length === 3
+                      ? "grid-cols-2"
+                      : "grid-cols-2"
+                  }`}
+                >
+                  {media.slice(1).map((imageUrl, index) => (
+                    <div
+                      key={index}
+                      className="relative w-full aspect-square rounded-lg overflow-hidden"
+                    >
+                      <Image
+                        src={getImageUrl(imageUrl)}
+                        alt={`Refuge For Women - Media ${index + 2}`}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 50vw, 400px"
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
-        </div>
+        )}
 
         {/* Donate Now Button */}
         <div className="w-full px-4 mt-4">

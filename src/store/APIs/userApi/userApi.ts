@@ -1,33 +1,41 @@
 import { api } from "@/store/baseApi";
-import { UserData } from "../authApi/authApi";
 
 export interface ProfileData {
   name: string;
   image?: File | null;
 }
 
+export interface UserProfileData {
+  _id: string;
+  name: string;
+  role: string;
+  contact: string;
+  image: string;
+  status: string;
+  verified: boolean;
+  isDeleted: boolean;
+  stripeCustomerId: string;
+  userLevel: string;
+  totalRaised: number;
+  totalDonated: number;
+  totalInvited: number;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}
+
+export interface GetMyProfileResponse {
+  success: boolean;
+  message: string;
+  statusCode: number;
+  data: UserProfileData;
+}
+
 export interface UpdateProfileResponse {
   success: boolean;
   message: string;
   statusCode: number;
-  data: {
-    _id: string;
-    name: string;
-    role: string;
-    contact: string;
-    image: string;
-    status: string;
-    verified: boolean;
-    isDeleted: boolean;
-    stripeCustomerId: string;
-    userLevel: string;
-    totalRaised: number;
-    totalDonated: number;
-    totalInvited: number;
-    createdAt: string;
-    updatedAt: string;
-    __v: number;
-  };
+  data: UserProfileData;
 }
 
 const userApi = api.injectEndpoints({
@@ -50,9 +58,11 @@ const userApi = api.injectEndpoints({
           body: formData,
         };
       },
+      invalidatesTags: ["UserProfile"],
     }),
-    getMyProfile: builder.query<UserData, void>({
+    getMyProfile: builder.query<GetMyProfileResponse, void>({
       query: () => `/users/profile`,
+      providesTags: ["UserProfile"],
     }),
   }),
   overrideExisting: true,
