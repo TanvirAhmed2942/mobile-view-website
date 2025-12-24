@@ -6,10 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Users } from "lucide-react";
 import React, { useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 function AboutCause() {
   const [isReadMoreExpanded, setIsReadMoreExpanded] = useState(false);
-
+  const router = useRouter();
   return (
     <ScrollArea className="w-full h-[calc(100vh-200px)] no-scrollbar">
       <div className="w-full min-h-[600px] xl:min-h-[630px] 2xl:min-h-[800px] flex flex-col items-center gap-6 justify-start pb-8">
@@ -194,7 +195,10 @@ function AboutCause() {
 
         {/* Donate Now Button */}
         <div className="w-full px-4 mt-4">
-          <Button className="w-full bg-paul hover:bg-paul-dark text-white font-semibold py-6 px-4 rounded-full">
+          <Button
+            className="w-full bg-paul hover:bg-paul-dark text-white font-semibold py-6 px-4 rounded-full"
+            onClick={() => router.push("/donate")}
+          >
             Donate Now
           </Button>
         </div>

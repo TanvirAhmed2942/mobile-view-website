@@ -102,7 +102,7 @@ function NavBar() {
               <div className="flex flex-col items-center mb-4">
                 {/* Profile Picture with Edit Icon */}
                 <div className="relative mb-3">
-                  <Avatar className="w-16 h-16 sm:w-20 sm:h-20">
+                  <Avatar className="w-16 h-16 sm:w-20 sm:h-20 border-2 border-[#8948c7]">
                     <AvatarImage
                       src={currentUserImage || undefined}
                       alt={currentUserName || "User"}
@@ -118,9 +118,6 @@ function NavBar() {
                         : "U"}
                     </AvatarFallback>
                   </Avatar>
-                  <button className="absolute bottom-0 right-0 w-6 h-6 sm:w-7 sm:h-7 bg-paul rounded-lg flex items-center justify-center border-2 border-white">
-                    <Pencil className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-white" />
-                  </button>
                 </div>
 
                 {/* Name */}

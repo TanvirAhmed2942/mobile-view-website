@@ -1,4 +1,5 @@
 import { api } from "@/store/baseApi";
+import { UserData } from "../authApi/authApi";
 
 export interface ProfileData {
   name: string;
@@ -50,8 +51,11 @@ const userApi = api.injectEndpoints({
         };
       },
     }),
+    getMyProfile: builder.query<UserData, void>({
+      query: () => `/users/profile`,
+    }),
   }),
   overrideExisting: true,
 });
 
-export const { useUpdateProfileMutation } = userApi;
+export const { useUpdateProfileMutation, useGetMyProfileQuery } = userApi;
