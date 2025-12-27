@@ -19,7 +19,9 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useGetMyProfileQuery } from "@/store/APIs/userApi/userApi";
 import { ImageUrl } from "@/store/baseUrl";
-
+import { TbAlertSquareRounded } from "react-icons/tb";
+import { PiStarFourBold } from "react-icons/pi";
+import { TbClockX } from "react-icons/tb";
 // Helper function to get full image URL
 const getImageUrl = (imagePath: string): string => {
   if (!imagePath) return "";
@@ -46,6 +48,7 @@ const getInitials = (name: string): string => {
 function NavBar() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isAboutUsDropdownOpen, setIsAboutUsDropdownOpen] = useState(false);
+  const [isAlertsDropdownOpen, setIsAlertsDropdownOpen] = useState(false);
   const router = useRouter();
   const { data: profileData } = useGetMyProfileQuery();
   const userData = profileData?.data;
@@ -106,6 +109,7 @@ function NavBar() {
               setIsSidebarOpen(!isSidebarOpen);
               if (isSidebarOpen) {
                 setIsAboutUsDropdownOpen(false);
+                setIsAlertsDropdownOpen(false);
               }
             }}
             className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-gray-300 bg-white shadow-sm flex items-center justify-center hover:bg-gray-50 transition-colors"
@@ -124,6 +128,7 @@ function NavBar() {
             onClick={() => {
               setIsSidebarOpen(false);
               setIsAboutUsDropdownOpen(false);
+              setIsAlertsDropdownOpen(false);
             }}
           />
           {/* Sidebar */}
@@ -221,21 +226,76 @@ function NavBar() {
                   )}
                 </div>
 
-                <Link
-                  href="/alerts"
-                  onClick={() => setIsSidebarOpen(false)}
-                  className="flex items-center justify-between p-2.5 sm:p-3 hover:bg-gray-50 rounded-lg transition-colors"
-                >
-                  <div className="flex items-center gap-2 sm:gap-2.5">
-                    <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gray-100 flex items-center justify-center">
-                      <Bell className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-600" />
+                {/* Alerts Dropdown */}
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setIsAlertsDropdownOpen(!isAlertsDropdownOpen)
+                    }
+                    className="w-full flex items-center justify-between p-2.5 sm:p-3 hover:bg-gray-50 rounded-lg transition-colors"
+                  >
+                    <div className="flex items-center gap-2 sm:gap-2.5">
+                      <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gray-100 flex items-center justify-center">
+                        <Bell className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-600" />
+                      </div>
+                      <span className="text-gray-800 font-medium text-xs sm:text-sm">
+                        Alerts
+                      </span>
                     </div>
-                    <span className="text-gray-800 font-medium text-xs sm:text-sm">
-                      Alerts
-                    </span>
-                  </div>
-                  <ChevronDown className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400 rotate-[-90deg]" />
-                </Link>
+                    {isAlertsDropdownOpen ? (
+                      <ChevronUp className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400" />
+                    ) : (
+                      <ChevronDown className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400 rotate-[-90deg]" />
+                    )}
+                  </button>
+                  {isAlertsDropdownOpen && (
+                    <div className="ml-4 mt-1 space-y-0.5">
+                      <Link
+                        href="/alerts"
+                        onClick={() => {
+                          setIsAlertsDropdownOpen(false);
+                          setIsSidebarOpen(false);
+                        }}
+                        className="flex items-center gap-2 sm:gap-2.5 p-2.5 sm:p-3 hover:bg-gray-50 rounded-lg transition-colors"
+                      >
+                        <span className="flex items-center gap-2 sm:gap-2.5">
+                          <TbAlertSquareRounded className="w-4 h-4 text-yellow-600" />{" "}
+                          <span className="text-gray-700 font-medium text-xs sm:text-sm">
+                            Alert
+                          </span>
+                        </span>
+                      </Link>
+                      <Link
+                        href="/impact"
+                        onClick={() => {
+                          setIsAlertsDropdownOpen(false);
+                          setIsSidebarOpen(false);
+                        }}
+                        className="flex items-center gap-2 sm:gap-2.5 p-2.5 sm:p-3 hover:bg-gray-50 rounded-lg transition-colors"
+                      >
+                        <span className="flex items-center gap-2 sm:gap-2.5">
+                          <PiStarFourBold className="w-4 h-4 text-cyan-600" />{" "}
+                          <span className="text-gray-700 font-medium text-xs sm:text-sm">
+                            Impact
+                          </span>
+                        </span>
+                      </Link>
+                      <Link
+                        href="/campaign-expired"
+                        onClick={() => {
+                          setIsAlertsDropdownOpen(false);
+                          setIsSidebarOpen(false);
+                        }}
+                        className="flex items-center gap-2 sm:gap-2.5 p-2.5 sm:p-3 hover:bg-gray-50 rounded-lg transition-colors"
+                      >
+                        <span className="flex items-center gap-2 sm:gap-2.5">
+                          <TbClockX className="w-4 h-4 text-red-600" /> Expired
+                        </span>
+                      </Link>
+                    </div>
+                  )}
+                </div>
 
                 <Link
                   href="/privacy-policy"
