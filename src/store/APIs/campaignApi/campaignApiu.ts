@@ -56,6 +56,17 @@ export interface CampaignResponse {
   };
 }
 
+export interface CampaignByIdResponse {
+  success: boolean;
+  message: string;
+  statusCode: number;
+  data: {
+    result: Campaign;
+    totalInvited: number;
+    totalDonated: number;
+  };
+}
+
 const campaignApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getCampaigns: builder.query<CampaignResponse, void>({
@@ -75,8 +86,15 @@ const campaignApi = api.injectEndpoints({
         return response as unknown as Campaign;
       },
     }),
+    getCampaignById: builder.query<CampaignByIdResponse, string>({
+      query: (campaignId) => `/campaign/${campaignId}`,
+    }),
   }),
   overrideExisting: true,
 });
 
-export const { useGetCampaignsQuery, useGetCampaignQuery } = campaignApi;
+export const {
+  useGetCampaignsQuery,
+  useGetCampaignQuery,
+  useGetCampaignByIdQuery,
+} = campaignApi;
