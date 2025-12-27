@@ -6,15 +6,32 @@ interface WhyState {
 }
 
 const STORAGE_KEY = "why-message";
-const CAMPAIGN_ID_KEY = "last_campaign_id";
+
+// Helper function to get campaignId based on user role (same logic as Donate.tsx)
+const getCampaignIdFromStorage = (): string | null => {
+  if (typeof window === "undefined") return null;
+
+  const userRole = localStorage.getItem("userRole");
+  const lastCampaignId = localStorage.getItem("last_campaign_id");
+  const paramsCampaignId = localStorage.getItem("params_campaign_id");
+
+  // If role is ADMIN, use params_campaign_id
+  if (userRole === "ADMIN") {
+    return paramsCampaignId;
+  }
+  // If role is SUPER_ADMIN, use last_campaign_id
+  if (userRole === "SUPER_ADMIN") {
+    return lastCampaignId;
+  }
+  // Default fallback: try params_campaign_id first, then last_campaign_id
+  return paramsCampaignId || lastCampaignId;
+};
 
 // Helper function to get campaign URL from localStorage
 const getCampaignUrl = (): string => {
-  if (typeof window !== "undefined") {
-    const campaignId = localStorage.getItem(CAMPAIGN_ID_KEY);
-    if (campaignId) {
-      return `https://mobile-view-website-liard.vercel.app/?campaign=${campaignId}`;
-    }
+  const campaignId = getCampaignIdFromStorage();
+  if (campaignId) {
+    return `https://mobile-view-website-liard.vercel.app/?campaign=${campaignId}`;
   }
   return "https://mobile-view-website-liard.vercel.app/?campaign=";
 };
@@ -86,7 +103,7 @@ const whySlice = createSlice({
             // Use stored value if it's the new format
             // But update the campaign URL if it's missing or outdated
             let updatedMessage = stored;
-            const campaignId = localStorage.getItem(CAMPAIGN_ID_KEY);
+            const campaignId = getCampaignIdFromStorage();
             if (campaignId && !stored.includes(`campaign=${campaignId}`)) {
               // Replace old campaign URL with new one
               updatedMessage = stored.replace(

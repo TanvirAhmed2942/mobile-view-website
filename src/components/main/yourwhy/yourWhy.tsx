@@ -24,10 +24,30 @@ function YourWhy() {
     setMessage(whyMessage || "");
   }, [whyMessage]);
 
+  // Helper function to get campaignId based on user role (same logic as Donate.tsx)
+  const getCampaignIdFromStorage = (): string | null => {
+    if (typeof window === "undefined") return null;
+
+    const userRole = localStorage.getItem("userRole");
+    const lastCampaignId = localStorage.getItem("last_campaign_id");
+    const paramsCampaignId = localStorage.getItem("params_campaign_id");
+
+    // If role is ADMIN, use params_campaign_id
+    if (userRole === "ADMIN") {
+      return paramsCampaignId;
+    }
+    // If role is SUPER_ADMIN, use last_campaign_id
+    if (userRole === "SUPER_ADMIN") {
+      return lastCampaignId;
+    }
+    // Default fallback: try params_campaign_id first, then last_campaign_id
+    return paramsCampaignId || lastCampaignId;
+  };
+
   // Update message URL if campaign ID is available and message doesn't have it
   useEffect(() => {
     if (typeof window !== "undefined" && whyMessage) {
-      const campaignId = localStorage.getItem("last_campaign_id");
+      const campaignId = getCampaignIdFromStorage();
       if (campaignId) {
         const campaignUrl = `https://mobile-view-website-liard.vercel.app/?campaign=${campaignId}`;
         // Check if message needs to be updated with campaign URL
@@ -38,11 +58,7 @@ function YourWhy() {
 
         if (!hasCorrectUrl && hasOldUrl) {
           // Update the URL in the message
-          let updatedMessage = whyMessage.replace(
-            /https:\/\/mobile-view-website-liard\.vercel\.app\/\?campaign=[^\s]*/g,
-            campaignUrl
-          );
-          updatedMessage = updatedMessage.replace(
+          const updatedMessage = whyMessage.replace(
             /https:\/\/mobile-view-website-liard\.vercel\.app\/\?campaign=[^\s]*/g,
             campaignUrl
           );
