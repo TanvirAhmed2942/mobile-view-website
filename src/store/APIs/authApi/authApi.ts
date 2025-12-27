@@ -49,6 +49,7 @@ export interface VerifyOTPCredentials {
 export interface VerifyOTPResponseData {
   accessToken: string;
   isVerified: boolean;
+  totalLogin: number;
   campaignId?: string; // Optional, only for SUPER_ADMIN
 }
 

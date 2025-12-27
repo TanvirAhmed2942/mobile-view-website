@@ -8,6 +8,29 @@ import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { setWhyMessage, hydrateFromStorage } from "@/store/whySlice";
 
+// Helper function to get donation amount from sessionStorage
+const getDonationAmount = (): number | null => {
+  if (typeof window === "undefined") return null;
+
+  try {
+    const donationInfo = sessionStorage.getItem("donation-info");
+    if (donationInfo) {
+      const parsed = JSON.parse(donationInfo);
+      // Only return amount if it's a valid number > 0 and user is donating
+      if (
+        parsed.isDonating &&
+        parsed.donationAmount &&
+        parsed.donationAmount > 0
+      ) {
+        return parsed.donationAmount;
+      }
+    }
+  } catch (error) {
+    console.error("Failed to parse donation info:", error);
+  }
+  return null;
+};
+
 function YourWhy() {
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -44,32 +67,102 @@ function YourWhy() {
     return paramsCampaignId || lastCampaignId;
   };
 
-  // Update message URL if campaign ID is available and message doesn't have it
+  // Update message with campaign URL and donation amount
   useEffect(() => {
     if (typeof window !== "undefined" && whyMessage) {
       const campaignId = getCampaignIdFromStorage();
+      const donationAmount = getDonationAmount();
+      let updatedMessage = whyMessage;
+      let needsUpdate = false;
+
+      // Update campaign URL if needed
       if (campaignId) {
         const campaignUrl = `https://mobile-view-website-liard.vercel.app/?campaign=${campaignId}`;
-        // Check if message needs to be updated with campaign URL
         const hasCorrectUrl = whyMessage.includes(`campaign=${campaignId}`);
         const hasOldUrl = whyMessage.includes(
           "https://mobile-view-website-liard.vercel.app/?campaign="
         );
 
         if (!hasCorrectUrl && hasOldUrl) {
-          // Update the URL in the message
-          const updatedMessage = whyMessage.replace(
+          updatedMessage = updatedMessage.replace(
             /https:\/\/mobile-view-website-liard\.vercel\.app\/\?campaign=[^\s]*/g,
             campaignUrl
           );
-          if (updatedMessage !== whyMessage) {
-            dispatch(setWhyMessage(updatedMessage));
-          }
+          needsUpdate = true;
         }
+      }
+
+      // Update donation amount if needed
+      if (donationAmount && donationAmount > 0) {
+        const donationText = `my $${donationAmount.toLocaleString(
+          "en-US"
+        )} donation`;
+        // Check if message has old donation text patterns (including "my my" or "00" issues)
+        const hasOldDonationPattern =
+          /I started this with (my )+\$?[\d,]*\s*donation/i.test(
+            updatedMessage
+          );
+        const hasGenericDonation = /I started this with my donation/i.test(
+          updatedMessage
+        );
+        const hasInvalidAmount =
+          /I started this with my my|I started this with.*00 donation/i.test(
+            updatedMessage
+          );
+
+        if (hasOldDonationPattern || hasGenericDonation || hasInvalidAmount) {
+          // Replace any variation of donation text with the correct one
+          updatedMessage = updatedMessage.replace(
+            /I started this with (my )+\$?[\d,]*\s*donation/i,
+            `I started this with ${donationText}`
+          );
+          updatedMessage = updatedMessage.replace(
+            /I started this with my donation/i,
+            `I started this with ${donationText}`
+          );
+          // Fix "my my" or "00" issues
+          updatedMessage = updatedMessage.replace(
+            /I started this with my my.*?donation/i,
+            `I started this with ${donationText}`
+          );
+          updatedMessage = updatedMessage.replace(
+            /I started this with.*?00 donation/i,
+            `I started this with ${donationText}`
+          );
+          needsUpdate = true;
+        }
+      } else {
+        // If no donation amount, use generic text and fix any invalid patterns
+        const hasSpecificAmount =
+          /I started this with my \$[\d,]+ donation/i.test(updatedMessage);
+        const hasInvalidPattern =
+          /I started this with my my|I started this with.*00 donation/i.test(
+            updatedMessage
+          );
+
+        if (hasSpecificAmount || hasInvalidPattern) {
+          updatedMessage = updatedMessage.replace(
+            /I started this with (my )+\$?[\d,]*\s*donation/i,
+            "I started this with my donation"
+          );
+          updatedMessage = updatedMessage.replace(
+            /I started this with my my.*?donation/i,
+            "I started this with my donation"
+          );
+          updatedMessage = updatedMessage.replace(
+            /I started this with.*?00 donation/i,
+            "I started this with my donation"
+          );
+          needsUpdate = true;
+        }
+      }
+
+      if (needsUpdate && updatedMessage !== whyMessage) {
+        dispatch(setWhyMessage(updatedMessage));
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Only run once on mount to update URL if needed
+  }, []); // Only run once on mount to update URL and donation amount if needed
 
   // Update Redux whenever message changes so it's always in sync
   const handleMessageChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {

@@ -36,9 +36,40 @@ const getCampaignUrl = (): string => {
   return "https://mobile-view-website-liard.vercel.app/?campaign=";
 };
 
-// Function to generate default message with campaign URL
+// Helper function to get donation amount from sessionStorage
+const getDonationAmount = (): number | null => {
+  if (typeof window === "undefined") return null;
+
+  try {
+    const donationInfo = sessionStorage.getItem("donation-info");
+    if (donationInfo) {
+      const parsed = JSON.parse(donationInfo);
+      // Only return amount if it's a valid number > 0 and user is donating
+      if (
+        parsed.isDonating &&
+        parsed.donationAmount &&
+        parsed.donationAmount > 0
+      ) {
+        return parsed.donationAmount;
+      }
+    }
+  } catch (error) {
+    console.error("Failed to parse donation info:", error);
+  }
+  return null;
+};
+
+// Function to generate default message with campaign URL and donation amount
 const getDefaultMessage = (): string => {
   const campaignUrl = getCampaignUrl();
+  const donationAmount = getDonationAmount();
+
+  // Format donation amount text - only show specific amount if user is donating
+  let donationText = "my donation";
+  if (donationAmount && donationAmount > 0) {
+    donationText = `my $${donationAmount.toLocaleString("en-US")} donation`;
+  }
+
   return `Hey <FRIENDS NAME>,
 
 I'm supporting [WHY from their prior page] and thought you might be interested too.
@@ -46,7 +77,7 @@ I'm supporting [WHY from their prior page] and thought you might be interested t
 This app lets our message reach tens, hundreds, even thousands of connected friends. When you share with 12 friends, it starts a ripple effect of giving.
 ${campaignUrl}
 
-I started this with my $100 donation. Please click the link, share with friends, and consider donating. Cheers!`;
+I started this with ${donationText}. Please click the link, share with friends, and consider donating. Cheers!`;
 };
 
 // Default message template (used for initial state, will be replaced on hydration)
@@ -57,7 +88,7 @@ I'm supporting [WHY from their prior page] and thought you might be interested t
 This app lets our message reach tens, hundreds, even thousands of connected friends. When you share with 12 friends, it starts a ripple effect of giving.
 https://mobile-view-website-liard.vercel.app/?campaign=
 
-I started this with my $100 donation. Please click the link, share with friends, and consider donating. Cheers!`;
+I started this with my donation. Please click the link, share with friends, and consider donating. Cheers!`;
 
 // Always start with default message template to avoid hydration mismatch
 const initialState: WhyState = {
@@ -101,12 +132,15 @@ const whySlice = createSlice({
             console.log("Reset to new default message format");
           } else {
             // Use stored value if it's the new format
-            // But update the campaign URL if it's missing or outdated
+            // But update the campaign URL and donation amount if needed
             let updatedMessage = stored;
+            let needsUpdate = false;
+
+            // Update campaign URL if needed
             const campaignId = getCampaignIdFromStorage();
             if (campaignId && !stored.includes(`campaign=${campaignId}`)) {
               // Replace old campaign URL with new one
-              updatedMessage = stored.replace(
+              updatedMessage = updatedMessage.replace(
                 /https:\/\/mobile-view-website-liard\.vercel\.app\/\?campaign=[^\\s]*/g,
                 `https://mobile-view-website-liard.vercel.app/?campaign=${campaignId}`
               );
@@ -116,11 +150,86 @@ const whySlice = createSlice({
                   "https://mobile-view-website-liard.vercel.app/?campaign="
                 )
               ) {
-                updatedMessage = stored.replace(
+                updatedMessage = updatedMessage.replace(
                   /https:\/\/mobile-view-website-liard\.vercel\.app\/\?campaign=[^\s]*/g,
                   `https://mobile-view-website-liard.vercel.app/?campaign=${campaignId}`
                 );
               }
+              needsUpdate = true;
+            }
+
+            // Update donation amount if needed
+            const donationAmount = getDonationAmount();
+            if (donationAmount && donationAmount > 0) {
+              const donationText = `my $${donationAmount.toLocaleString(
+                "en-US"
+              )} donation`;
+              // Check if message has old donation text patterns (including "my my" or "00" issues)
+              const hasOldDonationPattern =
+                /I started this with (my )+\$?[\d,]*\s*donation/i.test(
+                  updatedMessage
+                );
+              const hasGenericDonation =
+                /I started this with my donation/i.test(updatedMessage);
+              const hasInvalidAmount =
+                /I started this with my my|I started this with.*00 donation/i.test(
+                  updatedMessage
+                );
+
+              if (
+                hasOldDonationPattern ||
+                hasGenericDonation ||
+                hasInvalidAmount
+              ) {
+                // Replace any variation of donation text with the correct one
+                updatedMessage = updatedMessage.replace(
+                  /I started this with (my )+\$?[\d,]*\s*donation/i,
+                  `I started this with ${donationText}`
+                );
+                updatedMessage = updatedMessage.replace(
+                  /I started this with my donation/i,
+                  `I started this with ${donationText}`
+                );
+                // Fix "my my" or "00" issues
+                updatedMessage = updatedMessage.replace(
+                  /I started this with my my.*?donation/i,
+                  `I started this with ${donationText}`
+                );
+                updatedMessage = updatedMessage.replace(
+                  /I started this with.*?00 donation/i,
+                  `I started this with ${donationText}`
+                );
+                needsUpdate = true;
+              }
+            } else {
+              // If no donation amount, use generic text and fix any invalid patterns
+              const hasSpecificAmount =
+                /I started this with my \$[\d,]+ donation/i.test(
+                  updatedMessage
+                );
+              const hasInvalidPattern =
+                /I started this with my my|I started this with.*00 donation/i.test(
+                  updatedMessage
+                );
+
+              if (hasSpecificAmount || hasInvalidPattern) {
+                updatedMessage = updatedMessage.replace(
+                  /I started this with (my )+\$?[\d,]*\s*donation/i,
+                  "I started this with my donation"
+                );
+                updatedMessage = updatedMessage.replace(
+                  /I started this with my my.*?donation/i,
+                  "I started this with my donation"
+                );
+                updatedMessage = updatedMessage.replace(
+                  /I started this with.*?00 donation/i,
+                  "I started this with my donation"
+                );
+                needsUpdate = true;
+              }
+            }
+
+            if (needsUpdate) {
               state.whyMessage = updatedMessage;
               sessionStorage.setItem(STORAGE_KEY, updatedMessage);
             } else {

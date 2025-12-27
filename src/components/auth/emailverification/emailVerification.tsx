@@ -65,13 +65,24 @@ function PhoneVerification() {
         const data = response.data;
         if (data.accessToken) {
           localStorage.setItem("accessToken", data.accessToken);
+
+          // Extract role from JWT token
+          try {
+            const tokenParts = data.accessToken.split(".");
+            if (tokenParts.length === 3) {
+              const payload = JSON.parse(atob(tokenParts[1]));
+              if (payload.role) {
+                localStorage.setItem("userRole", payload.role);
+              }
+            }
+          } catch (error) {
+            console.error("Failed to extract role from JWT token:", error);
+          }
         }
         // Save campaignId if available (for SUPER_ADMIN)
         if (data.campaignId) {
           localStorage.setItem("last_campaign_id", data.campaignId);
         }
-        // Extract role from JWT token if needed
-        // Note: Role is typically in the JWT token, not in the response data
       }
 
       // Clear persisted login data after successful OTP verification
@@ -82,10 +93,10 @@ function PhoneVerification() {
 
       toast.success("OTP verified successfully!");
 
-      // Check if user is verified - redirect to /user if verified, otherwise /donate
+      // Redirect based on totalLogin: > 1 → /user, <= 1 → /donate
       if (response.data) {
-        const isVerified = response.data.isVerified;
-        if (isVerified) {
+        const totalLogin = response.data.totalLogin ?? 0;
+        if (totalLogin > 1) {
           router.push("/user");
         } else {
           router.push("/donate");
