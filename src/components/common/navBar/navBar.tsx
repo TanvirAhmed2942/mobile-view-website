@@ -73,12 +73,14 @@ function NavBar() {
 
   const handleLogout = () => {
     if (typeof window !== "undefined") {
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("userRole");
-      localStorage.removeItem("phoneNumber");
-      localStorage.removeItem("nickName");
-      localStorage.removeItem("verifyToken");
-      localStorage.removeItem("userImage");
+      // localStorage.removeItem("accessToken");
+      // localStorage.removeItem("userRole");
+      // localStorage.removeItem("phoneNumber");
+      // localStorage.removeItem("nickName");
+      // localStorage.removeItem("verifyToken");
+      // localStorage.removeItem("userImage");
+      // localStorage.removeItem("last_campaign_id");
+      localStorage.clear();
     }
     setIsSidebarOpen(false);
     router.push("/");

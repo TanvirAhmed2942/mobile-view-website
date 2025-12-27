@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
@@ -11,9 +11,12 @@ import { Input } from "@/components/ui/input";
 import { EyeOff, Eye } from "lucide-react";
 import { useLoginMutation } from "@/store/APIs/authApi/authApi";
 import { toast } from "sonner";
-
+import { useSearchParams } from "next/navigation";
 function WelcomePage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const campaignId = searchParams.get("campaign");
+  console.log(campaignId);
   const [showContent, setShowContent] = useState(false);
   const [videoEnded, setVideoEnded] = useState(false);
 
@@ -29,6 +32,56 @@ function WelcomePage() {
   const [nickName, setNickName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [login, { isLoading }] = useLoginMutation();
+
+  // Store campaignId in localStorage as soon as the page loads
+  useEffect(() => {
+    const extractAndStoreCampaignId = () => {
+      if (typeof window !== "undefined") {
+        // Get campaignId from URL directly - multiple methods for reliability
+        const searchParams = window.location.search;
+        const urlParams = new URLSearchParams(searchParams);
+        let urlCampaignId = urlParams.get("campaign");
+
+        // Fallback: try parsing the URL directly if URLSearchParams doesn't work
+        if (!urlCampaignId && searchParams) {
+          const match = searchParams.match(/[?&]campaign=([^&]*)/);
+          if (match && match[1]) {
+            urlCampaignId = decodeURIComponent(match[1]);
+          }
+        }
+
+        // Use URL campaign ID first, then fallback to useSearchParams
+        const finalCampaignId = urlCampaignId || campaignId;
+
+        console.log("Full URL:", window.location.href);
+        console.log("Search params:", searchParams);
+        console.log("Campaign ID from URL:", urlCampaignId);
+        console.log("Campaign ID from useSearchParams:", campaignId);
+        console.log("Final Campaign ID:", finalCampaignId);
+
+        if (finalCampaignId) {
+          localStorage.setItem("last_campaign_id", finalCampaignId);
+          console.log("Campaign ID stored in localStorage:", finalCampaignId);
+          alert(`Campaign ID: ${finalCampaignId}`);
+          return true;
+        } else {
+          console.log("No campaign ID found in URL");
+        }
+      }
+      return false;
+    };
+
+    // Try immediately
+    if (!extractAndStoreCampaignId()) {
+      // If not found, try again on window load (in case of timing issues)
+      const handleLoad = () => {
+        extractAndStoreCampaignId();
+        window.removeEventListener("load", handleLoad);
+      };
+      window.addEventListener("load", handleLoad);
+      return () => window.removeEventListener("load", handleLoad);
+    }
+  }, [campaignId]); // Include campaignId in dependencies
 
   const handleSendVerificationCode = async () => {
     // Validate inputs
