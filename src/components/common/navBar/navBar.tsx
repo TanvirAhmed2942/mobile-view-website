@@ -90,18 +90,20 @@ function NavBar() {
     <div className="bg-gray-100 sticky top-0 z-50 w-full">
       {/* Main Navigation */}
       <nav className="w-full  mx-auto px-4 py-4">
-        <div className="flex items-center justify-between">
+        <div className="w-full flex items-center justify-between">
           {/* Logo and App Name */}
           <Link href="/" className="flex items-center gap-2">
             <div className="relative w-16 h-8 sm:w-20 sm:h-10">
               <Image
                 src="/logo.png"
                 alt="logo"
-                fill
+                // fill
+                width={500}
+                height={500}
                 quality={100}
                 sizes="(max-width: 640px) 64px, 80px"
                 priority
-                className="object-contain scale-150"
+                className="object-contain w-full h-full scale-150"
               />
             </div>
           </Link>
