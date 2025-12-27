@@ -24,6 +24,37 @@ function YourWhy() {
     setMessage(whyMessage || "");
   }, [whyMessage]);
 
+  // Update message URL if campaign ID is available and message doesn't have it
+  useEffect(() => {
+    if (typeof window !== "undefined" && whyMessage) {
+      const campaignId = localStorage.getItem("last_campaign_id");
+      if (campaignId) {
+        const campaignUrl = `https://mobile-view-website-liard.vercel.app/?campaign=${campaignId}`;
+        // Check if message needs to be updated with campaign URL
+        const hasCorrectUrl = whyMessage.includes(`campaign=${campaignId}`);
+        const hasOldUrl = whyMessage.includes(
+          "https://mobile-view-website-liard.vercel.app/?campaign="
+        );
+
+        if (!hasCorrectUrl && hasOldUrl) {
+          // Update the URL in the message
+          let updatedMessage = whyMessage.replace(
+            /https:\/\/mobile-view-website-liard\.vercel\.app\/\?campaign=[^\s]*/g,
+            campaignUrl
+          );
+          updatedMessage = updatedMessage.replace(
+            /https:\/\/mobile-view-website-liard\.vercel\.app\/\?campaign=[^\s]*/g,
+            campaignUrl
+          );
+          if (updatedMessage !== whyMessage) {
+            dispatch(setWhyMessage(updatedMessage));
+          }
+        }
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run once on mount to update URL if needed
+
   // Update Redux whenever message changes so it's always in sync
   const handleMessageChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newMessage = e.target.value;

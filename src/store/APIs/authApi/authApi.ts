@@ -46,11 +46,17 @@ export interface VerifyOTPCredentials {
   isForLogin: boolean;
 }
 
+export interface VerifyOTPResponseData {
+  accessToken: string;
+  isVerified: boolean;
+  campaignId?: string; // Optional, only for SUPER_ADMIN
+}
+
 export interface VerifyOTPResponse {
   success: boolean;
   message: string;
   statusCode: number;
-  data?: unknown;
+  data?: VerifyOTPResponseData;
 }
 
 const authApi = api.injectEndpoints({

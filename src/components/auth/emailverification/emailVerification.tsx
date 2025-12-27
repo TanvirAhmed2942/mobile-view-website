@@ -60,25 +60,18 @@ function PhoneVerification() {
         isForLogin: true, // Hardcoded as requested
       }).unwrap();
 
-      // Save accessToken and user role to localStorage
+      // Save accessToken, user role, and campaignId to localStorage
       if (typeof window !== "undefined" && response.data) {
-        const data = response.data as {
-          accessToken?: string;
-          user?: {
-            role?: string;
-            verified?: boolean;
-          };
-          role?: string;
-          isVerified?: boolean;
-        };
+        const data = response.data;
         if (data.accessToken) {
           localStorage.setItem("accessToken", data.accessToken);
         }
-        // Save user role if available
-        const userRole = data.user?.role || data.role;
-        if (userRole) {
-          localStorage.setItem("userRole", userRole);
+        // Save campaignId if available (for SUPER_ADMIN)
+        if (data.campaignId) {
+          localStorage.setItem("last_campaign_id", data.campaignId);
         }
+        // Extract role from JWT token if needed
+        // Note: Role is typically in the JWT token, not in the response data
       }
 
       // Clear persisted login data after successful OTP verification
@@ -91,13 +84,7 @@ function PhoneVerification() {
 
       // Check if user is verified - redirect to /user if verified, otherwise /donate
       if (response.data) {
-        const data = response.data as {
-          isVerified?: boolean;
-          user?: {
-            verified?: boolean;
-          };
-        };
-        const isVerified = data.isVerified || data.user?.verified;
+        const isVerified = response.data.isVerified;
         if (isVerified) {
           router.push("/user");
         } else {
