@@ -53,16 +53,9 @@ function WelcomePage() {
         // Use URL campaign ID first, then fallback to useSearchParams
         const finalCampaignId = urlCampaignId || campaignId;
 
-        console.log("Full URL:", window.location.href);
-        console.log("Search params:", searchParams);
-        console.log("Campaign ID from URL:", urlCampaignId);
-        console.log("Campaign ID from useSearchParams:", campaignId);
-        console.log("Final Campaign ID:", finalCampaignId);
-
         if (finalCampaignId) {
-          localStorage.setItem("last_campaign_id", finalCampaignId);
-          console.log("Campaign ID stored in localStorage:", finalCampaignId);
-          alert(`Campaign ID: ${finalCampaignId}`);
+          localStorage.setItem("params_campaign_id", finalCampaignId);
+
           return true;
         } else {
           console.log("No campaign ID found in URL");

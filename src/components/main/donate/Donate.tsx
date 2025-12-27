@@ -4,39 +4,61 @@ import NavBar from "@/components/common/navBar/navBar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { CheckIcon } from "lucide-react";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import useIcon from "@/hooks/useIcon";
 import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { setDonationInfo, setCampaignId } from "@/store/donationSlice";
-import { useGetCampaignsQuery } from "@/store/APIs/campaignApi/campaignApiu";
+import { toast } from "sonner";
 
 function Donate() {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const { data: campaignsResponse, isLoading: isLoadingCampaigns } =
-    useGetCampaignsQuery();
   const selectedCampaignId = useAppSelector(
     (state) => state.donation.campaignId
   );
   const [selectedAmount, setSelectedAmount] = useState<number | null>(100);
   const [customAmount, setCustomAmount] = useState("");
 
-  const campaigns = campaignsResponse?.data?.result || [];
+  // Helper function to get campaignId based on user role
+  const getCampaignIdFromStorage = (): string | null => {
+    if (typeof window === "undefined") return null;
+
+    const userRole = localStorage.getItem("userRole");
+    const lastCampaignId = localStorage.getItem("last_campaign_id");
+    const paramsCampaignId = localStorage.getItem("params_campaign_id");
+
+    // If role is ADMIN, use params_campaign_id
+    if (userRole === "ADMIN") {
+      return paramsCampaignId;
+    }
+    // If role is SUPER_ADMIN, use last_campaign_id
+    if (userRole === "SUPER_ADMIN") {
+      return lastCampaignId;
+    }
+    // Default fallback: try params_campaign_id first, then last_campaign_id
+    return paramsCampaignId || lastCampaignId;
+  };
+
+  // Get campaignId from localStorage on mount
+  useEffect(() => {
+    const campaignIdToUse = getCampaignIdFromStorage();
+
+    // Set in Redux if we have a campaignId and it's not already set
+    if (campaignIdToUse && !selectedCampaignId) {
+      dispatch(setCampaignId(campaignIdToUse));
+    }
+  }, [dispatch, selectedCampaignId]);
 
   const handleContinue = () => {
+    // Get campaignId from Redux or localStorage
+    const campaignId = selectedCampaignId || getCampaignIdFromStorage();
+
     // Validate campaign selection
-    if (!selectedCampaignId) {
-      alert("Please select a campaign to continue.");
+    if (!campaignId) {
+      toast.error("Campaign ID not found. Please try again.");
       return;
     }
 
@@ -51,16 +73,19 @@ function Donate() {
         donationAmount: finalAmount,
         paymentMethod: "bkash", // TODO: Add payment method selection UI
         isDonating: true,
-        campaignId: selectedCampaignId,
+        campaignId: campaignId,
       })
     );
     router.push("/your-why");
   };
 
   const handleShareWithoutDonating = () => {
+    // Get campaignId from Redux or localStorage
+    const campaignId = selectedCampaignId || getCampaignIdFromStorage();
+
     // Validate campaign selection
-    if (!selectedCampaignId) {
-      alert("Please select a campaign to continue.");
+    if (!campaignId) {
+      toast.error("Campaign ID not found. Please try again.");
       return;
     }
 
@@ -70,7 +95,7 @@ function Donate() {
         donationAmount: null,
         paymentMethod: null,
         isDonating: false,
-        campaignId: selectedCampaignId,
+        campaignId: campaignId,
       })
     );
     router.push("/your-why");
@@ -99,38 +124,6 @@ function Donate() {
           <h2 className="text-left text-2xl font-semibold text-gray-800 mb-4">
             Donate / Share
           </h2>
-
-          {/* Campaign Selection */}
-          <div className="space-y-2">
-            <h3 className="text-lg font-semibold text-gray-800">
-              Select Campaign
-            </h3>
-            <Select
-              value={selectedCampaignId || ""}
-              onValueChange={(value) => dispatch(setCampaignId(value))}
-            >
-              <SelectTrigger className="w-full bg-gray-50 border-gray-300 rounded-xl h-11">
-                <SelectValue placeholder="Select a campaign" />
-              </SelectTrigger>
-              <SelectContent>
-                {isLoadingCampaigns ? (
-                  <SelectItem value="loading" disabled>
-                    Loading campaigns...
-                  </SelectItem>
-                ) : campaigns.length === 0 ? (
-                  <SelectItem value="no-campaigns" disabled>
-                    No campaigns available
-                  </SelectItem>
-                ) : (
-                  campaigns.map((campaign) => (
-                    <SelectItem key={campaign._id} value={campaign._id}>
-                      {campaign.title}
-                    </SelectItem>
-                  ))
-                )}
-              </SelectContent>
-            </Select>
-          </div>
 
           {/* Donation Amount Options */}
           <div className="space-y-3">
