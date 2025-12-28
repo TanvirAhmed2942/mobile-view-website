@@ -56,10 +56,12 @@ function Alerts() {
     }
   );
 
-  const campaign = campaignData?.data?.result;
-  const totalInvited = campaignData?.data?.totalInvited || 0;
-  const totalDonated = campaignData?.data?.totalDonated || 0;
-  const amountRaised = campaign?.overall_raised || 0;
+  const campaign = campaignData?.data;
+  const totalInvited = campaign?.totalInvited || 0;
+  const totalDoners = campaign?.totalDoners || 0;
+  const totalDonated = campaign?.totalDonated || 0;
+
+  console.log("campaign", campaignData?.data);
 
   // Calculate countdown from campaign endDate
   useEffect(() => {
@@ -172,7 +174,7 @@ function Alerts() {
             {/* Amount Raised */}
             <div className="text-center mb-4">
               <div className="text-4xl font-bold text-paul mb-1">
-                {formatCurrency(amountRaised)}
+                {formatCurrency(totalDonated)}
               </div>
               <div className="text-4xl font-bold text-paul">Raised!!</div>
             </div>
@@ -183,7 +185,7 @@ function Alerts() {
                 {formatNumber(totalInvited)} Invitees
               </p>
               <p className="text-sm text-gray-700">
-                {formatNumber(totalDonated)} Donors
+                {formatNumber(totalDoners)} Donors
               </p>
             </div>
           </div>

@@ -37,6 +37,11 @@ export interface Campaign {
   deletedAt?: string | null;
   alert?: string;
   message?: string;
+  totalInvited?: number;
+  totalDoners?: number;
+  totalDonated?: number;
+  newFunds?: number;
+  __v?: number;
 }
 
 export interface CampaignMeta {
@@ -60,11 +65,7 @@ export interface CampaignByIdResponse {
   success: boolean;
   message: string;
   statusCode: number;
-  data: {
-    result: Campaign;
-    totalInvited: number;
-    totalDonated: number;
-  };
+  data: Campaign;
 }
 
 export interface ExpiredCampaignResponse {
@@ -72,10 +73,10 @@ export interface ExpiredCampaignResponse {
   message: string;
   statusCode: number;
   data: {
-    totalInvited: number;
-    totalDoners: number;
-    totalDonated: number;
-    newFunds: number;
+    totalInvited?: number;
+    totalDoners?: number;
+    totalDonated?: number;
+    newFunds?: number;
   };
 }
 

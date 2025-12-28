@@ -59,9 +59,9 @@ function Impact() {
     }
   );
 
-  const campaign = campaignData?.data?.result;
-  const totalInvited = campaignData?.data?.totalInvited || 0;
-  const totalDonated = campaignData?.data?.totalDonated || 0;
+  const campaign = campaignData?.data;
+  const totalInvited = campaign?.totalInvited || 0;
+  const totalDoners = campaign?.totalDoners || 0;
   const newFunds = campaign?.overall_raised || 0;
   if (isLoading) {
     return (
@@ -126,7 +126,7 @@ function Impact() {
               </span>
             </div>
             <span className="text-xl font-bold text-gray-800">
-              {formatNumber(totalDonated)}
+              {formatNumber(totalDoners)}
             </span>
           </div>
 

@@ -63,8 +63,8 @@ function AboutCause() {
       skip: !campaignId, // Skip query if no campaignId
     });
 
-  const campaign = campaignData?.data?.result;
-  const totalInvited = campaignData?.data?.totalInvited || 0;
+  const campaign = campaignData?.data;
+  const totalInvited = campaign?.totalInvited || 0;
 
   // Fallback to content API data if campaign data not available
   const aboutRefugeForWomen =
