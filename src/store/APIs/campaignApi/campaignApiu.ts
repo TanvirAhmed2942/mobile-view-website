@@ -67,6 +67,18 @@ export interface CampaignByIdResponse {
   };
 }
 
+export interface ExpiredCampaignResponse {
+  success: boolean;
+  message: string;
+  statusCode: number;
+  data: {
+    totalInvited: number;
+    totalDoners: number;
+    totalDonated: number;
+    newFunds: number;
+  };
+}
+
 const campaignApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getCampaigns: builder.query<CampaignResponse, void>({
@@ -89,6 +101,9 @@ const campaignApi = api.injectEndpoints({
     getCampaignById: builder.query<CampaignByIdResponse, string>({
       query: (campaignId) => `/campaign/${campaignId}`,
     }),
+    expiredCampaign: builder.query<ExpiredCampaignResponse, string>({
+      query: (campaignId) => `/campaign/${campaignId}?expired=true`,
+    }),
   }),
   overrideExisting: true,
 });
@@ -97,4 +112,5 @@ export const {
   useGetCampaignsQuery,
   useGetCampaignQuery,
   useGetCampaignByIdQuery,
+  useExpiredCampaignQuery,
 } = campaignApi;

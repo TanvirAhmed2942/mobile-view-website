@@ -11,6 +11,7 @@ const nextConfig: NextConfig = {
       { hostname: "via.placeholder.com" },
       { hostname: "example.com" },
       { hostname: "10.10.7.102" },
+      { hostname: "ismail4001.binarybards.online" },
     ],
   },
 };
