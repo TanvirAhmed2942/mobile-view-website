@@ -9,6 +9,7 @@ import useIcon from "@/hooks/useIcon";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useGetMyProfileQuery } from "@/store/APIs/userApi/userApi";
+import { useGetCampaignByIdQuery } from "@/store/APIs/campaignApi/campaignApiu";
 import { ImageUrl } from "@/store/baseUrl";
 import { MdArrowRightAlt } from "react-icons/md";
 // Helper function to get full image URL
@@ -34,6 +35,26 @@ const getInitials = (name: string): string => {
     .slice(0, 2);
 };
 
+// Helper function to get campaignId based on user role (same logic as Alert.tsx)
+const getCampaignIdFromStorage = (): string | null => {
+  if (typeof window === "undefined") return null;
+
+  const userRole = localStorage.getItem("userRole");
+  const lastCampaignId = localStorage.getItem("last_campaign_id");
+  const paramsCampaignId = localStorage.getItem("params_campaign_id");
+
+  // If role is ADMIN, use params_campaign_id
+  if (userRole === "ADMIN") {
+    return paramsCampaignId;
+  }
+  // If role is SUPER_ADMIN, use last_campaign_id
+  if (userRole === "SUPER_ADMIN") {
+    return lastCampaignId;
+  }
+  // Default fallback: try params_campaign_id first, then last_campaign_id
+  return paramsCampaignId || lastCampaignId;
+};
+
 // Helper function to format currency
 const formatCurrency = (amount: number): string => {
   return `$${amount.toLocaleString("en-US")}`;
@@ -48,25 +69,59 @@ function User() {
   const inviteIcon = useIcon({ name: "two_user_icon" });
   const donateIcon = useIcon({ name: "donate_icon" });
 
-  const [hours, setHours] = useState(99);
-  const [minutes, setMinutes] = useState(58);
-  const [seconds, setSeconds] = useState(23);
+  const [campaignId, setCampaignId] = useState<string | null>(null);
+  const [hours, setHours] = useState(0);
+  const [minutes, setMinutes] = useState(0);
+  const [seconds, setSeconds] = useState(0);
 
+  // Get campaignId from localStorage
   useEffect(() => {
-    const interval = setInterval(() => {
-      setSeconds((prev) => {
-        if (prev > 0) return prev - 1;
-        setMinutes((prevMin) => {
-          if (prevMin > 0) return prevMin - 1;
-          setHours((prevHour) => (prevHour > 0 ? prevHour - 1 : 0));
-          return 59;
-        });
-        return 59;
-      });
-    }, 1000);
+    const id = getCampaignIdFromStorage();
+    setCampaignId(id);
+  }, []);
+
+  // Fetch campaign data
+  const { data: campaignData } = useGetCampaignByIdQuery(campaignId || "", {
+    skip: !campaignId,
+  });
+
+  const campaign = campaignData?.data;
+
+  // Calculate countdown from campaign endDate
+  useEffect(() => {
+    if (!campaign?.endDate) return;
+
+    const calculateTimeRemaining = () => {
+      const now = new Date().getTime();
+      const endDate = new Date(campaign.endDate).getTime();
+      const difference = endDate - now;
+
+      if (difference > 0) {
+        const hoursRemaining = Math.floor(difference / (1000 * 60 * 60));
+        const minutesRemaining = Math.floor(
+          (difference % (1000 * 60 * 60)) / (1000 * 60)
+        );
+        const secondsRemaining = Math.floor((difference % (1000 * 60)) / 1000);
+
+        setHours(hoursRemaining);
+        setMinutes(minutesRemaining);
+        setSeconds(secondsRemaining);
+      } else {
+        // Campaign has ended
+        setHours(0);
+        setMinutes(0);
+        setSeconds(0);
+      }
+    };
+
+    // Calculate immediately
+    calculateTimeRemaining();
+
+    // Update every second
+    const interval = setInterval(calculateTimeRemaining, 1000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [campaign?.endDate]);
 
   const handleEditProfile = () => {
     router.push("/edit-user");

@@ -8,10 +8,11 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { EyeOff, Eye } from "lucide-react";
 import { useLoginMutation } from "@/store/APIs/authApi/authApi";
 import { toast } from "sonner";
 import { useSearchParams } from "next/navigation";
+import PhoneInput, { isValidPhoneNumber } from "react-phone-number-input";
+import "react-phone-number-input/style.css";
 function WelcomePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -28,9 +29,8 @@ function WelcomePage() {
   const formRef = useRef<HTMLFormElement>(null);
   const buttonRef = useRef<HTMLDivElement>(null);
   const footerRef = useRef<HTMLDivElement>(null);
-  const [showPhoneNumber, setShowPhoneNumber] = useState(false);
   const [nickName, setNickName] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState<string>("");
   const [login, { isLoading }] = useLoginMutation();
 
   // Store campaignId in localStorage as soon as the page loads
@@ -83,8 +83,8 @@ function WelcomePage() {
       return;
     }
 
-    if (!phoneNumber.trim() || phoneNumber.trim().length < 6) {
-      toast.error("Phone number must contain at least 6 characters");
+    if (!phoneNumber || !isValidPhoneNumber(phoneNumber)) {
+      toast.error("Please enter a valid phone number");
       return;
     }
 
@@ -306,25 +306,15 @@ function WelcomePage() {
               >
                 Phone Number:
               </Label>
-              <div className="relative">
-                <Input
-                  id="phoneNumber"
-                  type={showPhoneNumber ? "text" : "tel"}
-                  placeholder="Must contain at least 6 characters"
+              <div className="phone-input-wrapper">
+                <PhoneInput
+                  international
+                  defaultCountry="US"
                   value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                  className="w-full bg-white border-none shadow-none rounded-lg pr-10 h-11"
+                  onChange={(value) => setPhoneNumber(value || "")}
+                  placeholder="Enter your phone number"
+                  className="phone-input-custom"
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowPhoneNumber(!showPhoneNumber)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 cursor-pointer focus:outline-none focus:text-gray-700 transition-colors"
-                  aria-label={
-                    showPhoneNumber ? "Hide phone number" : "Show phone number"
-                  }
-                >
-                  {showPhoneNumber ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
               </div>
             </div>
           </form>

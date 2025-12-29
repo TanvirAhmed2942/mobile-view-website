@@ -12,6 +12,7 @@ import {
   ChevronUp,
   LogOut,
   UserPlus,
+  User,
 } from "lucide-react";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -178,6 +179,23 @@ function NavBar() {
 
               {/* Menu Items */}
               <div className="space-y-0.5">
+                {/* My Profile Link */}
+                <Link
+                  href="/user"
+                  onClick={() => setIsSidebarOpen(false)}
+                  className="flex items-center justify-between p-2.5 sm:p-3 hover:bg-gray-50 rounded-lg transition-colors"
+                >
+                  <div className="flex items-center gap-2 sm:gap-2.5">
+                    <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gray-100 flex items-center justify-center">
+                      <User className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-600" />
+                    </div>
+                    <span className="text-gray-800 font-medium text-xs sm:text-sm">
+                      My Profile
+                    </span>
+                  </div>
+                  <ChevronDown className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400 rotate-[-90deg]" />
+                </Link>
+
                 {/* Invite Link */}
                 <Link
                   href="/your-why"
