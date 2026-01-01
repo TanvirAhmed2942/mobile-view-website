@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { useSearchParams } from "next/navigation";
 import PhoneInput, { isValidPhoneNumber } from "react-phone-number-input";
 import "react-phone-number-input/style.css";
+import { Switch } from "@/components/ui/switch";
 function WelcomePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -300,12 +301,22 @@ function WelcomePage() {
 
             {/* Phone Number Input */}
             <div className="space-y-2">
-              <Label
-                htmlFor="phoneNumber"
-                className="text-gray-700 font-medium text-sm"
-              >
-                Phone Number:
-              </Label>
+              <div className="flex items-center justify-between">
+                <Label
+                  htmlFor="phoneNumber"
+                  className="text-gray-700 font-medium text-sm"
+                >
+                  Phone Number:
+                </Label>
+                <Switch
+                  id="phoneNumber"
+                  checked={true}
+                  onCheckedChange={() => {
+                    console.log("checked");
+                  }}
+                />
+              </div>
+
               <div className="phone-input-wrapper">
                 <PhoneInput
                   international
