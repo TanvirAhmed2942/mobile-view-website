@@ -28,6 +28,7 @@ function PhoneVerification() {
     if (typeof window !== "undefined") {
       const storedPhone = localStorage.getItem("phoneNumber");
       const storedNickName = localStorage.getItem("nickName");
+
       if (storedPhone) {
         setPhoneNumber(storedPhone);
       }
@@ -35,6 +36,48 @@ function PhoneVerification() {
         setNickName(storedNickName);
       }
     }
+  }, []);
+
+  // Auto-fill OTP code from localStorage after component mounts
+  useEffect(() => {
+    const autoFillOTP = () => {
+      if (typeof window !== "undefined") {
+        const storedOneTimeCode = localStorage.getItem("oneTimeCode");
+
+        if (storedOneTimeCode) {
+          const codeNum = parseInt(storedOneTimeCode, 10);
+
+          if (!isNaN(codeNum) && codeNum > 0) {
+            // Convert number to 4-digit string array
+            const codeString = codeNum.toString().padStart(4, "0");
+            const codeArray = codeString.split("").slice(0, 4);
+
+            // Ensure we have exactly 4 digits
+            while (codeArray.length < 4) {
+              codeArray.push("0");
+            }
+
+            console.log("✅ Auto-filled OTP:", codeString);
+
+            // Set the code state
+            setCode(codeArray);
+
+            // Focus the last input field
+            setTimeout(() => {
+              inputRefs.current[3]?.focus();
+            }, 200);
+          }
+        }
+      }
+    };
+
+    // Try immediately
+    autoFillOTP();
+
+    // Also try after a short delay in case of timing issues
+    const timer = setTimeout(autoFillOTP, 100);
+
+    return () => clearTimeout(timer);
   }, []);
 
   const handleVerify = async () => {
@@ -89,6 +132,7 @@ function PhoneVerification() {
       if (typeof window !== "undefined") {
         localStorage.removeItem("phoneNumber");
         localStorage.removeItem("nickName");
+        localStorage.removeItem("oneTimeCode");
       }
 
       toast.success("OTP verified successfully!");

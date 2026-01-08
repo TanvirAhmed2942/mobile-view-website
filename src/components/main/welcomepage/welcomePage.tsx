@@ -95,17 +95,32 @@ function WelcomePage() {
         contact: phoneNumber.trim(),
       }).unwrap();
 
-      // Save phone number and nickName to localStorage for resend functionality
+      // Extract oneTimeCode from response: data.authentication.oneTimeCode
+      // Note: API returns data as object, not array
+      const responseData = response?.data as unknown as {
+        authentication?: { oneTimeCode?: number };
+        role?: string;
+      };
+      const oneTimeCode = responseData?.authentication?.oneTimeCode;
+
+      console.log("✅ Login successful. OneTimeCode:", oneTimeCode);
+
+      // Save phone number, nickName, and oneTimeCode to localStorage
       if (typeof window !== "undefined") {
         localStorage.setItem("phoneNumber", phoneNumber.trim());
         localStorage.setItem("nickName", nickName.trim());
 
+        // Save oneTimeCode for auto-fill
+        if (oneTimeCode) {
+          localStorage.setItem("oneTimeCode", String(oneTimeCode));
+          console.log("✅ OneTimeCode stored in localStorage:", oneTimeCode);
+        } else {
+          console.error("❌ OneTimeCode not found in response");
+        }
+
         // Save user role from response if available
-        if (response.data && response.data.length > 0) {
-          const userRole = response.data[0].role;
-          if (userRole) {
-            localStorage.setItem("userRole", userRole);
-          }
+        if (responseData?.role) {
+          localStorage.setItem("userRole", responseData.role);
         }
       }
 

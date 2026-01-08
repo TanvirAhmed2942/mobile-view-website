@@ -7,13 +7,67 @@ import { Button } from "@/components/ui/button";
 import { Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useLoginMutation } from "@/store/APIs/authApi/authApi";
+import { toast } from "sonner";
+
 function Login() {
   const [showPhoneNumber, setShowPhoneNumber] = useState(false);
   const [nickName, setNickName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const router = useRouter();
-  const handleSendVerificationCode = () => {
-    router.push("/auth/phone-verification");
+  const [login, { isLoading }] = useLoginMutation();
+
+  const handleSendVerificationCode = async () => {
+    // Validate inputs
+    if (!nickName.trim()) {
+      toast.error("Please enter your nick name");
+      return;
+    }
+
+    if (!phoneNumber.trim()) {
+      toast.error("Please enter your phone number");
+      return;
+    }
+
+    try {
+      const response = await login({
+        role: "USER",
+        name: nickName.trim(),
+        contact: phoneNumber.trim(),
+      }).unwrap();
+
+      // Extract oneTimeCode from response: data.authentication.oneTimeCode
+      // Note: API returns data as object, not array (TypeScript type is incorrect)
+      const responseData = response?.data as unknown as {
+        authentication?: { oneTimeCode?: number };
+      };
+      const oneTimeCode = responseData?.authentication?.oneTimeCode;
+
+      console.log("✅ Login successful. OneTimeCode:", response);
+
+      // Save to localStorage
+      localStorage.setItem("phoneNumber", phoneNumber.trim());
+      localStorage.setItem("nickName", nickName.trim());
+
+      if (oneTimeCode) {
+        localStorage.setItem("oneTimeCode", String(oneTimeCode));
+        console.log("✅ OneTimeCode stored in localStorage:", oneTimeCode);
+      } else {
+        console.error("❌ OneTimeCode not found in response");
+      }
+
+      toast.success("Verification code sent successfully!");
+
+      // Redirect to OTP verification page
+      router.push("/auth/phone-verification");
+    } catch (error: unknown) {
+      const errorMessage =
+        (error as { data?: { message?: string }; message?: string })?.data
+          ?.message ||
+        (error as { message?: string })?.message ||
+        "Failed to send verification code. Please try again.";
+      toast.error(errorMessage);
+    }
   };
   return (
     <div className="w-full min-h-[600px] xl:min-h-[630px] 2xl:min-h-[800px] flex flex-col items-center justify-between">
@@ -96,9 +150,10 @@ function Login() {
           <Button
             type="button"
             onClick={handleSendVerificationCode}
-            className="w-full bg-paul hover:bg-paul-dark text-white font-medium py-6 px-4 rounded-full mt-6"
+            disabled={isLoading}
+            className="w-full bg-paul hover:bg-paul-dark text-white font-medium py-6 px-4 rounded-full mt-6 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Send Verification Code
+            {isLoading ? "Sending..." : "Send Verification Code"}
           </Button>{" "}
           {/* Footer Text */}
           <div className="text-center">
