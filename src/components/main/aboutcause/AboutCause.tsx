@@ -72,7 +72,25 @@ function AboutCause() {
   const citiesServed = contentData?.data?.citiesServed || 0;
   const yearsOfOperation = contentData?.data?.yearsOfOperation || 0;
   const survivorsSupported = contentData?.data?.survivorsSupported || 0;
-  const media = contentData?.data?.gallery || [];
+
+  // Get images from campaign data (images array) or fallback to content API gallery
+  const campaignImages = campaign?.images || [];
+  const contentGallery = contentData?.data?.gallery || [];
+
+  // Get cause image from campaign and combine with images array
+  const causeImage = campaign?.cause_image;
+
+  // Combine cause image (if exists) with images array for media section
+  // Cause image should be first, then images array
+  const media: string[] = [];
+  if (causeImage) {
+    media.push(causeImage);
+  }
+  if (campaignImages.length > 0) {
+    media.push(...campaignImages);
+  } else if (contentGallery.length > 0) {
+    media.push(...contentGallery);
+  }
 
   // Calculate years from startDate if available
   const getEstablishedYear = (): string => {
@@ -128,14 +146,6 @@ function AboutCause() {
               <span className="text-sm text-gray-600">Established:</span>
               <span className="text-sm font-medium text-gray-800">
                 {getEstablishedYear()}
-              </span>
-            </div>
-
-            {/* Network */}
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">Network:</span>
-              <span className="text-sm font-medium text-gray-800">
-                {campaign?.organization_network || "5 City Network"}
               </span>
             </div>
 
@@ -263,7 +273,7 @@ function AboutCause() {
                       : "grid-cols-2"
                   }`}
                 >
-                  {media.slice(1).map((imageUrl, index) => (
+                  {media.slice(1).map((imageUrl: string, index: number) => (
                     <div
                       key={index}
                       className="relative w-full aspect-square rounded-lg overflow-hidden"

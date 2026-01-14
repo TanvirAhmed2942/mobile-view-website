@@ -31,6 +31,7 @@ export interface Campaign {
   cause_description: string;
   cause_mission: string;
   cause_image: string;
+  images?: string[];
   isDeleted: boolean;
   createdAt: string;
   updatedAt: string;

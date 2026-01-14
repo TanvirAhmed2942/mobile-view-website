@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ChevronUp, ChevronDown } from "lucide-react";
 import React, { useMemo, useState } from "react";
-import { useGetContentQuery } from "@/store/APIs/authApi/aboutusApi/aboutusApi";
+import { useGetPrivacyPolicyQuery } from "@/store/APIs/privacypolicyApi/privacypolicyApi";
 
 interface PrivacySection {
   id: string;
@@ -16,45 +16,18 @@ interface PrivacySection {
 }
 
 function PrivacyPolicy() {
-  const { data, isLoading, error } = useGetContentQuery();
+  const { data, isLoading, error } = useGetPrivacyPolicyQuery();
 
   const privacySections: PrivacySection[] = useMemo(() => {
-    const policy = data?.data?.privacyPolicy;
-    if (!policy) return [];
+    if (!data?.data || !Array.isArray(data.data)) return [];
 
-    return [
-      {
-        id: "whatWeCollect",
-        title: "What We Collect",
-        defaultExpanded: true,
-        content: policy.whatWeCollect,
-      },
-      {
-        id: "howWeUseIt",
-        title: "How We Use It",
-        content: policy.howWeUseIt,
-      },
-      {
-        id: "yourAnonymity",
-        title: "Your Anonymity",
-        content: policy.yourAnonymity,
-      },
-      {
-        id: "whoSeesYourInfo",
-        title: "Who Sees Your Info",
-        content: policy.whoSeesYourInfo,
-      },
-      {
-        id: "security",
-        title: "Security",
-        content: policy.security,
-      },
-      {
-        id: "yourChoices",
-        title: "Your Choices",
-        content: policy.yourChoices,
-      },
-    ];
+    // Map API response items to sections
+    return data.data.map((item, index) => ({
+      id: item._id || `section-${index}`,
+      title: item.title || "Privacy Policy",
+      defaultExpanded: index === 0, // Expand first item by default
+      content: item.content || "",
+    }));
   }, [data]);
 
   const [expandedSections, setExpandedSections] = useState<

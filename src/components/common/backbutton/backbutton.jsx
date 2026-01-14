@@ -31,7 +31,7 @@ function Navigation() {
   };
 
   const handleHome = () => {
-    router.push("/");
+    router.push("/user");
   };
 
   return (
