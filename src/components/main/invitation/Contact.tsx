@@ -156,6 +156,19 @@ export default function ContactPage() {
       return;
     }
 
+    // Get campaignId from localStorage params_campaign_id
+    let campaignId: string | null = null;
+    if (typeof window !== "undefined") {
+      campaignId = localStorage.getItem("params_campaign_id");
+    }
+
+    if (!campaignId) {
+      toast.error(
+        "Campaign not selected. Please go back and select a campaign."
+      );
+      return;
+    }
+
     // Get userId from JWT token
     let userId = "";
     if (typeof window !== "undefined") {
@@ -197,18 +210,10 @@ export default function ContactPage() {
       requestPayload.paymentMethod = donationInfo.paymentMethod || "bkash";
     }
 
-    // Get campaignId from Redux
-    if (!donationInfo.campaignId) {
-      toast.error(
-        "Campaign not selected. Please go back and select a campaign."
-      );
-      return;
-    }
-
     try {
       const response = await inviteUser({
-        ...requestPayload,
-        campaignId: donationInfo.campaignId,
+        campaignId: campaignId,
+        inviteData: requestPayload,
       }).unwrap();
 
       // Show success toast - check if response has a message

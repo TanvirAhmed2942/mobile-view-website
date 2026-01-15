@@ -141,7 +141,7 @@ function PhoneVerification() {
       if (response.data) {
         const totalLogin = response.data.totalLogin ?? 0;
         if (totalLogin > 1) {
-          router.push("/user");
+          router.push("/donate");
         } else {
           router.push("/donate");
         }

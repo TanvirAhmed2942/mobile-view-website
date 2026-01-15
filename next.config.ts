@@ -10,7 +10,7 @@ const nextConfig: NextConfig = {
       { hostname: "images.unsplash.com" },
       { hostname: "via.placeholder.com" },
       { hostname: "example.com" },
-      { hostname: "10.10.7.102" },
+      { hostname: "10.10.7.103" },
       { hostname: "api.gopassit.org" },
     ],
   },

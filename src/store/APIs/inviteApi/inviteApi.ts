@@ -10,17 +10,22 @@ export interface InviteUserRequest {
   donationAmount?: number;
   paymentMethod?: string;
   invitationIrecievedFrom: string; // userId of the person who sent the invitation
+}
+
+export interface InviteUserRequestWithCampaign {
   campaignId: string;
+  inviteData: InviteUserRequest;
 }
 
 const inviteApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    inviteUser: builder.mutation<void, InviteUserRequest>({
-      query: (inviteData: InviteUserRequest) => {
+    inviteUser: builder.mutation<void, InviteUserRequestWithCampaign>({
+      query: ({ campaignId, inviteData }: InviteUserRequestWithCampaign) => {
+        // campaignId is in the URL path, not in the body
         return {
-          url: `/campaign/invite-donate/${inviteData.campaignId}`,
+          url: `/campaign/invite-donate/${campaignId}`,
           method: "POST",
-          body: inviteData,
+          body: inviteData, // Only inviteData (without campaignId) goes in body
           headers: {
             "Content-Type": "application/json",
           },
