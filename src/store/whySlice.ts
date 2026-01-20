@@ -31,9 +31,9 @@ const getCampaignIdFromStorage = (): string | null => {
 const getCampaignUrl = (): string => {
   const campaignId = getCampaignIdFromStorage();
   if (campaignId) {
-    return `https://mobile-view-website-liard.vercel.app/?campaign=${campaignId}`;
+    return `https://gopassit.org/?campaign=${campaignId}`;
   }
-  return "https://mobile-view-website-liard.vercel.app/?campaign=";
+  return "https://gopassit.org/?campaign=";
 };
 
 // Helper function to get donation amount from sessionStorage
@@ -86,7 +86,7 @@ const DEFAULT_MESSAGE_TEMPLATE = `Hey <FRIENDS NAME>,
 I'm supporting [WHY from their prior page] and thought you might be interested too.
 
 This app lets our message reach tens, hundreds, even thousands of connected friends. When you share with 12 friends, it starts a ripple effect of giving.
-https://mobile-view-website-liard.vercel.app/?campaign=
+https://gopassit.org/?campaign=
 
 I started this with my donation. Please click the link, share with friends, and consider donating. Cheers!`;
 
@@ -117,12 +117,14 @@ const whySlice = createSlice({
           // Check if stored value looks like test data (all numbers)
           const isTestData = /^\d+$/.test(stored.trim());
           // Check if stored value is the old short format (doesn't contain template markers)
+          // Also check if it contains the old domain
           const isOldFormat =
-            !stored.includes("<FRIENDS NAME>") &&
+            (!stored.includes("<FRIENDS NAME>") &&
             !stored.includes(
-              "https://mobile-view-website-liard.vercel.app/?campaign="
+              "https://gopassit.org/?campaign="
             ) &&
-            !stored.includes("www.gopassit.org");
+            !stored.includes("www.gopassit.org")) ||
+            stored.includes("mobile-view-website-liard.vercel.app");
 
           if (isTestData || isOldFormat) {
             // Reset old format or test data to new default message with campaign URL
@@ -138,24 +140,28 @@ const whySlice = createSlice({
 
             // Update campaign URL if needed
             const campaignId = getCampaignIdFromStorage();
-            if (campaignId && !stored.includes(`campaign=${campaignId}`)) {
-              // Replace old campaign URL with new one
-              updatedMessage = updatedMessage.replace(
-                /https:\/\/mobile-view-website-liard\.vercel\.app\/\?campaign=[^\\s]*/g,
-                `https://mobile-view-website-liard.vercel.app/?campaign=${campaignId}`
-              );
-              // If no campaign URL found, add it
-              if (
-                !updatedMessage.includes(
-                  "https://mobile-view-website-liard.vercel.app/?campaign="
-                )
-              ) {
+            if (campaignId) {
+              const correctUrl = `https://gopassit.org/?campaign=${campaignId}`;
+              const hasCorrectUrl = stored.includes(`gopassit.org/?campaign=${campaignId}`);
+              const hasOldDomain = stored.includes("mobile-view-website-liard.vercel.app");
+
+              // Replace old domain with new domain
+              if (hasOldDomain) {
                 updatedMessage = updatedMessage.replace(
                   /https:\/\/mobile-view-website-liard\.vercel\.app\/\?campaign=[^\s]*/g,
-                  `https://mobile-view-website-liard.vercel.app/?campaign=${campaignId}`
+                  correctUrl
                 );
+                needsUpdate = true;
               }
-              needsUpdate = true;
+              
+              // If no correct URL found, replace any gopassit.org URL without correct campaignId
+              if (!hasCorrectUrl && !hasOldDomain) {
+                updatedMessage = updatedMessage.replace(
+                  /https:\/\/gopassit\.org\/\?campaign=[^\s]*/g,
+                  correctUrl
+                );
+                needsUpdate = true;
+              }
             }
 
             // Update donation amount if needed

@@ -197,7 +197,7 @@ function NavBar() {
                 </Link>
 
                 {/* Invite Link */}
-                <Link
+                {/* <Link
                   href="/your-why"
                   onClick={() => setIsSidebarOpen(false)}
                   className="flex items-center justify-between p-2.5 sm:p-3 hover:bg-gray-50 rounded-lg transition-colors"
@@ -211,7 +211,7 @@ function NavBar() {
                     </span>
                   </div>
                   <ChevronDown className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400 rotate-[-90deg]" />
-                </Link>
+                </Link> */}
 
                 {/* About Us Dropdown */}
                 <div className="relative">

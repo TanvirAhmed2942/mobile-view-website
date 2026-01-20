@@ -77,8 +77,8 @@ function YourWhy() {
 
       // Update campaign URL if needed
       if (campaignId) {
-        const campaignUrl = `https://mobile-view-website-liard.vercel.app/?campaign=${campaignId}`;
-        const hasCorrectUrl = whyMessage.includes(`campaign=${campaignId}`);
+        const campaignUrl = `https://gopassit.org/?campaign=${campaignId}`;
+        const hasCorrectUrl = whyMessage.includes(`gopassit.org/?campaign=${campaignId}`);
         const hasOldUrl = whyMessage.includes(
           "https://mobile-view-website-liard.vercel.app/?campaign="
         );
