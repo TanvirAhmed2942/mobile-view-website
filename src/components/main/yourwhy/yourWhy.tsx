@@ -47,7 +47,7 @@ function YourWhy() {
     setMessage(whyMessage || "");
   }, [whyMessage]);
 
-  // Helper function to get campaignId based on user role (same logic as Donate.tsx)
+  // Helper function to get campaignId based on user role
   const getCampaignIdFromStorage = (): string | null => {
     if (typeof window === "undefined") return null;
 
@@ -55,13 +55,13 @@ function YourWhy() {
     const lastCampaignId = localStorage.getItem("last_campaign_id");
     const paramsCampaignId = localStorage.getItem("params_campaign_id");
 
-    // If role is ADMIN, use params_campaign_id
-    if (userRole === "ADMIN") {
-      return paramsCampaignId;
-    }
     // If role is SUPER_ADMIN, use last_campaign_id
     if (userRole === "SUPER_ADMIN") {
       return lastCampaignId;
+    }
+    // If role is ADMIN, use params_campaign_id
+    if (userRole === "USER") {
+      return paramsCampaignId;
     }
     // Default fallback: try params_campaign_id first, then last_campaign_id
     return paramsCampaignId || lastCampaignId;
@@ -78,16 +78,42 @@ function YourWhy() {
       // Update campaign URL if needed
       if (campaignId) {
         const campaignUrl = `https://gopassit.org/?campaign=${campaignId}`;
-        const hasCorrectUrl = whyMessage.includes(`gopassit.org/?campaign=${campaignId}`);
-        const hasOldUrl = whyMessage.includes(
+        const hasCorrectUrl = updatedMessage.includes(`gopassit.org/?campaign=${campaignId}`);
+        const hasOldUrl = updatedMessage.includes(
           "https://mobile-view-website-liard.vercel.app/?campaign="
         );
+        const hasAnyCampaignUrl = updatedMessage.includes("gopassit.org/?campaign=") || 
+                                  updatedMessage.includes("mobile-view-website-liard.vercel.app/?campaign=");
 
-        if (!hasCorrectUrl && hasOldUrl) {
+        // Replace old domain with new domain and correct campaignId
+        if (hasOldUrl) {
           updatedMessage = updatedMessage.replace(
             /https:\/\/mobile-view-website-liard\.vercel\.app\/\?campaign=[^\s]*/g,
             campaignUrl
           );
+          needsUpdate = true;
+        }
+        // If URL exists but has wrong campaignId, replace it
+        else if (hasAnyCampaignUrl && !hasCorrectUrl) {
+          updatedMessage = updatedMessage.replace(
+            /https:\/\/gopassit\.org\/\?campaign=[^\s]*/g,
+            campaignUrl
+          );
+          needsUpdate = true;
+        }
+        // If no campaign URL exists at all, add it
+        else if (!hasAnyCampaignUrl) {
+          // Try to find where to insert the URL (after the ripple effect text)
+          const rippleEffectText = "When you share with 12 friends, it starts a ripple effect of giving.";
+          if (updatedMessage.includes(rippleEffectText)) {
+            updatedMessage = updatedMessage.replace(
+              rippleEffectText,
+              `${rippleEffectText}\n${campaignUrl}`
+            );
+          } else {
+            // Fallback: append at the end if pattern not found
+            updatedMessage = `${updatedMessage}\n${campaignUrl}`;
+          }
           needsUpdate = true;
         }
       }

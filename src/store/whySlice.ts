@@ -7,7 +7,7 @@ interface WhyState {
 
 const STORAGE_KEY = "why-message";
 
-// Helper function to get campaignId based on user role (same logic as Donate.tsx)
+// Helper function to get campaignId based on user role
 const getCampaignIdFromStorage = (): string | null => {
   if (typeof window === "undefined") return null;
 
@@ -15,13 +15,13 @@ const getCampaignIdFromStorage = (): string | null => {
   const lastCampaignId = localStorage.getItem("last_campaign_id");
   const paramsCampaignId = localStorage.getItem("params_campaign_id");
 
-  // If role is ADMIN, use params_campaign_id
-  if (userRole === "ADMIN") {
-    return paramsCampaignId;
-  }
   // If role is SUPER_ADMIN, use last_campaign_id
   if (userRole === "SUPER_ADMIN") {
     return lastCampaignId;
+  }
+  // If role is ADMIN, use params_campaign_id
+  if (userRole === "ADMIN") {
+    return paramsCampaignId;
   }
   // Default fallback: try params_campaign_id first, then last_campaign_id
   return paramsCampaignId || lastCampaignId;
@@ -144,8 +144,10 @@ const whySlice = createSlice({
               const correctUrl = `https://gopassit.org/?campaign=${campaignId}`;
               const hasCorrectUrl = stored.includes(`gopassit.org/?campaign=${campaignId}`);
               const hasOldDomain = stored.includes("mobile-view-website-liard.vercel.app");
+              const hasAnyCampaignUrl = stored.includes("gopassit.org/?campaign=") || 
+                                        stored.includes("mobile-view-website-liard.vercel.app");
 
-              // Replace old domain with new domain
+              // Replace old domain with new domain and correct campaignId
               if (hasOldDomain) {
                 updatedMessage = updatedMessage.replace(
                   /https:\/\/mobile-view-website-liard\.vercel\.app\/\?campaign=[^\s]*/g,
@@ -153,13 +155,27 @@ const whySlice = createSlice({
                 );
                 needsUpdate = true;
               }
-              
-              // If no correct URL found, replace any gopassit.org URL without correct campaignId
-              if (!hasCorrectUrl && !hasOldDomain) {
+              // If URL exists but has wrong campaignId, replace it
+              else if (hasAnyCampaignUrl && !hasCorrectUrl) {
                 updatedMessage = updatedMessage.replace(
                   /https:\/\/gopassit\.org\/\?campaign=[^\s]*/g,
                   correctUrl
                 );
+                needsUpdate = true;
+              }
+              // If no campaign URL exists at all, add it
+              else if (!hasAnyCampaignUrl) {
+                // Try to find where to insert the URL (after the ripple effect text)
+                const rippleEffectText = "When you share with 12 friends, it starts a ripple effect of giving.";
+                if (updatedMessage.includes(rippleEffectText)) {
+                  updatedMessage = updatedMessage.replace(
+                    rippleEffectText,
+                    `${rippleEffectText}\n${correctUrl}`
+                  );
+                } else {
+                  // Fallback: append at the end if pattern not found
+                  updatedMessage = `${updatedMessage}\n${correctUrl}`;
+                }
                 needsUpdate = true;
               }
             }
