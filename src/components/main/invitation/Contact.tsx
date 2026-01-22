@@ -8,7 +8,7 @@ import { LiaMinusCircleSolid } from "react-icons/lia";
 import { useRouter } from "next/navigation";
 import NavBar from "@/components/common/navBar/navBar";
 import { IoIosSend } from "react-icons/io";
-import { Check } from "lucide-react";
+import { Check, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useAppSelector, useAppDispatch } from "@/store/hooks";
 import { hydrateFromStorage } from "@/store/whySlice";
@@ -70,7 +70,7 @@ export default function ContactPage() {
   const dispatch = useAppDispatch();
   const whyMessage = useAppSelector((state) => state.why.whyMessage);
   const donationInfo = useAppSelector((state) => state.donation);
-  const [inviteUser] = useInviteUserMutation();
+  const [inviteUser, { isLoading }] = useInviteUserMutation();
 
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [manualNumber, setManualNumber] = useState<string>("");
@@ -400,21 +400,12 @@ export default function ContactPage() {
         {/* CONTINUE */}
         <Button
           onClick={handleContinue}
-          disabled={!canContinue}
+          disabled={!canContinue || isLoading}
           className="w-full bg-paul hover:bg-paul-dark text-white py-6 rounded-full mt-6 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Continue
+          {isLoading ? <Loader2 className="size-4 animate-spin text-white" /> : "Continue"}
         </Button>
-        {!canContinue && (
-          <p className="text-xs text-gray-500 text-center">
-            ** Add at least 3 contacts to continue.
-          </p>
-        )}
 
-        <p className="text-xs text-gray-400 text-center mt-2">
-          We only access contacts you select. Nothing is stored without
-          permission.
-        </p>
       </div>
     </ScrollArea>
   );
