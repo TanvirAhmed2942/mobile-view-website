@@ -4,9 +4,10 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { setWhyMessage, hydrateFromStorage } from "@/store/whySlice";
+import { useGetParentPhone } from "@/hooks/useGetParentPhone";
 
 // Helper function to get donation amount from sessionStorage
 const getDonationAmount = (): number | null => {
@@ -33,9 +34,11 @@ const getDonationAmount = (): number | null => {
 
 function YourWhy() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const dispatch = useAppDispatch();
   const whyMessage = useAppSelector((state) => state.why.whyMessage);
   const [message, setMessage] = useState(whyMessage || "");
+  const parentPhone = useGetParentPhone();
 
   // Hydrate from sessionStorage after mount to avoid hydration mismatch
   useEffect(() => {
@@ -59,12 +62,29 @@ function YourWhy() {
     if (userRole === "SUPER_ADMIN") {
       return lastCampaignId;
     }
-    // If role is ADMIN, use params_campaign_id
-    if (userRole === "USER") {
-      return paramsCampaignId;
-    }
+    
+    // For USER: use params_campaign_id
     // Default fallback: try params_campaign_id first, then last_campaign_id
     return paramsCampaignId || lastCampaignId;
+  };
+
+  // Helper function to get parent phone based on user role
+  const getParentPhoneForUrl = (): string | null => {
+    if (typeof window === "undefined") return null;
+
+    const userRole = localStorage.getItem("userRole");
+    
+    // For SUPER_ADMIN: get from JWT token
+    if (userRole === "SUPER_ADMIN") {
+      return parentPhone;
+    }
+    
+    // For USER: get from URL params
+    if (userRole === "USER") {
+      return searchParams.get("parent");
+    }
+    
+    return null;
   };
 
   // Update message with campaign URL and donation amount
@@ -77,8 +97,16 @@ function YourWhy() {
 
       // Update campaign URL if needed
       if (campaignId) {
-        const campaignUrl = `https://gopassit.org/?campaign=${campaignId}`;
-        const hasCorrectUrl = updatedMessage.includes(`gopassit.org/?campaign=${campaignId}`);
+        // Get parent phone based on user role
+        const parentPhoneForUrl = getParentPhoneForUrl();
+        // Build campaign URL with parent parameter if available
+        const parentParam = parentPhoneForUrl ? `&parent=${encodeURIComponent(parentPhoneForUrl)}` : "";
+        const campaignUrl = `https://gopassit.org/?campaign=${campaignId}${parentParam}`;
+        // Check if URL has correct campaignId (and parent if parentPhoneForUrl exists)
+        const expectedUrlPattern = parentPhoneForUrl 
+          ? `gopassit.org/?campaign=${campaignId}&parent=${encodeURIComponent(parentPhoneForUrl)}`
+          : `gopassit.org/?campaign=${campaignId}`;
+        const hasCorrectUrl = updatedMessage.includes(expectedUrlPattern);
         const hasOldUrl = updatedMessage.includes(
           "https://mobile-view-website-liard.vercel.app/?campaign="
         );
@@ -88,15 +116,16 @@ function YourWhy() {
         // Replace old domain with new domain and correct campaignId
         if (hasOldUrl) {
           updatedMessage = updatedMessage.replace(
-            /https:\/\/mobile-view-website-liard\.vercel\.app\/\?campaign=[^\s]*/g,
+            /https:\/\/mobile-view-website-liard\.vercel\.app\/\?campaign=[^\s&]*[^\s]*/g,
             campaignUrl
           );
           needsUpdate = true;
         }
-        // If URL exists but has wrong campaignId, replace it
+        // If URL exists but has wrong campaignId or missing parent param, replace it
         else if (hasAnyCampaignUrl && !hasCorrectUrl) {
+          // Match URLs with or without parent parameter
           updatedMessage = updatedMessage.replace(
-            /https:\/\/gopassit\.org\/\?campaign=[^\s]*/g,
+            /https:\/\/gopassit\.org\/\?campaign=[^\s&]*(&parent=[^\s]*)?/g,
             campaignUrl
           );
           needsUpdate = true;
@@ -208,40 +237,48 @@ function YourWhy() {
   };
   return (
     <ScrollArea className="w-full h-[calc(100vh-200px)] no-scrollbar">
-      <div className="w-full min-h-[600px] xl:min-h-[630px] 2xl:min-h-[800px] flex flex-col items-center gap-6 justify-start">
+      <div className="w-full min-h-[600px] xl:min-h-[630px] 2xl:min-h-[800px] flex flex-col items-center gap-6 justify-start pb-8">
         <NavBar />
-        <div className="w-full space-y-2 text-left ">
-          <h1 className="text-2xl  font-semibold text-gray-800 mb-2">
+        <div className="w-full space-y-2 text-left px-4">
+          <h1 className="text-2xl font-semibold text-gray-800 mb-2">
             Add Your WHY
           </h1>
           <p className="text-sm text-gray-500">
             Sharing your story can inspire others
           </p>
         </div>
-        <div className="w-full space-y-2 text-left ">
-          <h1 className="text-2xl  font-semibold text-gray-800 mb-2">
+        <div className="w-full space-y-2 text-left px-4">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-2">
             Your WHY
-          </h1>
+          </h2>
           <Textarea
             placeholder="Add Your WHY"
-            className="w-full h-60 resize-none"
+            className="w-full h-60 resize-none break-words overflow-wrap-anywhere whitespace-pre-wrap"
             value={message}
             onChange={handleMessageChange}
+            style={{ 
+              wordBreak: "break-all", 
+              overflowWrap: "break-word",
+              whiteSpace: "pre-wrap",
+              overflowX: "hidden"
+            }}
           />
         </div>
-        <div className="w-full grid grid-cols-2 gap-2">
-          <Button
-            onClick={handlePreview}
-            className="w-full bg-white hover:bg-paul-dark border border-[#8a48c4] text-black hover:text-white font-semibold py-6 px-4 rounded-full transition-all duration-200"
-          >
-            Preview
-          </Button>
-          <Button
-            onClick={handleSend}
-            className="w-full bg-paul hover:bg-paul-dark text-white font-semibold py-6 px-4 rounded-full transition-all duration-200"
-          >
-            Send
-          </Button>
+        <div className="w-full px-4">
+          <div className="grid grid-cols-2 gap-2 w-full">
+            <Button
+              onClick={handlePreview}
+              className="w-full bg-white hover:bg-paul-dark border border-[#8a48c4] text-black hover:text-white font-semibold py-6 px-2 sm:px-4 rounded-full transition-all duration-200 text-sm sm:text-base"
+            >
+              Preview
+            </Button>
+            <Button
+              onClick={handleSend}
+              className="w-full bg-paul hover:bg-paul-dark text-white font-semibold py-6 px-2 sm:px-4 rounded-full transition-all duration-200 text-sm sm:text-base"
+            >
+              Send
+            </Button>
+          </div>
         </div>
       </div>
     </ScrollArea>

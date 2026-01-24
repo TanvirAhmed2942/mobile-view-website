@@ -12,7 +12,9 @@ import { Check, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useAppSelector, useAppDispatch } from "@/store/hooks";
 import { hydrateFromStorage } from "@/store/whySlice";
-import { useInviteUserMutation } from "@/store/APIs/inviteApi/inviteApi";
+import { useInviteUserOnebyOneMutation, useContinueSubmitMutation } from "@/store/APIs/inviteApi/inviteApi";
+import { useGetParentPhone } from "@/hooks/useGetParentPhone";
+import { useSearchParams } from "next/navigation";
 /* -------------------- Types -------------------- */
 interface Contact {
   id: number;
@@ -48,29 +50,51 @@ const normalizePhone = (phone: string): string =>
   phone.replace(/\s|-/g, "").replace(/^0/, "+880"); // 🇧🇩 adjust if needed
 
 /* -------------------- Component -------------------- */
-// Helper function to decode JWT and get userId
-const decodeJWT = (token: string): { id?: string } | null => {
-  try {
-    const base64Url = token.split(".")[1];
-    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-    const jsonPayload = decodeURIComponent(
-      atob(base64)
-        .split("")
-        .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
-        .join("")
-    );
-    return JSON.parse(jsonPayload);
-  } catch {
-    return null;
-  }
-};
-
 export default function ContactPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const searchParams = useSearchParams();
   const whyMessage = useAppSelector((state) => state.why.whyMessage);
   const donationInfo = useAppSelector((state) => state.donation);
-  const [inviteUser, { isLoading }] = useInviteUserMutation();
+  const [inviteUserOnebyOne, { isLoading: isSendingOneByOne }] = useInviteUserOnebyOneMutation();
+  const [continueSubmit, { isLoading: isSubmittingContinue }] = useContinueSubmitMutation();
+  const parentPhoneFromToken = useGetParentPhone();
+
+  // Helper function to get parent phone based on user role
+  const getParentPhoneForInvite = (): string | null => {
+    if (typeof window === "undefined") return null;
+
+    const userRole = localStorage.getItem("userRole");
+    
+    // For SUPER_ADMIN: get from JWT token
+    if (userRole === "SUPER_ADMIN") {
+      return parentPhoneFromToken;
+    }
+    
+    // For USER: get from URL params
+    if (userRole === "USER") {
+      return searchParams.get("parent");
+    }
+    
+    return null;
+  };
+
+  // Helper function to get campaignId based on user role
+  const getCampaignIdForInvite = (): string | null => {
+    if (typeof window === "undefined") return null;
+
+    const userRole = localStorage.getItem("userRole");
+    const lastCampaignId = localStorage.getItem("last_campaign_id");
+    const paramsCampaignId = localStorage.getItem("params_campaign_id");
+
+    // For SUPER_ADMIN: use last_campaign_id
+    if (userRole === "SUPER_ADMIN") {
+      return lastCampaignId;
+    }
+    
+    // For USER: use params_campaign_id
+    return paramsCampaignId;
+  };
 
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [manualNumber, setManualNumber] = useState<string>("");
@@ -156,11 +180,8 @@ export default function ContactPage() {
       return;
     }
 
-    // Get campaignId from localStorage params_campaign_id
-    let campaignId: string | null = null;
-    if (typeof window !== "undefined") {
-      campaignId = localStorage.getItem("params_campaign_id");
-    }
+    // Get campaignId based on user role
+    const campaignId = getCampaignIdForInvite();
 
     if (!campaignId) {
       toast.error(
@@ -169,102 +190,130 @@ export default function ContactPage() {
       return;
     }
 
-    // Get userId from JWT token
-    let userId = "";
+    // Get current user's phone from JWT token for donation submission
+    let currentUserPhone: string | null = null;
     if (typeof window !== "undefined") {
       const accessToken = localStorage.getItem("accessToken");
       if (accessToken) {
-        const decoded = decodeJWT(accessToken);
-        userId = decoded?.id || "";
+        try {
+          const parts = accessToken.split(".");
+          if (parts.length === 3) {
+            const payload = parts[1];
+            let base64 = payload.replace(/-/g, "+").replace(/_/g, "/");
+            const padding = base64.length % 4;
+            if (padding) {
+              base64 += "=".repeat(4 - padding);
+            }
+            const decoded = atob(base64);
+            const jwtPayload = JSON.parse(decoded) as { contact?: string };
+            currentUserPhone = jwtPayload.contact || null;
+          }
+        } catch (error) {
+          console.error("Failed to decode JWT for user phone:", error);
+        }
       }
     }
 
-    if (!userId) {
-      toast.error("User not authenticated. Please login again.");
+    if (!currentUserPhone) {
+      toast.error("Unable to get user phone number. Please try again.");
       return;
     }
 
-    // Prepare invitees array
-    const myInvitees = contacts.map((contact) => ({
-      invitationForPhone: contact.phone,
-      invitationForName: contact.name,
-    }));
-
-    // Prepare request payload
-    const requestPayload: {
-      myInvitees: Array<{
-        invitationForPhone: string;
-        invitationForName: string;
-      }>;
-      invitationIrecievedFrom: string;
-      donationAmount?: number;
-      paymentMethod?: string;
-    } = {
-      myInvitees,
-      invitationIrecievedFrom: userId,
-    };
-
-    // Only include donation info if user is donating
-    if (donationInfo.isDonating && donationInfo.donationAmount) {
-      requestPayload.donationAmount = donationInfo.donationAmount;
-      requestPayload.paymentMethod = donationInfo.paymentMethod || "bkash";
+    if (!donationInfo.donationAmount) {
+      toast.error("Donation amount is required.");
+      return;
     }
 
+    // Call useContinueSubmitMutation API only
     try {
-      const response = await inviteUser({
+      await continueSubmit({
+        amount: donationInfo.donationAmount,
+        phone: currentUserPhone,
         campaignId: campaignId,
-        inviteData: requestPayload,
       }).unwrap();
 
-      // Show success toast - check if response has a message
-      const successMessage =
-        (response as unknown as { message?: string })?.message ||
-        "Invitations sent successfully!";
-      toast.success(successMessage);
-
+      toast.success("Submitted successfully!");
+      
       // Navigate to redirect page after a short delay
       setTimeout(() => {
         router.push("/redirect");
       }, 1000);
     } catch (error) {
-      console.error("Failed to send invitations:", error);
+      console.error("Failed to submit:", error);
       const errorMessage =
         (error as { data?: { message?: string }; message?: string })?.data
           ?.message ||
         (error as { message?: string })?.message ||
-        "Failed to send invitations. Please try again.";
+        "Failed to submit. Please try again.";
       toast.error(errorMessage);
     }
   };
 
-  const handleSendSMS = (contact: Contact) => {
-    // Get the latest message from Redux (user's last modified version)
-    const latestMessage = whyMessage;
+  const handleSendSMS = async (contact: Contact) => {
+    try {
+      // Get parent phone (based on user role)
+      const parentPhone = getParentPhoneForInvite();
 
-    // Replace <FRIENDS NAME> placeholder with actual contact name
-    const personalizedMessage = latestMessage.replace(
-      /<FRIENDS NAME>/g,
-      contact.name
-    );
+      if (!parentPhone) {
+        toast.error("Parent phone not found. Please check your URL or authentication.");
+        return;
+      }
 
-    // Clean single phone number
-    const cleanedNumber = contact.phone.replace(/\s|-/g, "");
-    const encodedMessage = encodeURIComponent(personalizedMessage);
+      // Get campaignId based on user role
+      const campaignId = getCampaignIdForInvite();
 
-    // Copy message to clipboard as fallback
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(personalizedMessage).catch(() => {
-        // Clipboard failed, continue anyway
-      });
+      if (!campaignId) {
+        toast.error("Campaign ID not found. Please go back and select a campaign.");
+        return;
+      }
+
+      // Prepare invite payload for one-by-one API
+      // Structure: { parentPhone, newPhone, campaignId }
+      const invitePayload = {
+        parentPhone: parentPhone,
+        newPhone: contact.phone,
+        campaignId: campaignId,
+      };
+
+      // First: Call the API
+      await inviteUserOnebyOne(invitePayload).unwrap();
+
+      // Then: Send the SMS message
+      const latestMessage = whyMessage;
+      const personalizedMessage = latestMessage.replace(
+        /<FRIENDS NAME>/g,
+        contact.name
+      );
+
+      // Clean single phone number
+      const cleanedNumber = contact.phone.replace(/\s|-/g, "");
+      const encodedMessage = encodeURIComponent(personalizedMessage);
+
+      // Copy message to clipboard as fallback
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(personalizedMessage).catch(() => {
+          // Clipboard failed, continue anyway
+        });
+      }
+
+      // Open SMS for single recipient
+      window.location.href = `sms:${cleanedNumber}?body=${encodedMessage}`;
+
+      // Mark as sent
+      setContacts((prev) =>
+        prev.map((c) => (c.id === contact.id ? { ...c, sent: true } : c))
+      );
+
+      toast.success(`Invitation sent to ${contact.name}`);
+    } catch (error) {
+      console.error("Failed to send invitation:", error);
+      const errorMessage =
+        (error as { data?: { message?: string }; message?: string })?.data
+          ?.message ||
+        (error as { message?: string })?.message ||
+        "Failed to send invitation. Please try again.";
+      toast.error(errorMessage);
     }
-
-    // Open SMS for single recipient
-    window.location.href = `sms:${cleanedNumber}?body=${encodedMessage}`;
-
-    // Mark as sent
-    setContacts((prev) =>
-      prev.map((c) => (c.id === contact.id ? { ...c, sent: true } : c))
-    );
   };
 
   /* ---------- Remove contact ---------- */
@@ -320,13 +369,19 @@ export default function ContactPage() {
 
                   <Button
                     onClick={() => handleSendSMS(c)}
-                    disabled={c.sent}
+                    disabled={c.sent || isSendingOneByOne}
                     className="bg-paul hover:bg-paul-dark text-white rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    <span className=" text-sm ml-1">
-                      {c.sent ? "Sent" : "Send"}
-                    </span>
-                    <IoIosSend className=" size-5" />
+                    {isSendingOneByOne ? (
+                      <Loader2 className="size-4 animate-spin text-white" />
+                    ) : (
+                      <>
+                        <span className=" text-sm ml-1">
+                          {c.sent ? "Sent" : "Send"}
+                        </span>
+                        <IoIosSend className=" size-5" />
+                      </>
+                    )}
                   </Button>
                 </div>
               </div>
@@ -400,10 +455,14 @@ export default function ContactPage() {
         {/* CONTINUE */}
         <Button
           onClick={handleContinue}
-          disabled={!canContinue || isLoading}
+          disabled={!canContinue || isSubmittingContinue}
           className="w-full bg-paul hover:bg-paul-dark text-white py-6 rounded-full mt-6 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isLoading ? <Loader2 className="size-4 animate-spin text-white" /> : "Continue"}
+          {isSubmittingContinue ? (
+            <Loader2 className="size-4 animate-spin text-white" />
+          ) : (
+            "Continue"
+          )}
         </Button>
 
       </div>

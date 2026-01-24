@@ -3,13 +3,71 @@ import NavBar from "@/components/common/navBar/navBar";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import useIcon from "@/hooks/useIcon";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { usePaymentURLQuery } from "@/store/APIs/inviteApi/inviteApi";
+
+// Helper function to get campaignId based on user role
+const getCampaignIdFromStorage = (): string | null => {
+  if (typeof window === "undefined") return null;
+
+  const userRole = localStorage.getItem("userRole");
+  const lastCampaignId = localStorage.getItem("last_campaign_id");
+  const paramsCampaignId = localStorage.getItem("params_campaign_id");
+
+  // If role is SUPER_ADMIN, use last_campaign_id
+  if (userRole === "SUPER_ADMIN") {
+    return lastCampaignId;
+  }
+  
+  // For USER: use params_campaign_id
+  // Default fallback: try params_campaign_id first, then last_campaign_id
+  return paramsCampaignId || lastCampaignId;
+};
+
 function Redirects() {
   const router = useRouter();
+  const [campaignId, setCampaignId] = useState<string | null>(null);
+  const [redirectUrl, setRedirectUrl] = useState<string | null>(null);
+
+  // Get campaignId on mount
+  useEffect(() => {
+    const id = getCampaignIdFromStorage();
+    setCampaignId(id);
+  }, []);
+
+  // Fetch payment URL when campaignId is available
+  const { data: paymentData, isLoading, error } = usePaymentURLQuery(campaignId || "", {
+    skip: !campaignId, // Skip query if no campaignId
+  });
+
+  // Extract redirect URL from response
+  useEffect(() => {
+    if (paymentData?.data) {
+      setRedirectUrl(paymentData.data);
+    }
+  }, [paymentData]);
+
   const handleContinue = () => {
-    router.push("/congrats");
+    if (redirectUrl) {
+      // Redirect to the URL from API response
+      window.location.href = redirectUrl;
+    } else {
+      // Fallback to congrats page if no URL available
+      router.push("/congrats");
+    }
   };
+
+  // Auto-redirect when URL is available
+  useEffect(() => {
+    if (redirectUrl) {
+      // Auto-redirect after a short delay
+      const timer = setTimeout(() => {
+        window.location.href = redirectUrl;
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [redirectUrl]);
   return (
     <ScrollArea className="w-full h-[calc(100vh-200px)] no-scrollbar">
       <div className="w-full min-h-[600px] xl:min-h-[630px] 2xl:min-h-[800px] flex flex-col items-center gap-6 justify-start">
@@ -23,11 +81,19 @@ function Redirects() {
           </h2>
 
           <div className="text-sm text-gray-500 text-center max-w-md">
-            <div
-              dangerouslySetInnerHTML={{
-                __html: `<p>You are now being securely redirected to <a href="https://thesignatry.com" target="_blank" rel="noopener noreferrer" class="text-paul underline">thesignatry.com</a> to complete your donation.</p>`,
-              }}
-            />
+            {isLoading ? (
+              <p>Loading redirect URL...</p>
+            ) : error ? (
+              <p>Failed to load redirect URL. Please try again.</p>
+            ) : redirectUrl ? (
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: `<p>You are now being securely redirected to <a href="${redirectUrl}" target="_blank" rel="noopener noreferrer" class="text-paul underline">complete your donation</a>.</p>`,
+                }}
+              />
+            ) : (
+              <p>Preparing redirect...</p>
+            )}
           </div>
         </div>
         <div className="flex items-center justify-center gap-2 bg-[#e8e1f3] rounded-3xl p-4">

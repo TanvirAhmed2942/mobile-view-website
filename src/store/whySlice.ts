@@ -19,19 +19,69 @@ const getCampaignIdFromStorage = (): string | null => {
   if (userRole === "SUPER_ADMIN") {
     return lastCampaignId;
   }
-  // If role is ADMIN, use params_campaign_id
-  if (userRole === "ADMIN") {
-    return paramsCampaignId;
-  }
+  
+  // For USER: use params_campaign_id
   // Default fallback: try params_campaign_id first, then last_campaign_id
   return paramsCampaignId || lastCampaignId;
+};
+
+// Helper function to get parent phone from accessToken
+const getParentPhoneFromToken = (): string | null => {
+  if (typeof window === "undefined") return null;
+
+  const accessToken = localStorage.getItem("accessToken");
+  if (!accessToken) return null;
+
+  try {
+    const parts = accessToken.split(".");
+    if (parts.length !== 3) return null;
+
+    const payload = parts[1];
+    let base64 = payload.replace(/-/g, "+").replace(/_/g, "/");
+    const padding = base64.length % 4;
+    if (padding) {
+      base64 += "=".repeat(4 - padding);
+    }
+
+    const decoded = atob(base64);
+    const jwtPayload = JSON.parse(decoded) as { contact?: string; parentPhone?: string };
+    return jwtPayload.contact || jwtPayload.parentPhone || null;
+  } catch (error) {
+    console.error("Error decoding JWT for parent phone:", error);
+    return null;
+  }
+};
+
+// Helper function to get parent phone based on user role
+const getParentPhoneForUrl = (): string | null => {
+  if (typeof window === "undefined") return null;
+
+  const userRole = localStorage.getItem("userRole");
+  
+  // For SUPER_ADMIN: get from JWT token
+  if (userRole === "SUPER_ADMIN") {
+    return getParentPhoneFromToken();
+  }
+  
+  // For USER: get from URL params
+  if (userRole === "USER") {
+    if (typeof window !== "undefined") {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get("parent");
+    }
+  }
+  
+  return null;
 };
 
 // Helper function to get campaign URL from localStorage
 const getCampaignUrl = (): string => {
   const campaignId = getCampaignIdFromStorage();
+  const parentPhone = getParentPhoneForUrl();
+  
   if (campaignId) {
-    return `https://gopassit.org/?campaign=${campaignId}`;
+    const parentParam = parentPhone ? `&parent=${encodeURIComponent(parentPhone)}` : "";
+    return `https://gopassit.org/?campaign=${campaignId}${parentParam}`;
   }
   return "https://gopassit.org/?campaign=";
 };
@@ -141,8 +191,14 @@ const whySlice = createSlice({
             // Update campaign URL if needed
             const campaignId = getCampaignIdFromStorage();
             if (campaignId) {
-              const correctUrl = `https://gopassit.org/?campaign=${campaignId}`;
-              const hasCorrectUrl = stored.includes(`gopassit.org/?campaign=${campaignId}`);
+              const parentPhoneForUrl = getParentPhoneForUrl();
+              const parentParam = parentPhoneForUrl ? `&parent=${encodeURIComponent(parentPhoneForUrl)}` : "";
+              const correctUrl = `https://gopassit.org/?campaign=${campaignId}${parentParam}`;
+              // Check if URL has correct campaignId (and parent if parentPhoneForUrl exists)
+              const expectedUrlPattern = parentPhoneForUrl 
+                ? `gopassit.org/?campaign=${campaignId}&parent=${encodeURIComponent(parentPhoneForUrl)}`
+                : `gopassit.org/?campaign=${campaignId}`;
+              const hasCorrectUrl = stored.includes(expectedUrlPattern);
               const hasOldDomain = stored.includes("mobile-view-website-liard.vercel.app");
               const hasAnyCampaignUrl = stored.includes("gopassit.org/?campaign=") || 
                                         stored.includes("mobile-view-website-liard.vercel.app");
@@ -150,15 +206,16 @@ const whySlice = createSlice({
               // Replace old domain with new domain and correct campaignId
               if (hasOldDomain) {
                 updatedMessage = updatedMessage.replace(
-                  /https:\/\/mobile-view-website-liard\.vercel\.app\/\?campaign=[^\s]*/g,
+                  /https:\/\/mobile-view-website-liard\.vercel\.app\/\?campaign=[^\s&]*[^\s]*/g,
                   correctUrl
                 );
                 needsUpdate = true;
               }
-              // If URL exists but has wrong campaignId, replace it
+              // If URL exists but has wrong campaignId or missing parent param, replace it
               else if (hasAnyCampaignUrl && !hasCorrectUrl) {
+                // Match URLs with or without parent parameter
                 updatedMessage = updatedMessage.replace(
-                  /https:\/\/gopassit\.org\/\?campaign=[^\s]*/g,
+                  /https:\/\/gopassit\.org\/\?campaign=[^\s&]*(&parent=[^\s]*)?/g,
                   correctUrl
                 );
                 needsUpdate = true;

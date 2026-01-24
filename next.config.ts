@@ -14,6 +14,8 @@ const nextConfig: NextConfig = {
       { hostname: "api.gopassit.org" },
     ],
   },
+  // Allow cross-origin requests from specific IPs in development
+  allowedDevOrigins: ["10.10.7.79"],
 };
 
 export default withNextIntl(nextConfig);
