@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { useSearchParams } from "next/navigation";
 import PhoneInput, { isValidPhoneNumber } from "react-phone-number-input";
 import "react-phone-number-input/style.css";
+import { Checkbox } from "@/components/ui/checkbox";
 function WelcomePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -312,6 +313,7 @@ function WelcomePage() {
                 className="w-full bg-white border-none shadow-none rounded-lg pr-10 h-11"
               />
             </div>
+           
 
             {/* Phone Number Input */}
             <div className="space-y-2">
@@ -332,6 +334,12 @@ function WelcomePage() {
                   className="phone-input-custom"
                 />
               </div>
+            </div>
+            <div className="space-y-2 flex items-start  gap-2">
+              <Checkbox id="terms" className="w-4 h-4 mt-1"/>
+              <Label htmlFor="terms" className="text-gray-700 font-medium text-sm">
+              By entering your phone number, you are opting in to receive text messages from Pass It Along.
+              </Label>
             </div>
           </form>
 
