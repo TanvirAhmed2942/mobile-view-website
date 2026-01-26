@@ -53,13 +53,34 @@ function WelcomePage() {
 
         // Use URL campaign ID first, then fallback to useSearchParams
         const finalCampaignId = urlCampaignId || campaignId;
-
+        
+        // Extract parent phone from URL
+        let urlParentPhone = urlParams.get("parent");
+        
+        // Fallback: try parsing the URL directly if URLSearchParams doesn't work
+        if (!urlParentPhone && searchParams) {
+          const match = searchParams.match(/[?&]parent=([^&]*)/);
+          if (match && match[1]) {
+            urlParentPhone = decodeURIComponent(match[1]);
+          }
+        }
+        
         if (finalCampaignId) {
           localStorage.setItem("params_campaign_id", finalCampaignId);
-
+          
+          // Store parent phone from URL if present
+          if (urlParentPhone) {
+            localStorage.setItem("parentPhoneFromUrl", urlParentPhone);
+          }
+          
           return true;
         } else {
           console.log("No campaign ID found in URL");
+        }
+        
+        // Even if no campaign ID, store parent phone if present
+        if (urlParentPhone) {
+          localStorage.setItem("parentPhoneFromUrl", urlParentPhone);
         }
       }
       return false;

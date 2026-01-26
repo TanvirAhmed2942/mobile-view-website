@@ -13,7 +13,6 @@ import { toast } from "sonner";
 import { useAppSelector, useAppDispatch } from "@/store/hooks";
 import { hydrateFromStorage } from "@/store/whySlice";
 import { useInviteUserOnebyOneMutation, useContinueSubmitMutation } from "@/store/APIs/inviteApi/inviteApi";
-import { useGetParentPhone } from "@/hooks/useGetParentPhone";
 import { useSearchParams } from "next/navigation";
 /* -------------------- Types -------------------- */
 interface Contact {
@@ -58,27 +57,21 @@ export default function ContactPage() {
   const donationInfo = useAppSelector((state) => state.donation);
   const [inviteUserOnebyOne, { isLoading: isSendingOneByOne }] = useInviteUserOnebyOneMutation();
   const [continueSubmit, { isLoading: isSubmittingContinue }] = useContinueSubmitMutation();
-  const parentPhoneFromToken = useGetParentPhone();
 
-  // Helper function to get parent phone based on user role
+  // Helper function to get parent phone from URL (stored in welcomePage)
   const getParentPhoneForInvite = (): string | null => {
     if (typeof window === "undefined") return null;
 
-    const userRole = localStorage.getItem("userRole");
-    
-    // For SUPER_ADMIN: get from JWT token
-    if (userRole === "SUPER_ADMIN") {
-      return parentPhoneFromToken;
+    // First priority: Get from localStorage (stored from URL in welcomePage)
+    const parentPhoneFromUrl = localStorage.getItem("parentPhoneFromUrl");
+    if (parentPhoneFromUrl) {
+      return parentPhoneFromUrl;
     }
     
-    // For USER: get from JWT token first, fallback to URL params if not found
-    if (userRole === "USER") {
-      // Try JWT token first
-      if (parentPhoneFromToken) {
-        return parentPhoneFromToken;
-      }
-      // Fallback to URL params if JWT token doesn't have it
-      return searchParams.get("parent");
+    // Second priority: Get from current URL params (if still in URL)
+    const urlParentPhone = searchParams.get("parent");
+    if (urlParentPhone) {
+      return urlParentPhone;
     }
     
     return null;
@@ -349,7 +342,7 @@ export default function ContactPage() {
 
 
         <p className="text-sm text-gray-500">
-          Parent Phone: {parentPhoneFromToken}
+          Parent Phone: {localStorage.getItem("parentPhoneFromUrl")}
         </p>
 
         {/* OPEN CONTACTS */}
