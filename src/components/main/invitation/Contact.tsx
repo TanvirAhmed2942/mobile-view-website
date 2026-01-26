@@ -241,9 +241,12 @@ export default function ContactPage() {
     } catch (error) {
       console.error("Failed to submit:", error);
       const errorMessage =
-        (error as { data?: { message?: string }; message?: string })?.data
+        (error as { data?: { message?: string; error?: string }; message?: string; error?: string })?.data
           ?.message ||
-        (error as { message?: string })?.message ||
+        (error as { data?: { message?: string; error?: string }; message?: string; error?: string })?.data
+          ?.error ||
+        (error as { message?: string; error?: string })?.message ||
+        (error as { message?: string; error?: string })?.error ||
         "Failed to submit. Please try again.";
       toast.error(errorMessage);
     }
@@ -308,9 +311,12 @@ export default function ContactPage() {
     } catch (error) {
       console.error("Failed to send invitation:", error);
       const errorMessage =
-        (error as { data?: { message?: string }; message?: string })?.data
+        (error as { data?: { message?: string; error?: string }; message?: string; error?: string })?.data
           ?.message ||
-        (error as { message?: string })?.message ||
+        (error as { data?: { message?: string; error?: string }; message?: string; error?: string })?.data
+          ?.error ||
+        (error as { message?: string; error?: string })?.message ||
+        (error as { message?: string; error?: string })?.error ||
         "Failed to send invitation. Please try again.";
       toast.error(errorMessage);
     }

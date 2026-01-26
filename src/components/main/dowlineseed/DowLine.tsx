@@ -12,8 +12,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { BarChart3, Loader2 } from "lucide-react";
-import React, { useMemo } from "react";
-import { useGetContentQuery } from "@/store/APIs/authApi/aboutusApi/aboutusApi";
+import React, { useMemo, useState, useEffect } from "react";
+import { useGetDownlineQuery } from "@/store/APIs/downlineApi/downlineApi";
+import { useGetParentPhone } from "@/hooks/useGetParentPhone";
 
 // Helper function to format numbers with commas
 const formatNumber = (num: number): string => {
@@ -34,31 +35,63 @@ const formatLargeNumber = (num: number): string => {
   return formatNumber(num);
 };
 
-function DowLine() {
-  const { data, isLoading, error } = useGetContentQuery();
+// Helper function to get campaignId based on user role
+const getCampaignIdFromStorage = (): string | null => {
+  if (typeof window === "undefined") return null;
 
-  // Extract userLevelStrategy from API response
-  const userLevelStrategy = useMemo(
-    () => data?.data?.userLevelStrategy || [],
-    [data?.data?.userLevelStrategy]
+  const userRole = localStorage.getItem("userRole");
+  const lastCampaignId = localStorage.getItem("last_campaign_id");
+  const paramsCampaignId = localStorage.getItem("params_campaign_id");
+
+  // If role is SUPER_ADMIN, use last_campaign_id
+  if (userRole === "SUPER_ADMIN") {
+    return lastCampaignId;
+  }
+  
+  // For USER: use params_campaign_id
+  // Default fallback: try params_campaign_id first, then last_campaign_id
+  return paramsCampaignId || lastCampaignId;
+};
+
+function DowLine() {
+  const parentPhone = useGetParentPhone();
+  const [campaignId, setCampaignId] = useState<string | null>(null);
+
+  // Get campaignId on mount
+  useEffect(() => {
+    const id = getCampaignIdFromStorage();
+    setCampaignId(id);
+  }, []);
+
+  // Fetch downline data when both parentPhone and campaignId are available
+  const { data: downlineData, isLoading, error } = useGetDownlineQuery(
+    { parentPhone: parentPhone || "", campaignId: campaignId || "" },
+    {
+      skip: !parentPhone || !campaignId, // Skip query if missing required params
+    }
   );
 
-  // Calculate totals
+  // Extract levels from API response
+  const levels = useMemo(() => {
+    return downlineData?.levels || [];
+  }, [downlineData?.levels]);
+
+  // Use total from API response or calculate from levels
   const totals = useMemo(() => {
-    const totalInvitation = userLevelStrategy.reduce(
-      (sum, level) => sum + level.targetInvitation,
-      0
-    );
-    const totalDonation = userLevelStrategy.reduce(
-      (sum, level) => sum + level.targetDonation,
-      0
-    );
-    const totalRaising = userLevelStrategy.reduce(
-      (sum, level) => sum + level.targetRaising,
-      0
-    );
-    return { totalInvitation, totalDonation, totalRaising };
-  }, [userLevelStrategy]);
+    if (downlineData?.total) {
+      return {
+        totalInvitation: downlineData.total.invited,
+        totalDonation: downlineData.total.donated,
+        totalRaising: downlineData.total.funds,
+      };
+    }
+    // Fallback: calculate from levels if total not available
+    return {
+      totalInvitation: levels.reduce((sum, level) => sum + level.invited, 0),
+      totalDonation: levels.reduce((sum, level) => sum + level.donated, 0),
+      totalRaising: levels.reduce((sum, level) => sum + level.funds, 0),
+    };
+  }, [downlineData?.total, levels]);
 
   if (isLoading) {
     return (
@@ -119,7 +152,7 @@ function DowLine() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {userLevelStrategy.length === 0 ? (
+                {levels.length === 0 ? (
                   <TableRow>
                     <TableCell
                       colSpan={4}
@@ -130,27 +163,27 @@ function DowLine() {
                   </TableRow>
                 ) : (
                   <>
-                    {userLevelStrategy.map((level, index) => (
+                    {levels.map((level, index) => (
                       <TableRow
-                        key={level.level || index}
+                        key={level.level ?? index}
                         className="border-b border-gray-100 hover:bg-gray-50"
                       >
                         <TableCell className="font-medium text-paul py-4">
                           {level.level}
                         </TableCell>
                         <TableCell className="text-gray-800 py-4 text-right">
-                          {formatNumber(level.targetInvitation)}
+                          {formatNumber(level.invited)}
                         </TableCell>
                         <TableCell className="text-gray-800 py-4 text-right">
-                          {formatNumber(level.targetDonation)}
+                          {formatNumber(level.donated)}
                         </TableCell>
                         <TableCell className="text-gray-800 py-4 text-right">
-                          {formatCurrency(level.targetRaising)}
+                          {formatCurrency(level.funds)}
                         </TableCell>
                       </TableRow>
                     ))}
                     {/* Total Row */}
-                    {userLevelStrategy.length > 0 && (
+                    {levels.length > 0 && (
                       <TableRow className="border-t-2 border-gray-200 hover:bg-transparent">
                         <TableCell className="font-medium text-gray-800 py-4">
                           TOT
