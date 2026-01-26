@@ -347,6 +347,11 @@ export default function ContactPage() {
           Invite up to 12 friends to grow your ripple giving.
         </p>
 
+
+        <p className="text-sm text-gray-500">
+          Parent Phone: {parentPhoneFromToken}
+        </p>
+
         {/* OPEN CONTACTS */}
         <Button
           onClick={handleOpenContacts}
