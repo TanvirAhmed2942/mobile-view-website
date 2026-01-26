@@ -71,8 +71,13 @@ export default function ContactPage() {
       return parentPhoneFromToken;
     }
     
-    // For USER: get from URL params
+    // For USER: get from JWT token first, fallback to URL params if not found
     if (userRole === "USER") {
+      // Try JWT token first
+      if (parentPhoneFromToken) {
+        return parentPhoneFromToken;
+      }
+      // Fallback to URL params if JWT token doesn't have it
       return searchParams.get("parent");
     }
     

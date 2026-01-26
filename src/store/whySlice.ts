@@ -63,9 +63,18 @@ const getParentPhoneForUrl = (): string | null => {
     return getParentPhoneFromToken();
   }
   
-  // For USER: get from JWT token (contact field)
+  // For USER: get from JWT token first, fallback to URL params if not found
   if (userRole === "USER") {
-    return getParentPhoneFromToken(); // Get parent phone from JWT token's contact field
+    const parentPhoneFromToken = getParentPhoneFromToken();
+    // Try JWT token first
+    if (parentPhoneFromToken) {
+      return parentPhoneFromToken;
+    }
+    // Fallback to URL params if JWT token doesn't have it
+    if (typeof window !== "undefined") {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get("parent");
+    }
   }
   
   return null;

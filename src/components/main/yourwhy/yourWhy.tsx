@@ -78,9 +78,15 @@ function YourWhy() {
       return parentPhone;
     }
     
-    // For USER: get from JWT token (contact field)
+    // For USER: get from JWT token first, fallback to URL params if not found
     if (userRole === "USER") {
-      return parentPhone; // parentPhone comes from useGetParentPhone hook which extracts from JWT token
+      // Try JWT token first
+      if (parentPhone) {
+        return parentPhone;
+      }
+      // Fallback to URL params if JWT token doesn't have it
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get("parent");
     }
     
     return null;
