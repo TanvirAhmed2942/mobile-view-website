@@ -63,12 +63,9 @@ const getParentPhoneForUrl = (): string | null => {
     return getParentPhoneFromToken();
   }
   
-  // For USER: get from URL params
+  // For USER: get from JWT token (contact field)
   if (userRole === "USER") {
-    if (typeof window !== "undefined") {
-      const urlParams = new URLSearchParams(window.location.search);
-      return urlParams.get("parent");
-    }
+    return getParentPhoneFromToken(); // Get parent phone from JWT token's contact field
   }
   
   return null;
@@ -194,16 +191,24 @@ const whySlice = createSlice({
               const parentPhoneForUrl = getParentPhoneForUrl();
               const parentParam = parentPhoneForUrl ? `&parent=${encodeURIComponent(parentPhoneForUrl)}` : "";
               const correctUrl = `https://gopassit.org/?campaign=${campaignId}${parentParam}`;
-              // Check if URL has correct campaignId (and parent if parentPhoneForUrl exists)
-              const expectedUrlPattern = parentPhoneForUrl 
-                ? `gopassit.org/?campaign=${campaignId}&parent=${encodeURIComponent(parentPhoneForUrl)}`
-                : `gopassit.org/?campaign=${campaignId}`;
-              const hasCorrectUrl = stored.includes(expectedUrlPattern);
+              
+              // Check if URL exists with or without parent parameter
               const hasOldDomain = stored.includes("mobile-view-website-liard.vercel.app");
-              const hasAnyCampaignUrl = stored.includes("gopassit.org/?campaign=") || 
-                                        stored.includes("mobile-view-website-liard.vercel.app");
+              const hasGopassitUrl = stored.includes("gopassit.org/?campaign=");
+              
+              // Check if current URL has the correct campaignId and parent (if parentPhone exists)
+              let hasCorrectUrl = false;
+              if (parentPhoneForUrl) {
+                // Check if URL has both correct campaignId and parent parameter
+                const encodedParent = encodeURIComponent(parentPhoneForUrl);
+                hasCorrectUrl = stored.includes(`gopassit.org/?campaign=${campaignId}&parent=${encodedParent}`);
+              } else {
+                // Check if URL has correct campaignId and no parent parameter
+                hasCorrectUrl = stored.includes(`gopassit.org/?campaign=${campaignId}`) && 
+                               !stored.includes(`gopassit.org/?campaign=${campaignId}&parent=`);
+              }
 
-              // Replace old domain with new domain and correct campaignId
+              // Replace old domain with new domain and correct campaignId + parent
               if (hasOldDomain) {
                 updatedMessage = updatedMessage.replace(
                   /https:\/\/mobile-view-website-liard\.vercel\.app\/\?campaign=[^\s&]*[^\s]*/g,
@@ -212,8 +217,8 @@ const whySlice = createSlice({
                 needsUpdate = true;
               }
               // If URL exists but has wrong campaignId or missing parent param, replace it
-              else if (hasAnyCampaignUrl && !hasCorrectUrl) {
-                // Match URLs with or without parent parameter
+              else if (hasGopassitUrl && !hasCorrectUrl) {
+                // Match URLs with or without parent parameter and replace with correct URL
                 updatedMessage = updatedMessage.replace(
                   /https:\/\/gopassit\.org\/\?campaign=[^\s&]*(&parent=[^\s]*)?/g,
                   correctUrl
@@ -221,7 +226,7 @@ const whySlice = createSlice({
                 needsUpdate = true;
               }
               // If no campaign URL exists at all, add it
-              else if (!hasAnyCampaignUrl) {
+              else if (!hasGopassitUrl && !hasOldDomain) {
                 // Try to find where to insert the URL (after the ripple effect text)
                 const rippleEffectText = "When you share with 12 friends, it starts a ripple effect of giving.";
                 if (updatedMessage.includes(rippleEffectText)) {

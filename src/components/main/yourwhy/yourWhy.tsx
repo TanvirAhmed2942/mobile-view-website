@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
 import React, { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { setWhyMessage, hydrateFromStorage } from "@/store/whySlice";
 import { useGetParentPhone } from "@/hooks/useGetParentPhone";
@@ -34,7 +34,6 @@ const getDonationAmount = (): number | null => {
 
 function YourWhy() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const dispatch = useAppDispatch();
   const whyMessage = useAppSelector((state) => state.why.whyMessage);
   const [message, setMessage] = useState(whyMessage || "");
@@ -79,9 +78,9 @@ function YourWhy() {
       return parentPhone;
     }
     
-    // For USER: get from URL params
+    // For USER: get from JWT token (contact field)
     if (userRole === "USER") {
-      return searchParams.get("parent");
+      return parentPhone; // parentPhone comes from useGetParentPhone hook which extracts from JWT token
     }
     
     return null;
@@ -102,18 +101,26 @@ function YourWhy() {
         // Build campaign URL with parent parameter if available
         const parentParam = parentPhoneForUrl ? `&parent=${encodeURIComponent(parentPhoneForUrl)}` : "";
         const campaignUrl = `https://gopassit.org/?campaign=${campaignId}${parentParam}`;
-        // Check if URL has correct campaignId (and parent if parentPhoneForUrl exists)
-        const expectedUrlPattern = parentPhoneForUrl 
-          ? `gopassit.org/?campaign=${campaignId}&parent=${encodeURIComponent(parentPhoneForUrl)}`
-          : `gopassit.org/?campaign=${campaignId}`;
-        const hasCorrectUrl = updatedMessage.includes(expectedUrlPattern);
+        
+        // Check if URL exists with or without parent parameter
         const hasOldUrl = updatedMessage.includes(
           "https://mobile-view-website-liard.vercel.app/?campaign="
         );
-        const hasAnyCampaignUrl = updatedMessage.includes("gopassit.org/?campaign=") || 
-                                  updatedMessage.includes("mobile-view-website-liard.vercel.app/?campaign=");
+        const hasGopassitUrl = updatedMessage.includes("gopassit.org/?campaign=");
+        
+        // Check if current URL has the correct campaignId and parent (if parentPhone exists)
+        let hasCorrectUrl = false;
+        if (parentPhoneForUrl) {
+          // Check if URL has both correct campaignId and parent parameter
+          const encodedParent = encodeURIComponent(parentPhoneForUrl);
+          hasCorrectUrl = updatedMessage.includes(`gopassit.org/?campaign=${campaignId}&parent=${encodedParent}`);
+        } else {
+          // Check if URL has correct campaignId and no parent parameter
+          hasCorrectUrl = updatedMessage.includes(`gopassit.org/?campaign=${campaignId}`) && 
+                         !updatedMessage.includes(`gopassit.org/?campaign=${campaignId}&parent=`);
+        }
 
-        // Replace old domain with new domain and correct campaignId
+        // Replace old domain with new domain and correct campaignId + parent
         if (hasOldUrl) {
           updatedMessage = updatedMessage.replace(
             /https:\/\/mobile-view-website-liard\.vercel\.app\/\?campaign=[^\s&]*[^\s]*/g,
@@ -122,8 +129,8 @@ function YourWhy() {
           needsUpdate = true;
         }
         // If URL exists but has wrong campaignId or missing parent param, replace it
-        else if (hasAnyCampaignUrl && !hasCorrectUrl) {
-          // Match URLs with or without parent parameter
+        else if (hasGopassitUrl && !hasCorrectUrl) {
+          // Match URLs with or without parent parameter and replace with correct URL
           updatedMessage = updatedMessage.replace(
             /https:\/\/gopassit\.org\/\?campaign=[^\s&]*(&parent=[^\s]*)?/g,
             campaignUrl
@@ -131,7 +138,7 @@ function YourWhy() {
           needsUpdate = true;
         }
         // If no campaign URL exists at all, add it
-        else if (!hasAnyCampaignUrl) {
+        else if (!hasGopassitUrl && !hasOldUrl) {
           // Try to find where to insert the URL (after the ripple effect text)
           const rippleEffectText = "When you share with 12 friends, it starts a ripple effect of giving.";
           if (updatedMessage.includes(rippleEffectText)) {
@@ -217,7 +224,7 @@ function YourWhy() {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Only run once on mount to update URL and donation amount if needed
+  }, [whyMessage, parentPhone]); // Run when whyMessage or parentPhone changes to update URL
 
   // Update Redux whenever message changes so it's always in sync
   const handleMessageChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
