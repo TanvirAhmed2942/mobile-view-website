@@ -14,6 +14,8 @@ import { useAppSelector, useAppDispatch } from "@/store/hooks";
 import { hydrateFromStorage } from "@/store/whySlice";
 import { useInviteUserOnebyOneMutation, useContinueSubmitMutation } from "@/store/APIs/inviteApi/inviteApi";
 import { useSearchParams } from "next/navigation";
+import PhoneInput from "react-phone-number-input";
+import "react-phone-number-input/style.css";
 /* -------------------- Types -------------------- */
 interface Contact {
   id: number;
@@ -149,7 +151,9 @@ export default function ContactPage() {
   const handleManualAdd = (): void => {
     if (!manualName.trim() || !manualNumber) return;
 
-    const phone = normalizePhone(manualNumber);
+    // PhoneInput already returns phone in international format (e.g., +8801234567890)
+    // So we can use it directly, but ensure it's properly formatted
+    const phone = manualNumber.startsWith("+") ? manualNumber : normalizePhone(manualNumber);
 
     setContacts((prev) => {
       if (prev.some((c) => c.phone === phone)) return prev;
@@ -427,19 +431,17 @@ export default function ContactPage() {
                 <p className="text-sm text-gray-600">
                   Name: <span className="font-medium">{manualName}</span>
                 </p>
-                <Input
-                  type="tel"
-                  value={manualNumber}
-                  onChange={(e) => {
-                    // Only allow numbers
-                    const value = e.target.value.replace(/\D/g, "");
-                    setManualNumber(value);
-                  }}
-                  placeholder="Enter phone number"
-                  className="rounded-2xl h-11"
-                  inputMode="numeric"
-                  pattern="[0-9]*"
-                />
+                <div className="flex items-center border border-gray-300 rounded-2xl overflow-hidden focus-within:ring-2 focus-within:ring-paul focus-within:border-paul [&_.PhoneInput]:flex [&_.PhoneInput]:items-center [&_.PhoneInput]:w-full [&_.PhoneInputCountry]:border-0 [&_.PhoneInputCountry]:rounded-l-2xl [&_.PhoneInputCountry]:h-11 [&_.PhoneInputCountry]:px-2 [&_.PhoneInputCountry]:bg-white [&_.PhoneInputInput]:flex-1 [&_.PhoneInputInput]:border-0 [&_.PhoneInputInput]:rounded-r-2xl [&_.PhoneInputInput]:h-11 [&_.PhoneInputInput]:px-4 [&_.PhoneInputInput]:outline-none">
+                  <PhoneInput
+                    international
+                    defaultCountry="BD"
+                    value={manualNumber}
+                    onChange={(value) => {
+                      setManualNumber(value || "");
+                    }}
+                    placeholder="Enter phone number"
+                  />
+                </div>
                 <div className="flex items-center gap-2">
                   <Button
                     variant="outline"
