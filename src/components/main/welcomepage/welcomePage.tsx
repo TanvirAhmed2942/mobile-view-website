@@ -14,6 +14,7 @@ import { useSearchParams } from "next/navigation";
 import PhoneInput, { isValidPhoneNumber } from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import { Checkbox } from "@/components/ui/checkbox";
+import Link from "next/link";
 function WelcomePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -300,9 +301,9 @@ function WelcomePage() {
 
           <div ref={titleRef} className="space-y-2">
             <h2 className="text-2xl md:text-3xl font-bold text-paul text-center leading-tight">
-              Welcome to Ripple
+              Welcome to
               <br />
-              Effect Giving
+              PASS IT ALONG
             </h2>
             <div ref={descriptionRef}>
               <p className="text-base text-gray-600 text-center leading-relaxed">
@@ -316,7 +317,7 @@ function WelcomePage() {
             </div>
           </div>
 
-          <form ref={formRef} className="space-y-5 w-full mt-6">
+          <form ref={formRef} className="space-y-5 w-full mt-4 bg">
             {/* Nick Name Input */}
             <div className="space-y-2">
               <Label
@@ -357,10 +358,16 @@ function WelcomePage() {
               </div>
             </div>
             <div className="space-y-2 flex items-start  gap-2">
-              <Checkbox id="terms" className="w-4 h-4 mt-1"/>
-              <Label htmlFor="terms" className="text-gray-700 font-medium text-sm">
-              By entering your phone number, you are opting in to receive text messages from Pass It Along.
+              <Checkbox id="terms" className="w-4 h-4 mt-1 border-[#8d4585]"/>
+              <Label htmlFor="terms" className="text-gray-700 font-medium text-sm text-justify">
+              By entering your phone number, you agree to receive a one-time SMS
+passcode from Pass It Along to verify your identity and access your account.
+This message is sent only for authentication purposes.
+Message & data rates may apply.
               </Label>
+            </div>
+            <div className="text-xs text-gray-500 leading-relaxed text-center">
+            Reply <span className="text-paul font-bold">STOP</span> to opt out. Reply <span className="text-paul font-bold">HELP</span> for help.
             </div>
           </form>
 
@@ -377,9 +384,7 @@ function WelcomePage() {
               ref={footerRef}
               className="text-xs text-gray-500 leading-relaxed text-center"
             >
-              Your phone number is your username.
-              <br />
-              No password needed.
+              Pass It Along is operated by <Link href="https://www.fencoinvest.com/" target="_blank" className="text-paul">Fenco Investments</Link>.
             </p>
           </div>
         </>
