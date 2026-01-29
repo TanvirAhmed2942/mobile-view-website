@@ -54,10 +54,10 @@ function WelcomePage() {
 
         // Use URL campaign ID first, then fallback to useSearchParams
         const finalCampaignId = urlCampaignId || campaignId;
-        
+
         // Extract parent phone from URL
         let urlParentPhone = urlParams.get("parent");
-        
+
         // Fallback: try parsing the URL directly if URLSearchParams doesn't work
         if (!urlParentPhone && searchParams) {
           const match = searchParams.match(/[?&]parent=([^&]*)/);
@@ -65,20 +65,20 @@ function WelcomePage() {
             urlParentPhone = decodeURIComponent(match[1]);
           }
         }
-        
+
         if (finalCampaignId) {
           localStorage.setItem("params_campaign_id", finalCampaignId);
-          
+
           // Store parent phone from URL if present
           if (urlParentPhone) {
             localStorage.setItem("parentPhoneFromUrl", urlParentPhone);
           }
-          
+
           return true;
         } else {
           console.log("No campaign ID found in URL");
         }
-        
+
         // Even if no campaign ID, store parent phone if present
         if (urlParentPhone) {
           localStorage.setItem("parentPhoneFromUrl", urlParentPhone);
@@ -335,7 +335,7 @@ function WelcomePage() {
                 className="w-full bg-white border-none shadow-none rounded-lg pr-10 h-11"
               />
             </div>
-           
+
 
             {/* Phone Number Input */}
             <div className="space-y-2">
@@ -358,16 +358,16 @@ function WelcomePage() {
               </div>
             </div>
             <div className="space-y-2 flex items-start  gap-2">
-              <Checkbox id="terms" className="w-4 h-4 mt-1 border-[#8d4585]"/>
+              <Checkbox id="terms" className="w-4 h-4 mt-1 border-[#8d4585]" />
               <Label htmlFor="terms" className="text-gray-700 font-medium text-sm text-justify">
-              By entering your phone number, you agree to receive a one-time SMS
-passcode from Pass It Along to verify your identity and access your account.
-This message is sent only for authentication purposes.
-Message & data rates may apply.
+                By entering your phone number, you agree to receive a one-time SMS
+                passcode from Pass It Along to verify your identity and access your account.
+                This message is sent only for authentication purposes.
+                Message & data rates may apply.
               </Label>
             </div>
             <div className="text-xs text-gray-500 leading-relaxed text-center">
-            Reply <span className="text-paul font-bold">STOP</span> to opt out. Reply <span className="text-paul font-bold">HELP</span> for help.
+              Reply <span className="text-paul font-bold">STOP</span> to opt out. Reply <span className="text-paul font-bold">HELP</span> for help.
             </div>
           </form>
 
