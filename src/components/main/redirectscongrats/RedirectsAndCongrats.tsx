@@ -7,10 +7,19 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { usePaymentURLQuery } from "@/store/APIs/inviteApi/inviteApi";
 
-// Ensure external URL is absolute (has protocol) so it doesn't resolve relative to our domain
+// External redirect base: donations go to gopassit.org (PASS IT ALONG)
+const EXTERNAL_REDIRECT_BASE = "https://gopassit.org";
+
+// Ensure external URL is absolute and points to gopassit.org (not our app domain)
 const toAbsoluteExternalUrl = (url: string): string => {
   const trimmed = url.trim();
   if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  // Path-only (e.g. "/donate" or "donate") -> resolve against gopassit.org
+  if (trimmed.startsWith("/") || !trimmed.includes(".")) {
+    const path = trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
+    return `${EXTERNAL_REDIRECT_BASE}${path}`;
+  }
+  // Domain or domain+path without protocol (e.g. "gopassit.org" or "gopassit.org/donate")
   return `https://${trimmed}`;
 };
 
@@ -68,7 +77,6 @@ function Redirects() {
   // Auto-redirect when URL is available (open in new tab)
   useEffect(() => {
     if (redirectUrl) {
-      // Auto-open external URL in new tab after a short delay (ensure absolute URL)
       const timer = setTimeout(() => {
         window.open(toAbsoluteExternalUrl(redirectUrl), "_blank", "noopener,noreferrer");
       }, 2000);
