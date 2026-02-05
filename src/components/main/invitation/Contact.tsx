@@ -14,6 +14,7 @@ import { useAppSelector, useAppDispatch } from "@/store/hooks";
 import { hydrateFromStorage } from "@/store/whySlice";
 import { useInviteUserOnebyOneMutation, useContinueSubmitMutation } from "@/store/APIs/inviteApi/inviteApi";
 import { useSearchParams } from "next/navigation";
+import { useGetParentPhone } from "@/hooks/useGetParentPhone";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 /* -------------------- Types -------------------- */
@@ -59,23 +60,29 @@ export default function ContactPage() {
   const donationInfo = useAppSelector((state) => state.donation);
   const [inviteUserOnebyOne, { isLoading: isSendingOneByOne }] = useInviteUserOnebyOneMutation();
   const [continueSubmit, { isLoading: isSubmittingContinue }] = useContinueSubmitMutation();
+  const parentPhoneFromToken = useGetParentPhone();
 
-  // Helper function to get parent phone from URL (stored in welcomePage)
+  // Helper function to get parent phone - SUPER_ADMIN from JWT, USER from URL
   const getParentPhoneForInvite = (): string | null => {
     if (typeof window === "undefined") return null;
 
-    // First priority: Get from localStorage (stored from URL in welcomePage)
+    const userRole = localStorage.getItem("userRole");
+
+    // For SUPER_ADMIN: get from JWT token
+    if (userRole === "SUPER_ADMIN") {
+      return parentPhoneFromToken;
+    }
+
+    // For USER: get from URL (stored in welcomePage or current URL params)
     const parentPhoneFromUrl = localStorage.getItem("parentPhoneFromUrl");
     if (parentPhoneFromUrl) {
       return parentPhoneFromUrl;
     }
-    
-    // Second priority: Get from current URL params (if still in URL)
     const urlParentPhone = searchParams.get("parent");
     if (urlParentPhone) {
       return urlParentPhone;
     }
-    
+
     return null;
   };
 
