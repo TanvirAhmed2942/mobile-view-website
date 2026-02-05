@@ -26,7 +26,7 @@ const getCampaignIdFromStorage = (): string | null => {
   if (userRole === "SUPER_ADMIN") {
     return lastCampaignId;
   }
-  
+
   // For USER: use params_campaign_id
   // Default fallback: try params_campaign_id first, then last_campaign_id
   return paramsCampaignId || lastCampaignId;
@@ -125,3 +125,4 @@ function Redirects() {
 }
 
 export default Redirects;
+// 
