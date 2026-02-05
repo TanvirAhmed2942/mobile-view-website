@@ -369,6 +369,9 @@ function WelcomePage() {
             <div className="text-xs text-gray-500 leading-relaxed text-center">
               Reply <span className="text-paul font-bold">STOP</span> to opt out. Reply <span className="text-paul font-bold">HELP</span> for help.
             </div>
+            <div className="text-xs text-gray-500 leading-relaxed text-center">
+              Read our <Link href="/privacy-policy" className="text-paul">Privacy Policy</Link> here.
+            </div>
           </form>
 
           <div ref={buttonRef} className="space-y-2 w-full">

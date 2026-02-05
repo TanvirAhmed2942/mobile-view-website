@@ -99,9 +99,8 @@ function PrivacyPolicy() {
                     <div key={section.id} className="w-full">
                       <button
                         onClick={() => toggleSection(section.id)}
-                        className={`w-full flex items-center justify-between p-4 bg-white border-b border-gray-200 hover:bg-gray-50 transition-colors ${
-                          isLast && !isExpanded ? "rounded-b-lg" : ""
-                        }`}
+                        className={`w-full flex items-center justify-between p-4 bg-white border-b border-gray-200 hover:bg-gray-50 transition-colors ${isLast && !isExpanded ? "rounded-b-lg" : ""
+                          }`}
                       >
                         <h2 className="text-lg md:text-xl font-semibold text-gray-800">
                           {section.title}
@@ -128,11 +127,11 @@ function PrivacyPolicy() {
           </Card>
 
           {/* Contact Us Button */}
-          <div className="w-full px-4 mt-6">
+          {/* <div className="w-full px-4 mt-6">
             <Button className="w-full bg-paul hover:bg-paul-dark text-white font-semibold py-6 px-4 rounded-full">
               Contact Us for Data Requests
             </Button>
-          </div>
+          </div> */}
         </div>
       </ScrollArea>
     </>
