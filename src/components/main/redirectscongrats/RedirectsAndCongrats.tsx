@@ -7,6 +7,13 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { usePaymentURLQuery } from "@/store/APIs/inviteApi/inviteApi";
 
+// Ensure external URL is absolute (has protocol) so it doesn't resolve relative to our domain
+const toAbsoluteExternalUrl = (url: string): string => {
+  const trimmed = url.trim();
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  return `https://${trimmed}`;
+};
+
 // Helper function to get campaignId based on user role
 const getCampaignIdFromStorage = (): string | null => {
   if (typeof window === "undefined") return null;
@@ -50,20 +57,20 @@ function Redirects() {
 
   const handleContinue = () => {
     if (redirectUrl) {
-      // Redirect to the URL from API response
-      window.location.href = redirectUrl;
+      // Open external URL in new tab (ensure absolute URL so it doesn't use our domain)
+      window.open(toAbsoluteExternalUrl(redirectUrl), "_blank", "noopener,noreferrer");
     } else {
       // Fallback to congrats page if no URL available
       router.push("/congrats");
     }
   };
 
-  // Auto-redirect when URL is available
+  // Auto-redirect when URL is available (open in new tab)
   useEffect(() => {
     if (redirectUrl) {
-      // Auto-redirect after a short delay
+      // Auto-open external URL in new tab after a short delay (ensure absolute URL)
       const timer = setTimeout(() => {
-        window.location.href = redirectUrl;
+        window.open(toAbsoluteExternalUrl(redirectUrl), "_blank", "noopener,noreferrer");
       }, 2000);
       return () => clearTimeout(timer);
     }
@@ -88,7 +95,7 @@ function Redirects() {
             ) : redirectUrl ? (
               <div
                 dangerouslySetInnerHTML={{
-                  __html: `<p>You are now being securely redirected to <a href="${redirectUrl}" target="_blank" rel="noopener noreferrer" class="text-paul underline">complete your donation</a>.</p>`,
+                  __html: `<p>You are now being securely redirected to <a href="${toAbsoluteExternalUrl(redirectUrl)}" target="_blank" rel="noopener noreferrer" class="text-paul underline">complete your donation</a>.</p>`,
                 }}
               />
             ) : (
