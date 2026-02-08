@@ -12,7 +12,7 @@ function AboutUs() {
   const [isMissionExpanded, setIsMissionExpanded] = useState(false);
   const [isHowWeOperateExpanded, setIsHowWeOperateExpanded] = useState(false);
   const { data, isLoading, error } = useGetContentQuery();
-
+  const foundersQuote = data?.data?.foundersQuote || "";
   const foundersData = data?.data?.founders;
   const introductionText = data?.data?.introduction || "";
   const missionText =
@@ -56,7 +56,7 @@ function AboutUs() {
               {foundersData?.[0]?.name}
             </h3>
             <p className="text-sm md:text-base text-gray-600 italic leading-relaxed">
-              &quot;{foundersData?.[0]?.bio}&quot;
+              &quot;{foundersQuote}&quot;
             </p>
             {/* Founders Photo */}
             <div className="relative w-full max-w-md mx-auto aspect-[4/3] rounded-lg overflow-hidden">

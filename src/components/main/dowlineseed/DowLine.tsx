@@ -47,7 +47,7 @@ const getCampaignIdFromStorage = (): string | null => {
   if (userRole === "SUPER_ADMIN") {
     return lastCampaignId;
   }
-  
+
   // For USER: use params_campaign_id
   // Default fallback: try params_campaign_id first, then last_campaign_id
   return paramsCampaignId || lastCampaignId;
@@ -128,7 +128,7 @@ function DowLine() {
           <h1 className="text-3xl md:text-4xl font-bold text-gray-800">
             Your Downline
           </h1>
-          <p className="text-sm md:text-base text-gray-500">Seed #00001</p>
+          {/* <p className="text-sm md:text-base text-gray-500">Seed #00001</p> */}
         </div>
 
         {/* Table Card */}

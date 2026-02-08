@@ -53,6 +53,7 @@ export interface ContentData {
   introduction: string;
   citiesServed: number;
   yearsOfOperation: number;
+  foundersQuote: string;
   survivorsSupported: number;
   userLevelStrategy: UserLevelStrategy[];
   gallery: string[];

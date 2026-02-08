@@ -6,7 +6,8 @@ import { DollarSign, Users, Heart, Loader2 } from "lucide-react";
 import React, { useMemo } from "react";
 import { LuWaves } from "react-icons/lu";
 import { useGetMyProfileQuery } from "@/store/APIs/userApi/userApi";
-import { useGetContentQuery } from "@/store/APIs/authApi/aboutusApi/aboutusApi";
+
+import { useGetImpactQuery } from "@/store/APIs/impactApi/impactApi";
 
 // Helper function to format currency
 const formatCurrency = (amount: number): string => {
@@ -24,38 +25,42 @@ const getLevelNumber = (userLevel: string): number => {
   return match ? parseInt(match[1], 10) : 0;
 };
 
+// Get campaignId from localStorage (same pattern as other components)
+const getCampaignIdFromStorage = (): string | null => {
+  if (typeof window === "undefined") return null;
+  const userRole = localStorage.getItem("userRole");
+  const lastCampaignId = localStorage.getItem("last_campaign_id");
+  const paramsCampaignId = localStorage.getItem("params_campaign_id");
+  if (userRole === "SUPER_ADMIN") return lastCampaignId;
+  return paramsCampaignId || lastCampaignId;
+};
+
 function ImpactLevel() {
+  const [campaignId, setCampaignId] = React.useState<string | null>(null);
+
   const {
     data: profileData,
     isLoading: isProfileLoading,
     error: profileError,
   } = useGetMyProfileQuery();
-  const { data: contentData, isLoading: isContentLoading } =
-    useGetContentQuery();
+
+  const { data: impactData, isLoading: isImpactLoading } = useGetImpactQuery(
+    {
+      currentUsersPhone: profileData?.data?.contact ?? "",
+      campaignId: campaignId ?? "",
+    },
+    { skip: !profileData?.data?.contact || !campaignId }
+  );
+
+  React.useEffect(() => {
+    setCampaignId(getCampaignIdFromStorage());
+  }, []);
 
   const userData = profileData?.data;
 
-  // Memoize userLevelStrategy to avoid dependency issues
-  const userLevelStrategy = useMemo(
-    () => contentData?.data?.userLevelStrategy || [],
-    [contentData?.data?.userLevelStrategy]
-  );
 
-  // Find the current user's level info
-  const currentLevelInfo = useMemo(() => {
-    if (!userData?.userLevel) return null;
-    return userLevelStrategy.find(
-      (level) => level.level === userData.userLevel
-    );
-  }, [userData?.userLevel, userLevelStrategy]);
 
-  // Extract level number from userLevel
-  const levelNumber = userData?.userLevel
-    ? getLevelNumber(userData.userLevel)
-    : 0;
-  const levelTitle = currentLevelInfo?.title || "Ocean Wave";
-
-  const isLoading = isProfileLoading || isContentLoading;
+  const isLoading = isProfileLoading || isImpactLoading;
 
   if (isLoading) {
     return (
@@ -107,13 +112,9 @@ function ImpactLevel() {
 
             {/* Level Number */}
             <span className="text-3xl  font-bold text-gray-800 mb-2">
-              Level {levelNumber}
+              0
             </span>
-
-            {/* Level Name */}
-            <span className="text-2xl md:text-3xl font-bold text-paul">
-              {levelTitle}
-            </span>
+            <span className="text-sm text-gray-500 mb-1">Root</span>
           </div>
         </div>
 
@@ -130,7 +131,7 @@ function ImpactLevel() {
 
             {/* Amount */}
             <span className="text-5xl  font-bold text-white">
-              {formatCurrency(userData.totalRaised || 0)}
+              {formatCurrency(impactData?.fundsRaised ?? 0)}
             </span>
           </div>
         </div>
@@ -149,7 +150,7 @@ function ImpactLevel() {
 
             {/* Count */}
             <span className="text-3xl  font-bold text-gray-800">
-              {formatNumber(userData.totalInvited || 0)}
+              {formatNumber(impactData?.invited ?? 0)}
             </span>
           </div>
 
@@ -165,7 +166,7 @@ function ImpactLevel() {
 
             {/* Count */}
             <span className="text-3xl  font-bold text-gray-800">
-              {formatNumber(userData.totalDonated || 0)}
+              {formatNumber(impactData?.donated ?? 0)}
             </span>
           </div>
         </div>
