@@ -372,7 +372,7 @@ function WelcomePage() {
               </Label>
             </div>
             <div className="text-xs text-gray-500 leading-relaxed text-center">
-              Reply <span className="text-paul font-bold cursor-pointer">STOP</span> to opt out. Reply <span className="text-paul font-bold cursor-pointer" onClick={() => router.push("/help")}>HELP</span> for help.
+              Reply <span className="text-paul font-bold cursor-pointer" onClick={() => router.push("/stop")}>STOP</span> to opt out. Reply <span className="text-paul font-bold cursor-pointer" onClick={() => router.push("/help")}>HELP</span> for help.
             </div>
             <div className="text-xs text-gray-500 leading-relaxed text-center">
               Read our <Link href="/privacy-policy" className="text-paul">Privacy Policy</Link> here.
