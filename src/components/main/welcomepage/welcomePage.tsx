@@ -34,7 +34,7 @@ function WelcomePage() {
   const [nickName, setNickName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState<string>("");
   const [login, { isLoading }] = useLoginMutation();
-
+  const [terms, setTerms] = useState(false);
   // Store campaignId in localStorage as soon as the page loads
   useEffect(() => {
     const extractAndStoreCampaignId = () => {
@@ -358,8 +358,13 @@ function WelcomePage() {
               </div>
             </div>
             <div className="space-y-2 flex items-start  gap-2">
-              <Checkbox id="terms" className="w-4 h-4 mt-1 border-[#8d4585]" />
-              <Label htmlFor="terms" className="text-gray-700 font-medium text-sm text-justify">
+              <Checkbox
+                id="terms"
+                className="w-4 h-4 mt-1 border-[#8d4585]"
+                checked={terms}
+                onCheckedChange={(checked) => setTerms(checked === true)}
+              />
+              <Label htmlFor="terms" className="text-gray-700 font-medium text-sm text-justify" >
                 By entering your phone number, you agree to receive a one-time SMS
                 passcode from Pass It Along to verify your identity and access your account.
                 This message is sent only for authentication purposes.
@@ -367,7 +372,7 @@ function WelcomePage() {
               </Label>
             </div>
             <div className="text-xs text-gray-500 leading-relaxed text-center">
-              Reply <span className="text-paul font-bold">STOP</span> to opt out. Reply <span className="text-paul font-bold">HELP</span> for help.
+              Reply <span className="text-paul font-bold cursor-pointer">STOP</span> to opt out. Reply <span className="text-paul font-bold cursor-pointer" onClick={() => router.push("/help")}>HELP</span> for help.
             </div>
             <div className="text-xs text-gray-500 leading-relaxed text-center">
               Read our <Link href="/privacy-policy" className="text-paul">Privacy Policy</Link> here.
@@ -378,7 +383,7 @@ function WelcomePage() {
             <Button
               type="button"
               onClick={handleSendVerificationCode}
-              disabled={isLoading}
+              disabled={isLoading || !terms}
               className="w-full bg-paul hover:bg-paul-dark text-white font-medium py-6 px-4 rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? "Sending..." : "Send Verification Code"}

@@ -2,7 +2,6 @@
 
 import NavBar from "@/components/common/navBar/navBar";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ChevronUp, ChevronDown } from "lucide-react";
 import React, { useMemo, useState } from "react";
@@ -67,9 +66,8 @@ function PrivacyPolicy() {
             <h1 className="text-3xl md:text-4xl font-bold text-gray-800">
               Privacy Policy
             </h1>
-            <p className="text-sm md:text-base text-gray-500 max-w-2xl mx-auto">
-              We keep your personal information safe, private, and only used for
-              processing your donation.
+            <p className="text-sm md:text-base text-gray-500 max-w-2xl mx-auto text-center ">
+              We retain your personal phone number only for identity and influence reporting purposes. Any personal information provided to the charity is not visible to us or retained in our system. The information you provide to the receiving organization is used to process your donation.
             </p>
           </div>
 
