@@ -40,6 +40,7 @@ function Login() {
       // Note: API returns data as object, not array (TypeScript type is incorrect)
       const responseData = response?.data as unknown as {
         authentication?: { oneTimeCode?: number };
+        loggedinCampaigns?: string[];
       };
       const oneTimeCode = responseData?.authentication?.oneTimeCode;
 
@@ -48,7 +49,7 @@ function Login() {
       // Save to localStorage
       localStorage.setItem("phoneNumber", phoneNumber.trim());
       localStorage.setItem("nickName", nickName.trim());
-
+      localStorage.setItem("loggedinCampaigns", JSON.stringify(responseData?.loggedinCampaigns || []));
       if (oneTimeCode) {
         localStorage.setItem("oneTimeCode", String(oneTimeCode));
         console.log("✅ OneTimeCode stored in localStorage:", oneTimeCode);

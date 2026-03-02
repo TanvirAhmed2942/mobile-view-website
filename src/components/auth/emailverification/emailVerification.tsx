@@ -13,7 +13,7 @@ import {
 } from "@/store/APIs/authApi/authApi";
 import { toast } from "sonner";
 import Timer from "./Timer";
-
+const campaignIdOtp = localStorage.getItem("campaignIdOtp");
 function PhoneVerification() {
   const [code, setCode] = useState(["", "", "", ""]);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -22,7 +22,7 @@ function PhoneVerification() {
   const [login, { isLoading: isResending }] = useLoginMutation();
   const [phoneNumber, setPhoneNumber] = useState<string>("");
   const [nickName, setNickName] = useState<string>("");
-
+  console.log(campaignIdOtp);
   // Get phone number and nickName from localStorage on mount
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -101,6 +101,8 @@ function PhoneVerification() {
         oneTimeCode,
         contact: phoneNumber,
         isForLogin: true, // Hardcoded as requested
+        campaignId: campaignIdOtp || "",
+        isFromWebsite: true,
       }).unwrap();
 
       // Save accessToken, user role, and campaignId to localStorage

@@ -7,43 +7,47 @@ export interface LoginCredentials {
 }
 
 export interface Authentication {
-  isResetPassword: boolean;
   oneTimeCode: number;
   expireAt: string;
-  _id: string;
+  isResetPassword?: boolean;
+  _id?: string;
 }
 
 export interface UserData {
+  loggedinCampaigns: string[];
+  _id: string;
+  contact: string;
+  createdAt: string;
+  image: string;
+  isDeleted: boolean;
   name: string;
   role: string;
-  contact: string;
-  image: string;
   status: string;
-  verified: boolean;
-  isDeleted: boolean;
   stripeCustomerId: string;
-  authentication: Authentication;
-  userLevel: string;
-  totalRaised: number;
   totalDonated: number;
   totalInvited: number;
-  _id: string;
-  createdAt: string;
+  totalLogin: number;
+  totalRaised: number;
   updatedAt: string;
+  userLevel: string;
+  verified: boolean;
   __v: number;
+  authentication: Authentication;
 }
 
 export interface LoginResponse {
   success: boolean;
   message: string;
   statusCode: number;
-  data: UserData[];
+  data: UserData;
 }
 
 export interface VerifyOTPCredentials {
   oneTimeCode: number;
   contact: string;
   isForLogin: boolean;
+  campaignId: string;
+  isFromWebsite: boolean;
 }
 
 export interface VerifyOTPResponseData {
@@ -76,11 +80,17 @@ const authApi = api.injectEndpoints({
     }),
 
     verifyOTP: builder.mutation<VerifyOTPResponse, VerifyOTPCredentials>({
-      query: ({ oneTimeCode, contact, isForLogin }: VerifyOTPCredentials) => {
+      query: ({
+        oneTimeCode,
+        contact,
+        isForLogin,
+        campaignId,
+        isFromWebsite,
+      }: VerifyOTPCredentials) => {
         return {
           url: "/auth/verify-otp",
           method: "POST",
-          body: { oneTimeCode, contact, isForLogin },
+          body: { oneTimeCode, contact, isForLogin, campaignId, isFromWebsite },
           headers: {
             "Content-Type": "application/json",
           },
@@ -99,9 +109,25 @@ const authApi = api.injectEndpoints({
         };
       },
     }),
+    optOut: builder.mutation({
+      query: ({ contact }: { contact: string }) => {
+        return {
+          url: "/delete-user",
+          method: "POST",
+          body: { contact, isDeleted: true },
+          headers: {
+            "Content-Type": "application/json",
+          },
+        };
+      },
+    }),
   }),
   overrideExisting: true,
 });
 
-export const { useLoginMutation, useVerifyOTPMutation, useResendOtpMutation } =
-  authApi;
+export const {
+  useLoginMutation,
+  useVerifyOTPMutation,
+  useResendOtpMutation,
+  useOptOutMutation,
+} = authApi;

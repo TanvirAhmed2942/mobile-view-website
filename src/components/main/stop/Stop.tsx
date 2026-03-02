@@ -10,23 +10,34 @@ import PhoneInput from "react-phone-number-input";
 import { isValidPhoneNumber } from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import { toast } from "sonner";
+import { useOptOutMutation } from "@/store/APIs/authApi/authApi";
 
 function Stop() {
-    const [phoneNumber, setPhoneNumber] = useState<string>("");
+  const [phoneNumber, setPhoneNumber] = useState<string>("");
+  const [optOut, { isLoading: isOptingOut }] = useOptOutMutation();
 
-    const handleProceed = () => {
-        if (!phoneNumber.trim()) {
-            toast.error("Please enter your phone number.");
-            return;
-        }
-        if (!isValidPhoneNumber(phoneNumber)) {
-            toast.error("Please enter a valid phone number.");
-            return;
-        }
-        toast.success(
-            "To complete opt-out, reply STOP via SMS to the same number you received messages from."
-        );
-    };
+  const handleProceed = async () => {
+    if (!phoneNumber.trim()) {
+      toast.error("Please enter your phone number.");
+      return;
+    }
+    if (!isValidPhoneNumber(phoneNumber)) {
+      toast.error("Please enter a valid phone number.");
+      return;
+    }
+
+    try {
+      await optOut({ contact: phoneNumber.trim() }).unwrap();
+      toast.success("You have been opted out. You will no longer receive messages from us.");
+      setPhoneNumber("");
+    } catch (error) {
+      const message =
+        (error as { data?: { message?: string }; message?: string })?.data?.message ||
+        (error as { message?: string })?.message ||
+        "Failed to opt out. Please try again.";
+      toast.error(message);
+    }
+  };
 
     return (
         <>
@@ -75,9 +86,10 @@ function Stop() {
                                 <Button
                                     type="button"
                                     onClick={handleProceed}
-                                    className="w-full bg-paul hover:bg-paul-dark text-white font-medium py-6 rounded-full"
+                                    disabled={isOptingOut}
+                                    className="w-full bg-paul hover:bg-paul-dark text-white font-medium py-6 rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                    Proceed
+                                    {isOptingOut ? "Processing..." : "Proceed"}
                                 </Button>
                             </div>
 
@@ -87,10 +99,9 @@ function Stop() {
                                 </h3>
                                 <ol className="list-decimal list-inside space-y-2 text-sm text-gray-600">
                                     <li>Enter your phone number above and tap Proceed.</li>
-
                                     <li>
-                                        You will be opted out and will no longer receive messages from
-                                        us for that number.
+                                        We will opt out that number—you will no longer receive
+                                        messages from us.
                                     </li>
                                 </ol>
                             </div>

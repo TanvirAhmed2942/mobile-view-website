@@ -20,6 +20,8 @@ function WelcomePage() {
   const searchParams = useSearchParams();
   const campaignId = searchParams.get("campaign");
   console.log(campaignId);
+
+  localStorage.setItem("campaignIdOtp", campaignId || "");
   const [showContent, setShowContent] = useState(false);
   const [videoEnded, setVideoEnded] = useState(false);
 
@@ -118,22 +120,16 @@ function WelcomePage() {
         contact: phoneNumber.trim(),
       }).unwrap();
 
-      // Extract oneTimeCode from response: data.authentication.oneTimeCode
-      // Note: API returns data as object, not array
-      const responseData = response?.data as unknown as {
-        authentication?: { oneTimeCode?: number };
-        role?: string;
-      };
+      const responseData = response?.data;
       const oneTimeCode = responseData?.authentication?.oneTimeCode;
 
       console.log("✅ Login successful. OneTimeCode:", oneTimeCode);
 
-      // Save phone number, nickName, and oneTimeCode to localStorage
+      // Save phone number, nickName, oneTimeCode, role, and loggedinCampaigns to localStorage
       if (typeof window !== "undefined") {
         localStorage.setItem("phoneNumber", phoneNumber.trim());
         localStorage.setItem("nickName", nickName.trim());
 
-        // Save oneTimeCode for auto-fill
         if (oneTimeCode) {
           localStorage.setItem("oneTimeCode", String(oneTimeCode));
           console.log("✅ OneTimeCode stored in localStorage:", oneTimeCode);
@@ -141,10 +137,12 @@ function WelcomePage() {
           console.error("❌ OneTimeCode not found in response");
         }
 
-        // Save user role from response if available
         if (responseData?.role) {
           localStorage.setItem("userRole", responseData.role);
         }
+
+        const campaigns = responseData?.loggedinCampaigns ?? [];
+        localStorage.setItem("loggedinCampaigns", JSON.stringify(campaigns));
       }
 
       toast.success("Verification code sent successfully!");
