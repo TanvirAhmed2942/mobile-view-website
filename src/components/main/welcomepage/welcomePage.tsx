@@ -125,7 +125,7 @@ function WelcomePage() {
 
       console.log("✅ Login successful. OneTimeCode:", oneTimeCode);
 
-      // Save phone number, nickName, oneTimeCode, role, and loggedinCampaigns to localStorage
+      // Save phone number, nickName, oneTimeCode, role (from API), and loggedinCampaigns to localStorage
       if (typeof window !== "undefined") {
         localStorage.setItem("phoneNumber", phoneNumber.trim());
         localStorage.setItem("nickName", nickName.trim());
@@ -137,6 +137,9 @@ function WelcomePage() {
           console.error("❌ OneTimeCode not found in response");
         }
 
+        // Store role from login response so verify-OTP can send it when user submits OTP
+        const roleFromResponse = responseData?.role ?? "USER";
+        localStorage.setItem("loginRole", roleFromResponse);
         if (responseData?.role) {
           localStorage.setItem("userRole", responseData.role);
         }

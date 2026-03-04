@@ -30,25 +30,32 @@ function Login() {
     }
 
     try {
+      // Use stored login role (set by entry point: user vs admin); default USER
+      const role =
+        (typeof window !== "undefined" && localStorage.getItem("loginRole")) ||
+        "USER";
+
       const response = await login({
-        role: "USER",
+        role: role as "USER" | "SUPER_ADMIN",
         name: nickName.trim(),
         contact: phoneNumber.trim(),
       }).unwrap();
 
-      // Extract oneTimeCode from response: data.authentication.oneTimeCode
-      // Note: API returns data as object, not array (TypeScript type is incorrect)
+      // Extract oneTimeCode and role from response for verify-OTP step
       const responseData = response?.data as unknown as {
         authentication?: { oneTimeCode?: number };
         loggedinCampaigns?: string[];
+        role?: string;
       };
       const oneTimeCode = responseData?.authentication?.oneTimeCode;
+      const roleFromResponse = responseData?.role ?? "USER";
 
       console.log("✅ Login successful. OneTimeCode:", response);
 
-      // Save to localStorage
+      // Save to localStorage; use role from API response for verify-OTP
       localStorage.setItem("phoneNumber", phoneNumber.trim());
       localStorage.setItem("nickName", nickName.trim());
+      localStorage.setItem("loginRole", roleFromResponse);
       localStorage.setItem("loggedinCampaigns", JSON.stringify(responseData?.loggedinCampaigns || []));
       if (oneTimeCode) {
         localStorage.setItem("oneTimeCode", String(oneTimeCode));

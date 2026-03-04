@@ -24,6 +24,7 @@ function PhoneVerification() {
   const [nickName, setNickName] = useState<string>("");
   console.log(campaignIdOtp);
   // Get phone number and nickName from localStorage on mount
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       const storedPhone = localStorage.getItem("phoneNumber");
@@ -97,15 +98,22 @@ function PhoneVerification() {
     }
 
     try {
+      // Role from login response (stored when OTP was sent) — USER or SUPER_ADMIN
+      const roleForVerify =
+        (typeof window !== "undefined" && localStorage.getItem("loginRole")) ||
+        "USER";
+
       const response = await verifyOTP({
         oneTimeCode,
         contact: phoneNumber,
-        isForLogin: true, // Hardcoded as requested
+        isForLogin: true,
         campaignId: campaignIdOtp || "",
         isFromWebsite: true,
+        role: roleForVerify,
       }).unwrap();
 
       // Save accessToken, user role, and campaignId to localStorage
+      let role: string | undefined;
       if (typeof window !== "undefined" && response.data) {
         const data = response.data;
         if (data.accessToken) {
@@ -115,9 +123,10 @@ function PhoneVerification() {
           try {
             const tokenParts = data.accessToken.split(".");
             if (tokenParts.length === 3) {
-              const payload = JSON.parse(atob(tokenParts[1]));
-              if (payload.role) {
-                localStorage.setItem("userRole", payload.role);
+              const payload = JSON.parse(atob(tokenParts[1])) as { role?: string };
+              role = payload.role;
+              if (role) {
+                localStorage.setItem("userRole", role);
               }
             }
           } catch (error) {
@@ -135,21 +144,38 @@ function PhoneVerification() {
         localStorage.removeItem("phoneNumber");
         localStorage.removeItem("nickName");
         localStorage.removeItem("oneTimeCode");
+        localStorage.removeItem("loginRole");
       }
 
       toast.success("OTP verified successfully!");
 
-      // Redirect based on totalLogin: > 1 → /user, <= 1 → /donate
-      if (response.data) {
-        const totalLogin = response.data.totalLogin ?? 0;
-        if (totalLogin > 1) {
+      // Redirect: for USER only, use campaign check; for SUPER_ADMIN/ADMIN use totalLogin
+      if (role === "USER") {
+        const previousCampaignIds: string[] = (() => {
+          try {
+            return JSON.parse(localStorage.getItem("loggedinCampaigns") || "[]");
+          } catch {
+            return [];
+          }
+        })();
+        const paramsCampaignId = localStorage.getItem("params_campaign_id") || "";
+        if (paramsCampaignId && previousCampaignIds.includes(paramsCampaignId)) {
+          router.push("/donate");
+        } else {
           router.push("/user");
+        }
+      } else {
+        // SUPER_ADMIN or ADMIN: redirect based on totalLogin
+        if (response.data) {
+          const totalLogin = response.data.totalLogin ?? 0;
+          if (totalLogin > 1) {
+            router.push("/user");
+          } else {
+            router.push("/donate");
+          }
         } else {
           router.push("/donate");
         }
-      } else {
-        // Default to /donate if no data
-        router.push("/donate");
       }
     } catch (error: unknown) {
       const errorMessage =
@@ -209,9 +235,14 @@ function PhoneVerification() {
     }
 
     try {
-      // Call login API again with the same data
+      // Use same role as when OTP was first sent (USER or SUPER_ADMIN)
+      const role =
+        (typeof window !== "undefined" && localStorage.getItem("loginRole")) ||
+        "USER";
+
+      // Call login API again with the same data (role included for OTP)
       await login({
-        role: "USER", // Hardcoded as requested
+        role: role as "USER" | "SUPER_ADMIN",
         name: nickName,
         contact: phoneNumber,
       }).unwrap();

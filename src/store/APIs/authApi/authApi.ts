@@ -48,6 +48,7 @@ export interface VerifyOTPCredentials {
   isForLogin: boolean;
   campaignId: string;
   isFromWebsite: boolean;
+  role?: string;
 }
 
 export interface VerifyOTPResponseData {
@@ -86,11 +87,12 @@ const authApi = api.injectEndpoints({
         isForLogin,
         campaignId,
         isFromWebsite,
+        role,
       }: VerifyOTPCredentials) => {
         return {
           url: "/auth/verify-otp",
           method: "POST",
-          body: { oneTimeCode, contact, isForLogin, campaignId, isFromWebsite },
+          body: { oneTimeCode, contact, isForLogin, campaignId, isFromWebsite, role },
           headers: {
             "Content-Type": "application/json",
           },
