@@ -47,8 +47,10 @@ export interface VerifyOTPCredentials {
   contact: string;
   isForLogin: boolean;
   campaignId: string;
+  /** Always true when verifying from the website. */
   isFromWebsite: boolean;
-  role?: string;
+  /** Role from the welcome page login response (e.g. USER, SUPER_ADMIN). */
+  role: string;
 }
 
 export interface VerifyOTPResponseData {

@@ -98,7 +98,7 @@ function PhoneVerification() {
     }
 
     try {
-      // Role from login response (stored when OTP was sent) — USER or SUPER_ADMIN
+      // role comes from welcome page login response (stored as loginRole); isFromWebsite is always true for website flow
       const roleForVerify =
         (typeof window !== "undefined" && localStorage.getItem("loginRole")) ||
         "USER";
