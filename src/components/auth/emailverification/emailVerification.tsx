@@ -139,6 +139,27 @@ function PhoneVerification() {
         }
       }
 
+      // Use welcome-page data for redirect (no OTP response check): role + loggedinCampaigns + campaignIdOtp
+      const roleFromWelcome =
+        typeof window !== "undefined"
+          ? localStorage.getItem("loginRole") || "USER"
+          : "USER";
+      const loggedinCampaigns: string[] = (() => {
+        try {
+          return JSON.parse(
+            typeof window !== "undefined"
+              ? localStorage.getItem("loggedinCampaigns") || "[]"
+              : "[]"
+          );
+        } catch {
+          return [];
+        }
+      })();
+      const campaignIdForRedirect =
+        typeof window !== "undefined"
+          ? localStorage.getItem("campaignIdOtp") || ""
+          : "";
+
       // Clear persisted login data after successful OTP verification
       if (typeof window !== "undefined") {
         localStorage.removeItem("phoneNumber");
@@ -149,33 +170,15 @@ function PhoneVerification() {
 
       toast.success("OTP verified successfully!");
 
-      // Redirect: for USER only, use campaign check; for SUPER_ADMIN/ADMIN use totalLogin
-      if (role === "USER") {
-        const previousCampaignIds: string[] = (() => {
-          try {
-            return JSON.parse(localStorage.getItem("loggedinCampaigns") || "[]");
-          } catch {
-            return [];
-          }
-        })();
-        const paramsCampaignId = localStorage.getItem("params_campaign_id") || "";
-        if (paramsCampaignId && previousCampaignIds.includes(paramsCampaignId)) {
-          router.push("/donate");
-        } else {
-          router.push("/user");
-        }
+      // Redirect: USER and campaignIdOtp in loggedinCampaigns → /user; else → /donate
+      if (
+        roleFromWelcome === "USER" &&
+        campaignIdForRedirect &&
+        loggedinCampaigns.includes(campaignIdForRedirect)
+      ) {
+        router.push("/user");
       } else {
-        // SUPER_ADMIN or ADMIN: redirect based on totalLogin
-        if (response.data) {
-          const totalLogin = response.data.totalLogin ?? 0;
-          if (totalLogin > 1) {
-            router.push("/user");
-          } else {
-            router.push("/donate");
-          }
-        } else {
-          router.push("/donate");
-        }
+        router.push("/donate");
       }
     } catch (error: unknown) {
       const errorMessage =

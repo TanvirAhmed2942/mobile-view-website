@@ -90,7 +90,7 @@ export default function ContactPage() {
     if (userRole === "SUPER_ADMIN") {
       return lastCampaignId;
     }
-    
+
     // For USER: use params_campaign_id
     return paramsCampaignId;
   };
@@ -220,21 +220,21 @@ export default function ContactPage() {
       return;
     }
 
-    if (!donationInfo.donationAmount) {
-      toast.error("Donation amount is required.");
-      return;
-    }
+    // if (!donationInfo.donationAmount) {
+    //   toast.error("Donation amount is required.");
+    //   return;
+    // }
 
     // Call useContinueSubmitMutation API only
     try {
       await continueSubmit({
-        amount: donationInfo.donationAmount,
+        amount: donationInfo.donationAmount || 0,
         phone: currentUserPhone,
         campaignId: campaignId,
       }).unwrap();
 
       toast.success("Submitted successfully!");
-      
+
       // Navigate to redirect page after a short delay
       setTimeout(() => {
         router.push("/redirect");
