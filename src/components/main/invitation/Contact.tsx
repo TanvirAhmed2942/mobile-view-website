@@ -60,18 +60,19 @@ export default function ContactPage() {
   const [continueSubmit, { isLoading: isSubmittingContinue }] = useContinueSubmitMutation();
   const parentPhoneFromToken = useGetParentPhone();
 
-  // Helper function to get parent phone - from JWT contact for USER, SUPER_ADMIN, and ADMIN
+  // Helper function to get parent phone - USER uses parentPhoneFromUrl (welcome page); others use JWT contact
   const getParentPhoneForInvite = (): string | null => {
     if (typeof window === "undefined") return null;
 
     const userRole = localStorage.getItem("userRole");
 
-    // For USER, SUPER_ADMIN, and ADMIN: parent comes from JWT token (contact field)
-    if (
-      userRole === "USER" ||
-      userRole === "SUPER_ADMIN" ||
-      userRole === "ADMIN"
-    ) {
+    // For USER: parent comes from URL (stored as parentPhoneFromUrl on welcome page)
+    if (userRole === "USER") {
+      return localStorage.getItem("parentPhoneFromUrl");
+    }
+
+    // For SUPER_ADMIN and ADMIN: parent comes from JWT token (contact field)
+    if (userRole === "SUPER_ADMIN" || userRole === "ADMIN") {
       return parentPhoneFromToken;
     }
 
@@ -433,7 +434,7 @@ export default function ContactPage() {
                 <div className="flex items-center border border-gray-300 rounded-2xl overflow-hidden focus-within:ring-2 focus-within:ring-paul focus-within:border-paul [&_.PhoneInput]:flex [&_.PhoneInput]:items-center [&_.PhoneInput]:w-full [&_.PhoneInputCountry]:border-0 [&_.PhoneInputCountry]:rounded-l-2xl [&_.PhoneInputCountry]:h-11 [&_.PhoneInputCountry]:px-2 [&_.PhoneInputCountry]:bg-white [&_.PhoneInputInput]:flex-1 [&_.PhoneInputInput]:border-0 [&_.PhoneInputInput]:rounded-r-2xl [&_.PhoneInputInput]:h-11 [&_.PhoneInputInput]:px-4 [&_.PhoneInputInput]:outline-none">
                   <PhoneInput
                     international
-                    defaultCountry="BD"
+                    defaultCountry="US"
                     value={manualNumber}
                     onChange={(value) => {
                       setManualNumber(value || "");
