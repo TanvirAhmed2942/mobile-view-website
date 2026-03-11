@@ -20,7 +20,7 @@ function Preview() {
 
   const handleContinue = () => {
     // Navigate to Donate page (new flow: invite → why → preview → donate)
-    router.push("/donate");
+    router.push("/invite");
   };
 
   return (
@@ -39,10 +39,10 @@ function Preview() {
 
         <div className="w-full px-4">
           <div className="w-full bg-white rounded-2xl p-4 sm:p-6">
-            <div 
+            <div
               className="whitespace-pre-wrap text-gray-800 break-words overflow-wrap-anywhere text-sm sm:text-base leading-relaxed"
-              style={{ 
-                wordBreak: "break-all", 
+              style={{
+                wordBreak: "break-all",
                 overflowWrap: "break-word",
                 whiteSpace: "pre-wrap",
                 overflowX: "hidden"
