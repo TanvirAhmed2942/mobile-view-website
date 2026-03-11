@@ -246,7 +246,8 @@ function YourWhy() {
   };
   const handleSend = () => {
     dispatch(setWhyMessage(message));
-    router.push("/invite");
+    // Full page navigation to avoid ChunkLoadError on live (stale chunk hash after deploy)
+    window.location.href = "/invite";
   };
   return (
     <ScrollArea className="w-full h-[calc(100vh-200px)] no-scrollbar">
