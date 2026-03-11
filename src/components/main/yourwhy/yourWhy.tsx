@@ -4,10 +4,11 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { setWhyMessage, hydrateFromStorage } from "@/store/whySlice";
 import { useGetParentPhone } from "@/hooks/useGetParentPhone";
+import Contact from "@/components/main/invitation/Contact";
 
 // Helper function to get donation amount from sessionStorage
 const getDonationAmount = (): number | null => {
@@ -34,10 +35,12 @@ const getDonationAmount = (): number | null => {
 
 function YourWhy() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const dispatch = useAppDispatch();
   const whyMessage = useAppSelector((state) => state.why.whyMessage);
   const [message, setMessage] = useState(whyMessage || "");
   const parentPhone = useGetParentPhone();
+  const showInvite = searchParams.get("step") === "invite";
 
   // Hydrate from sessionStorage after mount to avoid hydration mismatch
   useEffect(() => {
@@ -61,7 +64,7 @@ function YourWhy() {
     if (userRole === "SUPER_ADMIN") {
       return lastCampaignId;
     }
-    
+
     // For USER: use params_campaign_id
     // Default fallback: try params_campaign_id first, then last_campaign_id
     return paramsCampaignId || lastCampaignId;
@@ -72,12 +75,12 @@ function YourWhy() {
     if (typeof window === "undefined") return null;
 
     const userRole = localStorage.getItem("userRole");
-    
+
     // For SUPER_ADMIN: get from JWT token
     if (userRole === "SUPER_ADMIN") {
       return parentPhone;
     }
-    
+
     // For USER: get from JWT token first, fallback to URL params if not found
     if (userRole === "USER") {
       // Try JWT token first
@@ -88,7 +91,7 @@ function YourWhy() {
       const urlParams = new URLSearchParams(window.location.search);
       return urlParams.get("parent");
     }
-    
+
     return null;
   };
 
@@ -107,13 +110,13 @@ function YourWhy() {
         // Build campaign URL with parent parameter if available
         const parentParam = parentPhoneForUrl ? `&parent=${encodeURIComponent(parentPhoneForUrl)}` : "";
         const campaignUrl = `https://gopassit.org/?campaign=${campaignId}${parentParam}`;
-        
+
         // Check if URL exists with or without parent parameter
         const hasOldUrl = updatedMessage.includes(
           "https://mobile-view-website-liard.vercel.app/?campaign="
         );
         const hasGopassitUrl = updatedMessage.includes("gopassit.org/?campaign=");
-        
+
         // Check if current URL has the correct campaignId and parent (if parentPhone exists)
         let hasCorrectUrl = false;
         if (parentPhoneForUrl) {
@@ -122,8 +125,8 @@ function YourWhy() {
           hasCorrectUrl = updatedMessage.includes(`gopassit.org/?campaign=${campaignId}&parent=${encodedParent}`);
         } else {
           // Check if URL has correct campaignId and no parent parameter
-          hasCorrectUrl = updatedMessage.includes(`gopassit.org/?campaign=${campaignId}`) && 
-                         !updatedMessage.includes(`gopassit.org/?campaign=${campaignId}&parent=`);
+          hasCorrectUrl = updatedMessage.includes(`gopassit.org/?campaign=${campaignId}`) &&
+            !updatedMessage.includes(`gopassit.org/?campaign=${campaignId}&parent=`);
         }
 
         // Replace old domain with new domain and correct campaignId + parent
@@ -246,9 +249,13 @@ function YourWhy() {
   };
   const handleSend = () => {
     dispatch(setWhyMessage(message));
-    // Full page navigation to avoid ChunkLoadError on live (stale chunk hash after deploy)
-    window.location.href = "/invite";
+    router.push("/your-why?step=invite");
   };
+
+  if (showInvite) {
+    return <Contact />;
+  }
+
   return (
     <ScrollArea className="w-full h-[calc(100vh-200px)] no-scrollbar">
       <div className="w-full min-h-[600px] xl:min-h-[630px] 2xl:min-h-[800px] flex flex-col items-center gap-6 justify-start pb-8">
@@ -270,8 +277,8 @@ function YourWhy() {
             className="w-full h-60 resize-none break-words overflow-wrap-anywhere whitespace-pre-wrap"
             value={message}
             onChange={handleMessageChange}
-            style={{ 
-              wordBreak: "break-all", 
+            style={{
+              wordBreak: "break-all",
               overflowWrap: "break-word",
               whiteSpace: "pre-wrap",
               overflowX: "hidden"
