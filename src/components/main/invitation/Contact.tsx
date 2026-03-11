@@ -66,7 +66,7 @@ export default function ContactPage() {
 
     const userRole = localStorage.getItem("userRole");
 
-    // For USER: parent comes from URL (stored as parentPhoneFromUrl on welcome page)
+    // For USER: parent comes from URL (stored on welcome page as parentPhoneFromUrl)
     if (userRole === "USER") {
       return localStorage.getItem("parentPhoneFromUrl");
     }
@@ -434,7 +434,7 @@ export default function ContactPage() {
                 <div className="flex items-center border border-gray-300 rounded-2xl overflow-hidden focus-within:ring-2 focus-within:ring-paul focus-within:border-paul [&_.PhoneInput]:flex [&_.PhoneInput]:items-center [&_.PhoneInput]:w-full [&_.PhoneInputCountry]:border-0 [&_.PhoneInputCountry]:rounded-l-2xl [&_.PhoneInputCountry]:h-11 [&_.PhoneInputCountry]:px-2 [&_.PhoneInputCountry]:bg-white [&_.PhoneInputInput]:flex-1 [&_.PhoneInputInput]:border-0 [&_.PhoneInputInput]:rounded-r-2xl [&_.PhoneInputInput]:h-11 [&_.PhoneInputInput]:px-4 [&_.PhoneInputInput]:outline-none">
                   <PhoneInput
                     international
-                    defaultCountry="US"
+                    defaultCountry="BD"
                     value={manualNumber}
                     onChange={(value) => {
                       setManualNumber(value || "");

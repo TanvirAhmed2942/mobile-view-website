@@ -8,25 +8,19 @@ import { CheckIcon } from "lucide-react";
 import React, { useState, useEffect } from "react";
 
 import useIcon from "@/hooks/useIcon";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { setDonationInfo, setCampaignId } from "@/store/donationSlice";
 import { toast } from "sonner";
-import YourWhy from "@/components/main/yourwhy/yourWhy";
-import Navigation from "@/components/common/backbutton/backbutton";
 
 function Donate() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const dispatch = useAppDispatch();
   const selectedCampaignId = useAppSelector(
     (state) => state.donation.campaignId
   );
   const [selectedAmount, setSelectedAmount] = useState<number | null>(100);
   const [customAmount, setCustomAmount] = useState("");
-  const showYourWhy = searchParams.get("step") === "your-why";
-  const twoUserIcon = useIcon({ name: "two_user_icon" });
-  const twoUserBlackIcon = useIcon({ name: "two_user_black_icon" });
 
   // Helper function to get campaignId based on user role
   const getCampaignIdFromStorage = (): string | null => {
@@ -82,7 +76,7 @@ function Donate() {
         campaignId: campaignId,
       })
     );
-    router.push("/donate?step=your-why");
+    router.push("/your-why");
   };
 
   const handleShareWithoutDonating = () => {
@@ -104,7 +98,7 @@ function Donate() {
         campaignId: campaignId,
       })
     );
-    router.push("/donate?step=your-why");
+    router.push("/your-why");
   };
 
   const options = [
@@ -113,15 +107,6 @@ function Donate() {
       value: 100,
     },
   ];
-
-  if (showYourWhy) {
-    return (
-      <>
-        <YourWhy />
-        <Navigation />
-      </>
-    );
-  }
 
   return (
     <ScrollArea className="w-full h-[calc(100vh-200px)] no-scrollbar">
@@ -148,17 +133,19 @@ function Donate() {
                 <button
                   key={option.id}
                   onClick={() => setSelectedAmount(option.value)}
-                  className={`w-full flex items-center gap-3 p-4 rounded-lg border-2 transition-all ${isSelected
+                  className={`w-full flex items-center gap-3 p-4 rounded-lg border-2 transition-all ${
+                    isSelected
                       ? "bg-[#f1e9f8] border-[#8a48c4]"
                       : "bg-white border-gray-200"
-                    }`}
+                  }`}
                 >
                   {/* Radio Circle */}
                   <div
-                    className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${isSelected
+                    className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
+                      isSelected
                         ? "bg-[#06dba3] border-[#06dba3]"
                         : "bg-white border-gray-300"
-                      }`}
+                    }`}
                   >
                     {isSelected && <CheckIcon className="w-3 h-3 text-white" />}
                   </div>
@@ -201,7 +188,7 @@ function Donate() {
           </h2>
           <div className="w-full flex items-center gap-2">
             <div className="h-10 w-10 rounded-full bg-gray-100 p-1 flex items-center justify-center">
-              {twoUserIcon}
+              {useIcon({ name: "two_user_icon" })}
             </div>
             <span className="text-sm text-gray-500">
               Send invites to your 12 friends
@@ -213,7 +200,7 @@ function Donate() {
             className="w-full h-11 bg-white hover:bg-paul-dark text-black hover:text-white border border-[#8a48c4] font-semibold py-3 px-4 rounded-full mt-4 flex items-center justify-center gap-2"
             onClick={handleShareWithoutDonating}
           >
-            {twoUserBlackIcon}
+            {useIcon({ name: "two_user_black_icon" })}
             Share Without Donating
           </Button>
         </div>
